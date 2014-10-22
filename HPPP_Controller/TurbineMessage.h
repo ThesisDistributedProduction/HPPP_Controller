@@ -1,3 +1,4 @@
+#pragma once
 
 #define MAX_TURBINEID_NAME_SIZE 20
 

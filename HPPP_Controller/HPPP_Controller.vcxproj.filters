@@ -27,6 +27,12 @@
     <ClInclude Include="TurbineMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ClusterSubscriber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Turbine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HPPP_Controller.cpp">
@@ -36,6 +42,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TurbineInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ClusterSubscriber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Turbine.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

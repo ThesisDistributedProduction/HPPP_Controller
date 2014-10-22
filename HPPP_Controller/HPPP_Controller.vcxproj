@@ -147,12 +147,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClusterListener.h" />
+    <ClInclude Include="ClusterSubscriber.h" />
+    <ClInclude Include="Turbine.h" />
     <ClInclude Include="TurbineInfo.h" />
     <ClInclude Include="TurbineMessage.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClusterSubscriber.cpp" />
     <ClCompile Include="HPPP_Controller.cpp" />
     <ClCompile Include="ClusterListener.cpp" />
+    <ClCompile Include="Turbine.cxx" />
     <ClCompile Include="TurbineInfo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
