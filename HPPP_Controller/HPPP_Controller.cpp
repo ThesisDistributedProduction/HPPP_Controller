@@ -58,7 +58,7 @@ static int subscriber_shutdown(
 	return status;
 }
 
-static bool startIDLMessageApplication(int sample_count)
+static bool startIDLMessageApplication()
 {
 	DDSDomainParticipant *participant = NULL;
 	DDSSubscriber *subscriber = NULL;
@@ -345,9 +345,8 @@ static bool startListenerMessageApplication(int _main_result)
 
 int main() {
 	int main_result = 1; /* error by default */
-	int sample_count = 0; //infinite loop
 
-	if (startIDLMessageApplication(sample_count))
+	if (startIDLMessageApplication())
 		main_result = 0;
 
 	//if (startStructMessageApplication())
