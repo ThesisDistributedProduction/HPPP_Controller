@@ -2,7 +2,7 @@
 
 #define MAX_TURBINEID_NAME_SIZE 20
 
-struct Turbine
+struct TurbineStruct
 {
 	char turbineId[MAX_TURBINEID_NAME_SIZE];
 	__int32 maxProduction;
@@ -12,6 +12,6 @@ struct Turbine
 
 union TurbineMessage
 {
-	unsigned char rawMsg[sizeof(Turbine)];
-	Turbine turbine;
+	unsigned char rawMsg[sizeof(TurbineStruct)];
+	TurbineStruct turbine;
 };
