@@ -24,23 +24,22 @@ static bool fileExist(const char *fileName) {
 }
 
 /* Delete all entities */
-static int subscriber_shutdown(
+static bool subscriber_shutdown(
 	DDSDomainParticipant *participant)
 {
 	DDS_ReturnCode_t retcode;
-	int status = 0;
 
 	if (participant != NULL) {
 		retcode = participant->delete_contained_entities();
 		if (retcode != DDS_RETCODE_OK) {
 			printf("delete_contained_entities error %d\n", retcode);
-			status = -1;
+			return false;
 		}
 
 		retcode = DDSTheParticipantFactory->delete_participant(participant);
 		if (retcode != DDS_RETCODE_OK) {
 			printf("delete_participant error %d\n", retcode);
-			status = -1;
+			return false;
 		}
 	}
 
@@ -55,27 +54,44 @@ static int subscriber_shutdown(
 	status = -1;
 	}
 	*/
-	return status;
+	return true;
 }
 
 static bool startIDLMessageApplication()
 {
-	DDSDomainParticipant *participant = NULL;
-	DDSSubscriber *subscriber = NULL;
-	DDSTopic *topic = NULL;
-	DDSDataReader *reader = NULL;
-	DDS_ReturnCode_t retcode;
-	const char *type_name = NULL;
-	int count = 0;
-	DDS_Duration_t receive_period = { 4, 0 };
-	int status = 0;
+	if (!fileExist("USER_QOS_PROFILES.xml")) {
+		std::cout << "! Unable to locate QoS definition file" << std::endl;
+		std::cout << "! (USER_QOS_PROFILES.xml) in current directory."
+			<< std::endl;
+		return false;
+	}
 
 	DDSDomainParticipantFactory* factory =
 		DDSDomainParticipantFactory::get_instance();
 
+	//DDS_DomainParticipantFactoryQos factoryQos;
+	//retcode = factory->get_qos(factoryQos);
+	//if (retcode != DDS_RETCODE_OK) {
+	//	std::cerr << "! Unable to get participant factory QoS: "
+	//		<< retcode << std::endl;
+	//	return false;
+	//}
+
+	//// Modify the factory QoS here
+
+
+
+	//retcode = factory->set_qos(factoryQos);
+	//if (retcode != DDS_RETCODE_OK) {
+	//	std::cerr << "! Unable to set participant factory QoS: "
+	//		<< retcode << std::endl;
+	//	return false;
+	//}
+
+
 	/* To customize the participant QoS, use
 	the configuration file USER_QOS_PROFILES.xml */
-	participant = factory->create_participant(
+	DDSDomainParticipant *participant = factory->create_participant(
 		0, 
 		DDS_PARTICIPANT_QOS_DEFAULT,
 		NULL, 
@@ -83,20 +99,21 @@ static bool startIDLMessageApplication()
 	if (participant == NULL) {
 		printf("create_participant error\n");
 		subscriber_shutdown(participant);
-		return -1;
+		return false;
 	}
 
-	type_name = TurbineTypeSupport::get_type_name();
-	retcode = TurbineTypeSupport::register_type(
+
+	const char *type_name = TurbineTypeSupport::get_type_name();
+	DDS_ReturnCode_t retcode = TurbineTypeSupport::register_type(
 		participant, 
 		type_name);
 	if (retcode != DDS_RETCODE_OK) {
 		printf("register_type error %d\n", retcode);
 		subscriber_shutdown(participant);
-		return -1;
+		return false;
 	}
 
-	topic = participant->create_topic(
+	DDSTopic *topic = participant->create_topic(
 		"Cluster 1",
 		type_name,
 		DDS_TOPIC_QOS_DEFAULT,
@@ -105,7 +122,7 @@ static bool startIDLMessageApplication()
 	if (topic == NULL) {
 		printf("create_topic error\n");
 		subscriber_shutdown(participant);
-		return -1;
+		return false;
 	}
 
 	try
@@ -121,9 +138,7 @@ static bool startIDLMessageApplication()
 	}
 
 	/*delete all listeners*/
-	status = subscriber_shutdown(participant);
-
-	return true;
+	return subscriber_shutdown(participant);
 }
 
 static bool startStructMessageApplication() {

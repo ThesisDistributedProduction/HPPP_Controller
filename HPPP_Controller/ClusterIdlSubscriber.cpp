@@ -1,5 +1,12 @@
 #include "ClusterIdlSubscriber.h"
 
+
+void TurbineStatusListener::on_liveliness_changed(
+	DDSDataReader* reader,
+	const DDS_LivelinessChangedStatus& status) {
+		std::cout << "->Callback: liveliness changed." << std::endl;
+}
+
 ClusterIdlSubscriber::ClusterIdlSubscriber(DDSDomainParticipant* participant, DDSTopic* topic)
 {
 	/* To customize the data reader QoS, use
@@ -7,7 +14,7 @@ ClusterIdlSubscriber::ClusterIdlSubscriber(DDSDomainParticipant* participant, DD
 	DDSDataReader* untypedReader = participant->create_datareader(
 		topic, 
 		DDS_DATAREADER_QOS_DEFAULT, 
-		NULL,							 
+		&_listener,							 
 		DDS_STATUS_MASK_ALL);			//(DDS_DATA_AVAILABLE_STATUS)
 	if (untypedReader == NULL) {
 		printf("create_datareader error\n");
@@ -15,6 +22,30 @@ ClusterIdlSubscriber::ClusterIdlSubscriber(DDSDomainParticipant* participant, DD
 	}
 
 	_reader = TurbineDataReader::narrow(untypedReader);
+
+	/*DDS_ReturnCode_t retcode;
+
+	DDS_DataReaderQos BLA;
+
+	retcode = _reader->get_qos(BLA);
+	if (retcode != DDS_RETCODE_OK) {
+		std::cerr << "! Unable to get participant factory QoS: "
+			<< retcode << std::endl;
+		return;
+	}
+
+	cout << "QOS: Depth: " << BLA.history.depth << endl;
+
+	 BLA.history.depth = 10;
+
+	 retcode = _reader->set_qos(BLA);
+	if (retcode != DDS_RETCODE_OK) {
+		std::cerr << "! Unable to set participant factory QoS: "
+			<< retcode << std::endl;
+		return;
+	}
+*/
+
 	if (_reader == NULL) {
 		throw std::runtime_error(
 			"Unable to narrow data reader into TurbineDataReader");
@@ -57,6 +88,9 @@ void ClusterIdlSubscriber::calculateNewSetpoint()
 		}
 		
 		for (i = 0; i < turbines.length(); ++i) {
+			cout << "\n";
+			cout << turbines.length();
+			
 			DDS_SampleInfo& turbineInfo = turbineInfos[i];
 
 			if (!turbineInfo.valid_data) {
@@ -67,8 +101,6 @@ void ClusterIdlSubscriber::calculateNewSetpoint()
 
 			time_t src_time = (time_t)turbineInfo.source_timestamp.sec;
 			tm* local_src_time = localtime(&src_time);
-
-			cout << "\n";
 			std::cout
 				<< "[" << local_src_time->tm_hour
 				<< ":" << std::setw(2) << std::setfill('0')

@@ -12,6 +12,18 @@
 
 using namespace std;
 
+
+/* The class containing DDS event callbacks */
+class TurbineStatusListener : public DDSDataReaderListener {
+public:
+	// ---------------------------------------------------------------------------
+	// DDSDataReaderListener interface callbacks
+public:
+	void on_liveliness_changed(
+		DDSDataReader* reader,
+		const DDS_LivelinessChangedStatus& status);
+};
+
 class ClusterIdlSubscriber
 {
 public:
@@ -21,6 +33,6 @@ public:
 	void calculateNewSetpoint();
 
 private:
-	//ArticleDeliveryStatusListener _listener;
+	TurbineStatusListener _listener;
 	TurbineDataReader* _reader;
 };
