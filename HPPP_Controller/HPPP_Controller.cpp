@@ -23,9 +23,7 @@ static bool fileExist(const char *fileName) {
 	return true;
 }
 
-/* Delete all entities */
-static bool subscriber_shutdown(
-	DDSDomainParticipant *participant)
+static bool subscriber_shutdown(DDSDomainParticipant *participant)
 {
 	DDS_ReturnCode_t retcode;
 
@@ -43,54 +41,18 @@ static bool subscriber_shutdown(
 		}
 	}
 
-	/* RTI Connext provides the finalize_instance() method on
-	domain participant factory for people who want to release memory used
-	by the participant factory. Uncomment the following block of code for
-	clean destruction of the singleton. */
-	/*
 	retcode = DDSDomainParticipantFactory::finalize_instance();
 	if (retcode != DDS_RETCODE_OK) {
-	printf("finalize_instance error %d\n", retcode);
-	status = -1;
+		printf("finalize_instance error %d\n", retcode);
+		return false;
 	}
-	*/
 	return true;
 }
 
 static bool startIDLMessageApplication()
 {
-	if (!fileExist("USER_QOS_PROFILES.xml")) {
-		std::cout << "! Unable to locate QoS definition file" << std::endl;
-		std::cout << "! (USER_QOS_PROFILES.xml) in current directory."
-			<< std::endl;
-		return false;
-	}
+	DDSDomainParticipantFactory* factory = DDSDomainParticipantFactory::get_instance();
 
-	DDSDomainParticipantFactory* factory =
-		DDSDomainParticipantFactory::get_instance();
-
-	//DDS_DomainParticipantFactoryQos factoryQos;
-	//retcode = factory->get_qos(factoryQos);
-	//if (retcode != DDS_RETCODE_OK) {
-	//	std::cerr << "! Unable to get participant factory QoS: "
-	//		<< retcode << std::endl;
-	//	return false;
-	//}
-
-	//// Modify the factory QoS here
-
-
-
-	//retcode = factory->set_qos(factoryQos);
-	//if (retcode != DDS_RETCODE_OK) {
-	//	std::cerr << "! Unable to set participant factory QoS: "
-	//		<< retcode << std::endl;
-	//	return false;
-	//}
-
-
-	/* To customize the participant QoS, use
-	the configuration file USER_QOS_PROFILES.xml */
 	DDSDomainParticipant *participant = factory->create_participant(
 		0, 
 		DDS_PARTICIPANT_QOS_DEFAULT,
@@ -137,7 +99,6 @@ static bool startIDLMessageApplication()
 		std::cerr << "An error occurred: " << ex.what();
 	}
 
-	/*delete all listeners*/
 	return subscriber_shutdown(participant);
 }
 
@@ -145,17 +106,6 @@ static bool startStructMessageApplication() {
 	DDS_ReturnCode_t         rc;
 	DDSTopic *               topic = NULL;
 	bool                     returnValue = false;
-
-	/* This example creates DDS entities using the default QoS loaded
-	* from the file USER_QOS_PROFILES.xml in the current working
-	* directory.
-	*/
-	if (!fileExist("USER_QOS_PROFILES.xml")) {
-		std::cout << "! Unable to locate QoS definition file" << std::endl;
-		std::cout << "! (USER_QOS_PROFILES.xml) in current directory."
-			<< std::endl;
-		return false;
-	}
 
 	DDSDomainParticipantFactory* factory =
 		DDSDomainParticipantFactory::get_instance();
@@ -357,9 +307,14 @@ static bool startListenerMessageApplication(int _main_result)
 		return true;
 }
 
-
 int main() {
 	int main_result = 1; /* error by default */
+
+	if (!fileExist("USER_QOS_PROFILES.xml")) {
+		std::cout << "! Unable to locate QoS definition file" << std::endl;
+		std::cout << "! (USER_QOS_PROFILES.xml) in current directory." << std::endl;
+		return main_result;
+	}
 
 	if (startIDLMessageApplication())
 		main_result = 0;
