@@ -35,4 +35,5 @@ public:
 private:
 	TurbineStatusListener _listener;
 	TurbineDataReader* _reader;
+	long _number_of_turbines;
 };

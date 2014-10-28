@@ -4,13 +4,63 @@
 void TurbineStatusListener::on_liveliness_changed(
 	DDSDataReader* reader,
 	const DDS_LivelinessChangedStatus& status) {
-		std::cout << "->Callback: liveliness changed." << std::endl;
+
+	Turbine turbine;
+	TurbineDataReader* typedReader =
+		TurbineDataReader::narrow(reader);
+
+
+	DDS_ReturnCode_t retcode = typedReader->get_key_value(turbine, status.last_publication_handle);
+
+	//DDS_RETCODE_BAD_PARAMETER
+
+	if (status.alive_count_change > 0)
+	{
+		std::cout << "\nTurbine went ONLINE."
+			<< " recode: " << retcode
+			<< " keyHash.value: " << status.last_publication_handle.keyHash.value
+			/*<< " Id: " << turbine.turbineId
+			<< " Prod: " << turbine.currentProduction*/
+			<< std::endl;
+	}
+	else if (status.alive_count_change < 0)
+	{
+		std::cout << "\nTurbine went OFFLINE."
+			<< " recode: " << retcode
+			<< " keyHash.value: " << status.last_publication_handle.keyHash.value
+			<< std::endl;
+	}
+	else 
+		std::cout << "\nNo change"
+		/*<< turbine.turbineId*/
+		<< std::endl;
+
+	
+	if (!status.last_publication_handle.isValid) {
+		std::cout << "not valid";
+	}
+	/*std::cout << "->Callback: Turbine went offline."
+		<< turbine.turbineId
+		<< std::endl;
+
+	TurbineSeq turbines;
+	DDS_SampleInfoSeq turbineInfos;
+	typedReader->take_instance_w_condition(turbines, turbineInfos, DDS_LENGTH_UNLIMITED,ddshandle,);
+
+
+	DDS_LENGTH_UNLIMITED,
+		DDS_ANY_SAMPLE_STATE,
+		DDS_ANY_VIEW_STATE,
+		DDS_ANY_INSTANCE_STATE);*/
+
 }
 
 ClusterIdlSubscriber::ClusterIdlSubscriber(DDSDomainParticipant* participant, DDSTopic* topic)
 {
 	/* To customize the data reader QoS, use
 	the configuration file USER_QOS_PROFILES.xml */
+	_number_of_turbines = 0;
+
 	DDSDataReader* untypedReader = participant->create_datareader(
 		topic, 
 		DDS_DATAREADER_QOS_DEFAULT, 
@@ -94,6 +144,13 @@ void ClusterIdlSubscriber::calculateNewSetpoint()
 			DDS_SampleInfo& turbineInfo = turbineInfos[i];
 
 			if (!turbineInfo.valid_data) {
+				cout << " Id: " << turbines[i].turbineId;
+				cout << ", Curr. prod.: " << turbines[i].currentProduction << endl;;
+				cout << " instance_state: " << turbineInfo.instance_state << endl;
+				cout << " instance_handle: " << turbineInfo.instance_handle.isValid << endl;
+				cout << " view_state: " << turbineInfo.view_state << endl;
+				cout << " sample_state: " << turbineInfo.sample_state << endl;
+				cout << " timestamp: " << turbineInfo.source_timestamp.from_seconds << endl;
 				continue;
 			}
 
