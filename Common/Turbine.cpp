@@ -17,19 +17,25 @@ Turbine::Turbine(string collection) {
 
 	string startTime = "16:00:00";
 	string stopTime = "17:00:00";
-	MaxProdDBReader datareader;
+
 	MaxProdQuery query(collection, startTime, stopTime);
 	_db->query(query, datareader);
 
-	cout << "max.prod: ";
-	for( int i = 0; i < 10; i++ ) {
-		cout << datareader.getNextValue( ) << ", ";
-	}
-	cout << endl;
+	//cout << "max.prod: ";
+	//for( int i = 0; i < 10; i++ ) {
+	//	cout << datareader.getNextValue( ) << ", ";
+	//}
+	//cout << endl;
 
 	db = _db;
+}
 
-	
+void Turbine::sendSetpoint(uint_fast32_t setPoint) {
+	maxProduction = datareader.getNextValue( );
+	currentProduction = tSim.calculate(setPoint, maxProduction);
+}
 
-
+void Turbine::readTurbineData(uint_fast32_t &maxProduction, uint_fast32_t &currentProduction) {
+	maxProduction = this->maxProduction;
+	currentProduction = this->currentProduction;
 }

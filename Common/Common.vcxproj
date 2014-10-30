@@ -20,6 +20,7 @@
     <ClInclude Include="TurbineMessage.h" />
     <ClInclude Include="TurbineMessagePlugin.h" />
     <ClInclude Include="TurbineMessageSupport.h" />
+    <ClInclude Include="TurbineSim.h" />
     <ClInclude Include="Turbine\IncludeMongo.h" />
     <ClInclude Include="Turbine\MongoDatabase.h" />
     <ClInclude Include="Turbine\MongoDatareader.h" />
