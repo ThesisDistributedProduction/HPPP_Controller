@@ -2,14 +2,14 @@
 /*
   WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
 
-  This file was generated from Turbine.idl using "rtiddsgen".
+  This file was generated from TurbineMessage.idl using "rtiddsgen".
   The rtiddsgen tool is part of the RTI Connext distribution.
   For more information, type 'rtiddsgen -help' at a command shell
   or consult the RTI Connext manual.
 */
 
-#include "TurbineSupport.h"
-#include "TurbinePlugin.h"
+#include "TurbineMessageSupport.h"
+#include "TurbineMessagePlugin.h"
 
 
 
@@ -31,7 +31,7 @@
               TDataReader,
               TTypeSupport
 
-   Configure and implement 'Turbine' support classes.
+   Configure and implement 'TurbineMessage' support classes.
 
    Note: Only the #defined classes get defined
 */
@@ -47,11 +47,11 @@
 */
 
 /* Requires */
-#define TTYPENAME   TurbineTYPENAME
+#define TTYPENAME   TurbineMessageTYPENAME
 
 /* Defines */
-#define TDataWriter TurbineDataWriter
-#define TData       Turbine
+#define TDataWriter TurbineMessageDataWriter
+#define TData       TurbineMessage
 
 
 #ifdef __cplusplus
@@ -77,12 +77,12 @@
 */
 
 /* Requires */
-#define TTYPENAME   TurbineTYPENAME
+#define TTYPENAME   TurbineMessageTYPENAME
 
 /* Defines */
-#define TDataReader TurbineDataReader
-#define TDataSeq    TurbineSeq
-#define TData       Turbine
+#define TDataReader TurbineMessageDataReader
+#define TDataSeq    TurbineMessageSeq
+#define TData       TurbineMessage
 
 
 #ifdef __cplusplus
@@ -110,15 +110,15 @@
 */
 
 /* Requires */
-#define TTYPENAME    TurbineTYPENAME
-#define TPlugin_new  TurbinePlugin_new
-#define TPlugin_delete  TurbinePlugin_delete
+#define TTYPENAME    TurbineMessageTYPENAME
+#define TPlugin_new  TurbineMessagePlugin_new
+#define TPlugin_delete  TurbineMessagePlugin_delete
 
 /* Defines */
-#define TTypeSupport TurbineTypeSupport
-#define TData        Turbine
-#define TDataReader  TurbineDataReader
-#define TDataWriter  TurbineDataWriter
+#define TTypeSupport TurbineMessageTypeSupport
+#define TData        TurbineMessage
+#define TDataReader  TurbineMessageDataReader
+#define TDataWriter  TurbineMessageDataWriter
 #ifdef __cplusplus
 
 

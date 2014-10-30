@@ -6,9 +6,9 @@
 #include <iostream>
 #include <iomanip>
 
-#include "Turbine.h"
-#include "TurbineSupport.h"
-#include "TurbinePlugin.h"
+#include "TurbineMessage.h"
+#include "TurbineMessageSupport.h"
+#include "TurbineMessagePlugin.h"
 #include "MaxProductionReachedMessage.h"
 #include "MaxProductionReachedMessagePlugin.h"
 #include "MaxProductionReachedMessageSupport.h"
@@ -36,11 +36,11 @@ public:
 private:
 	DDSDataWriter* _writer;
 	TurbineStatusListener _listener;
-	TurbineDataReader* _reader;
-	TurbineDataWriter* _turbine_writer;
+	TurbineMessageDataReader* _reader;
+	TurbineMessageDataWriter* _turbine_writer;
 
 	MaxProductionReachedMessageDataWriter* _maxProd_reached_writer;
-	long regAlgorithm(long globalSetpoint, TurbineSeq turbines, long maxProd, long currentProd, DDS_SampleInfoSeq turbineInfos);
+	long regAlgorithm(long globalSetpoint, TurbineMessageSeq turbines, long maxProd, long currentProd, DDS_SampleInfoSeq turbineInfos);
 	void productionLevelReached(long localAndMaxDiff);
-	void printReceivedTurbineData(TurbineSeq turbines, DDS_SampleInfoSeq turbineInfos);
+	void printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos);
 };

@@ -1,4 +1,4 @@
-struct Turbine {
+struct TurbineMessage {
 	long turbineId; //@key
 	long maxProduction;
 	long currentProduction;

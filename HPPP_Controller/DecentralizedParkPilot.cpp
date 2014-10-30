@@ -4,9 +4,9 @@
 void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const DDS_LivelinessChangedStatus& status) 
 {
 	if (status.alive_count_change > 0)
-		cout << "\nTurbine went ONLINE." << std::endl;
+		cout << "\nTurbine ONLINE." << std::endl;
 	else if (status.alive_count_change < 0)
-		cout << "\nTurbine went OFFLINE." << std::endl;
+		cout << "\nTurbine OFFLINE." << std::endl;
 	else 
 		cout << "\nNo change" << std::endl;
 
@@ -27,7 +27,7 @@ DecentralizedParkPilot::DecentralizedParkPilot(DDSDomainParticipant* participant
 		throw runtime_error("Unable to create DataReader");
 	}
 
-	_reader = TurbineDataReader::narrow(untypedReader);
+	_reader = TurbineMessageDataReader::narrow(untypedReader);
 	if (_reader == NULL) {
 		throw runtime_error("Unable to narrow data reader into TurbineDataReader");
 	}
@@ -52,7 +52,7 @@ DecentralizedParkPilot::DecentralizedParkPilot(DDSDomainParticipant* participant
 		throw runtime_error("Unable to create writer1");
 	}
 
-	_turbine_writer = TurbineDataWriter::narrow(_writer);
+	_turbine_writer = TurbineMessageDataWriter::narrow(_writer);
 	if (_turbine_writer == NULL) {
 		printf("DataWriter narrow_turbine error\n");
 		throw runtime_error("Unable to create turbine_writer");
@@ -76,12 +76,11 @@ DecentralizedParkPilot::DecentralizedParkPilot(DDSDomainParticipant* participant
 	}
 }
 
-
 DecentralizedParkPilot::~DecentralizedParkPilot() { }
 
 void DecentralizedParkPilot::calculateNewSetpoint()
 {
-	TurbineSeq turbines;
+	TurbineMessageSeq turbines;
 	DDS_SampleInfoSeq turbineInfos;
 	DDS_ReturnCode_t retcode;
 	int sample_count = 0; /* infinite loop */
@@ -91,7 +90,7 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		return;
 	}
 
-	Turbine *instance = TurbineTypeSupport::create_data();
+	TurbineMessage *instance = TurbineMessageTypeSupport::create_data();
 	instance->turbineId = TURBINE_ID;
 	DDS_InstanceHandle_t instance_handle = _turbine_writer->register_instance(*instance);
 
@@ -137,10 +136,9 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 	}
 }
 
-
 long DecentralizedParkPilot::regAlgorithm(
 	long globalSetpoint, 
-	TurbineSeq turbines, 
+	TurbineMessageSeq turbines,
 	long maxProd,
 	long currentProd,
 	DDS_SampleInfoSeq turbineInfos)
@@ -171,7 +169,7 @@ long DecentralizedParkPilot::regAlgorithm(
 	return localSetpoint;
 }
 
-void DecentralizedParkPilot::printReceivedTurbineData(TurbineSeq turbines, DDS_SampleInfoSeq turbineInfos)
+void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos)
 {
 	for (int i = 0; i < turbines.length(); ++i) {
 		cout << "\n";
@@ -183,7 +181,7 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineSeq turbines, DDS_S
 			continue;
 		}
 
-		Turbine& turbineData = turbines[i];
+		TurbineMessage& turbineData = turbines[i];
 
 		time_t src_time = (time_t)turbineInfo.source_timestamp.sec;
 		tm* local_src_time = localtime(&src_time);

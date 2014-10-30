@@ -2,11 +2,11 @@
 
 void TurbineListener::on_data_available(DDSDataReader* reader)
 {
-	TurbineSeq turbines;
+	TurbineMessageSeq turbines;
 	DDS_SampleInfoSeq info_seq;
 	DDS_ReturnCode_t retcode;
 
-	TurbineDataReader* _reader = TurbineDataReader::narrow(reader);
+	TurbineMessageDataReader* _reader = TurbineMessageDataReader::narrow(reader);
 	if (_reader == NULL) {
 		printf("DataReader narrow error\n");
 		throw runtime_error("Unable to narrow data reader into TurbineDataReader");
@@ -30,7 +30,7 @@ void TurbineListener::on_data_available(DDSDataReader* reader)
 
 	for (int i = 0; i < turbines.length(); ++i) {
 		if (info_seq[i].valid_data) {
-			TurbineTypeSupport::print_data(&turbines[i]);
+			TurbineMessageTypeSupport::print_data(&turbines[i]);
 		}
 	}
 

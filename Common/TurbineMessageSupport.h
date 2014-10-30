@@ -2,17 +2,17 @@
 /*
   WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
 
-  This file was generated from Turbine.idl using "rtiddsgen".
+  This file was generated from TurbineMessage.idl using "rtiddsgen".
   The rtiddsgen tool is part of the RTI Connext distribution.
   For more information, type 'rtiddsgen -help' at a command shell
   or consult the RTI Connext manual.
 */
 
-#ifndef TurbineSupport_1089397372_h
-#define TurbineSupport_1089397372_h
+#ifndef TurbineMessageSupport_1893946714_h
+#define TurbineMessageSupport_1893946714_h
 
 /* Uses */
-#include "Turbine.h"
+#include "TurbineMessage.h"
 
 
 
@@ -47,17 +47,17 @@
 
 #ifdef __cplusplus
 
-DDS_TYPESUPPORT_CPP(TurbineTypeSupport, Turbine);
+DDS_TYPESUPPORT_CPP(TurbineMessageTypeSupport, TurbineMessage);
 
-DDS_DATAWRITER_CPP(TurbineDataWriter, Turbine);
-DDS_DATAREADER_CPP(TurbineDataReader, TurbineSeq, Turbine);
+DDS_DATAWRITER_CPP(TurbineMessageDataWriter, TurbineMessage);
+DDS_DATAREADER_CPP(TurbineMessageDataReader, TurbineMessageSeq, TurbineMessage);
 
 
 #else
 
-DDS_TYPESUPPORT_C(TurbineTypeSupport, Turbine);
-DDS_DATAWRITER_C(TurbineDataWriter, Turbine);
-DDS_DATAREADER_C(TurbineDataReader, TurbineSeq, Turbine);
+DDS_TYPESUPPORT_C(TurbineMessageTypeSupport, TurbineMessage);
+DDS_DATAWRITER_C(TurbineMessageDataWriter, TurbineMessage);
+DDS_DATAREADER_C(TurbineMessageDataReader, TurbineMessageSeq, TurbineMessage);
 
 #endif
 
@@ -70,4 +70,4 @@ DDS_DATAREADER_C(TurbineDataReader, TurbineSeq, Turbine);
 
 
 
-#endif  /* TurbineSupport_1089397372_h */
+#endif  /* TurbineMessageSupport_1893946714_h */

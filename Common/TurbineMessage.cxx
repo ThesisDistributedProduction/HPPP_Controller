@@ -2,7 +2,7 @@
 /*
   WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
 
-  This file was generated from Turbine.idl using "rtiddsgen".
+  This file was generated from TurbineMessage.idl using "rtiddsgen".
   The rtiddsgen tool is part of the RTI Connext distribution.
   For more information, type 'rtiddsgen -help' at a command shell
   or consult the RTI Connext manual.
@@ -36,17 +36,17 @@
 
 
 
-#include "Turbine.h"
+#include "TurbineMessage.h"
 
 /* ========================================================================= */
-const char *TurbineTYPENAME = "Turbine";
+const char *TurbineMessageTYPENAME = "TurbineMessage";
 
-DDS_TypeCode* Turbine_get_typecode()
+DDS_TypeCode* TurbineMessage_get_typecode()
 {
     static RTIBool is_initialized = RTI_FALSE;
 
 
-    static DDS_TypeCode_Member Turbine_g_tc_members[4]=
+    static DDS_TypeCode_Member TurbineMessage_g_tc_members[4]=
     {
         {
             (char *)"turbineId",/* Member name */
@@ -118,44 +118,44 @@ DDS_TypeCode* Turbine_get_typecode()
         }
     };
 
-    static DDS_TypeCode Turbine_g_tc =
+    static DDS_TypeCode TurbineMessage_g_tc =
     {{
         DDS_TK_STRUCT,/* Kind */
         DDS_BOOLEAN_FALSE, /* Ignored */
         -1,/* Ignored */
-        (char *)"Turbine", /* Name */
+        (char *)"TurbineMessage", /* Name */
         NULL, /* Ignored */
         0, /* Ignored */
         0, /* Ignored */
         NULL, /* Ignored */
         4, /* Number of members */
-        Turbine_g_tc_members, /* Members */
+        TurbineMessage_g_tc_members, /* Members */
         DDS_VM_NONE /* Ignored */
-    }}; /* Type code for Turbine*/
+    }}; /* Type code for TurbineMessage*/
 
     if (is_initialized) {
-        return &Turbine_g_tc;
+        return &TurbineMessage_g_tc;
     }
 
 
-    Turbine_g_tc_members[0]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
-    Turbine_g_tc_members[1]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
-    Turbine_g_tc_members[2]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
-    Turbine_g_tc_members[3]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
+    TurbineMessage_g_tc_members[0]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
+    TurbineMessage_g_tc_members[1]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
+    TurbineMessage_g_tc_members[2]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
+    TurbineMessage_g_tc_members[3]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
 
     is_initialized = RTI_TRUE;
 
-    return &Turbine_g_tc;
+    return &TurbineMessage_g_tc;
 }
 
 
-RTIBool Turbine_initialize(
-    Turbine* sample) {
-  return Turbine_initialize_ex(sample,RTI_TRUE,RTI_TRUE);
+RTIBool TurbineMessage_initialize(
+    TurbineMessage* sample) {
+  return TurbineMessage_initialize_ex(sample,RTI_TRUE,RTI_TRUE);
 }
         
-RTIBool Turbine_initialize_ex(
-    Turbine* sample,RTIBool allocatePointers,RTIBool allocateMemory)
+RTIBool TurbineMessage_initialize_ex(
+    TurbineMessage* sample,RTIBool allocatePointers,RTIBool allocateMemory)
 {
     struct DDS_TypeAllocationParams_t allocParams =
         DDS_TYPE_ALLOCATION_PARAMS_DEFAULT;
@@ -163,12 +163,12 @@ RTIBool Turbine_initialize_ex(
     allocParams.allocate_pointers =  (DDS_Boolean)allocatePointers;
     allocParams.allocate_memory = (DDS_Boolean)allocateMemory;
     
-    return Turbine_initialize_w_params(
+    return TurbineMessage_initialize_w_params(
         sample,&allocParams);
 }
 
-RTIBool Turbine_initialize_w_params(
-        Turbine* sample,
+RTIBool TurbineMessage_initialize_w_params(
+        TurbineMessage* sample,
         const struct DDS_TypeAllocationParams_t * allocParams)
 {
         
@@ -200,14 +200,14 @@ RTIBool Turbine_initialize_w_params(
     return RTI_TRUE;
 }
 
-void Turbine_finalize(
-    Turbine* sample)
+void TurbineMessage_finalize(
+    TurbineMessage* sample)
 {
-    Turbine_finalize_ex(sample,RTI_TRUE);
+    TurbineMessage_finalize_ex(sample,RTI_TRUE);
 }
         
-void Turbine_finalize_ex(
-    Turbine* sample,RTIBool deletePointers)
+void TurbineMessage_finalize_ex(
+    TurbineMessage* sample,RTIBool deletePointers)
 {        
     struct DDS_TypeDeallocationParams_t deallocParams =
             DDS_TYPE_DEALLOCATION_PARAMS_DEFAULT;
@@ -216,12 +216,12 @@ void Turbine_finalize_ex(
     
     deallocParams.delete_pointers = (DDS_Boolean)deletePointers;
 
-    Turbine_finalize_w_params(
+    TurbineMessage_finalize_w_params(
         sample,&deallocParams);
 }
 
-void Turbine_finalize_w_params(
-        Turbine* sample,
+void TurbineMessage_finalize_w_params(
+        TurbineMessage* sample,
         const struct DDS_TypeDeallocationParams_t * deallocParams)
 {    
     if (sample) { } /* To avoid warnings */
@@ -234,8 +234,8 @@ void Turbine_finalize_w_params(
 
 }
 
-void Turbine_finalize_optional_members(
-    Turbine* sample, RTIBool deletePointers)
+void TurbineMessage_finalize_optional_members(
+    TurbineMessage* sample, RTIBool deletePointers)
 {
     struct DDS_TypeDeallocationParams_t deallocParamsTmp =
         DDS_TYPE_DEALLOCATION_PARAMS_DEFAULT;
@@ -256,9 +256,9 @@ void Turbine_finalize_optional_members(
 
 }
 
-RTIBool Turbine_copy(
-    Turbine* dst,
-    const Turbine* src)
+RTIBool TurbineMessage_copy(
+    TurbineMessage* dst,
+    const TurbineMessage* src)
 {
 
     if (!RTICdrType_copyLong(
@@ -295,13 +295,13 @@ RTIBool Turbine_copy(
  *
  * Defines:  TSeq, T
  *
- * Configure and implement 'Turbine' sequence class.
+ * Configure and implement 'TurbineMessage' sequence class.
  */
-#define T Turbine
-#define TSeq TurbineSeq
-#define T_initialize_w_params Turbine_initialize_w_params
-#define T_finalize_w_params   Turbine_finalize_w_params
-#define T_copy       Turbine_copy
+#define T TurbineMessage
+#define TSeq TurbineMessageSeq
+#define T_initialize_w_params TurbineMessage_initialize_w_params
+#define T_finalize_w_params   TurbineMessage_finalize_w_params
+#define T_copy       TurbineMessage_copy
 
 #ifndef NDDS_STANDALONE_TYPE
 #include "dds_c/generic/dds_c_sequence_TSeq.gen"

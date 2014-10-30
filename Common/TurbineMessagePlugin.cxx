@@ -2,7 +2,7 @@
 /*
   WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
 
-  This file was generated from Turbine.idl using "rtiddsgen".
+  This file was generated from TurbineMessage.idl using "rtiddsgen".
   The rtiddsgen tool is part of the RTI Connext distribution.
   For more information, type 'rtiddsgen -help' at a command shell
   or consult the RTI Connext manual.
@@ -54,27 +54,27 @@
 
 
 
-#include "TurbinePlugin.h"
+#include "TurbineMessagePlugin.h"
 
 
 /* --------------------------------------------------------------------------------------
- *  Type Turbine
+ *  Type TurbineMessage
  * -------------------------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------------------------
     Support functions:
  * -------------------------------------------------------------------------------------- */
 
-Turbine*
-TurbinePluginSupport_create_data_w_params(
+TurbineMessage*
+TurbineMessagePluginSupport_create_data_w_params(
     const struct DDS_TypeAllocationParams_t * alloc_params){
-    Turbine *sample = NULL;
+    TurbineMessage *sample = NULL;
 
     RTIOsapiHeap_allocateStructure(
-        &sample, Turbine);
+        &sample, TurbineMessage);
 
     if(sample != NULL) {
-        if (!Turbine_initialize_w_params(sample,alloc_params)) {
+        if (!TurbineMessage_initialize_w_params(sample,alloc_params)) {
             RTIOsapiHeap_freeStructure(sample);
             return NULL;
         }
@@ -83,15 +83,15 @@ TurbinePluginSupport_create_data_w_params(
 }
 
 
-Turbine *
-TurbinePluginSupport_create_data_ex(RTIBool allocate_pointers){
-    Turbine *sample = NULL;
+TurbineMessage *
+TurbineMessagePluginSupport_create_data_ex(RTIBool allocate_pointers){
+    TurbineMessage *sample = NULL;
 
     RTIOsapiHeap_allocateStructure(
-        &sample, Turbine);
+        &sample, TurbineMessage);
 
     if(sample != NULL) {
-        if (!Turbine_initialize_ex(sample,allocate_pointers, RTI_TRUE)) {
+        if (!TurbineMessage_initialize_ex(sample,allocate_pointers, RTI_TRUE)) {
             RTIOsapiHeap_freeStructure(sample);
             return NULL;
         }
@@ -100,55 +100,55 @@ TurbinePluginSupport_create_data_ex(RTIBool allocate_pointers){
 }
 
 
-Turbine *
-TurbinePluginSupport_create_data(void)
+TurbineMessage *
+TurbineMessagePluginSupport_create_data(void)
 {
-    return TurbinePluginSupport_create_data_ex(RTI_TRUE);
+    return TurbineMessagePluginSupport_create_data_ex(RTI_TRUE);
 }
 
 
 void 
-TurbinePluginSupport_destroy_data_w_params(
-    Turbine *sample,
+TurbineMessagePluginSupport_destroy_data_w_params(
+    TurbineMessage *sample,
     const struct DDS_TypeDeallocationParams_t * dealloc_params) {
 
-    Turbine_finalize_w_params(sample,dealloc_params);
+    TurbineMessage_finalize_w_params(sample,dealloc_params);
 
     RTIOsapiHeap_freeStructure(sample);
 }
 
 
 void 
-TurbinePluginSupport_destroy_data_ex(
-    Turbine *sample,RTIBool deallocate_pointers) {
+TurbineMessagePluginSupport_destroy_data_ex(
+    TurbineMessage *sample,RTIBool deallocate_pointers) {
 
-    Turbine_finalize_ex(sample,deallocate_pointers);
+    TurbineMessage_finalize_ex(sample,deallocate_pointers);
 
     RTIOsapiHeap_freeStructure(sample);
 }
 
 
 void 
-TurbinePluginSupport_destroy_data(
-    Turbine *sample) {
+TurbineMessagePluginSupport_destroy_data(
+    TurbineMessage *sample) {
 
-    TurbinePluginSupport_destroy_data_ex(sample,RTI_TRUE);
+    TurbineMessagePluginSupport_destroy_data_ex(sample,RTI_TRUE);
 
 }
 
 
 RTIBool 
-TurbinePluginSupport_copy_data(
-    Turbine *dst,
-    const Turbine *src)
+TurbineMessagePluginSupport_copy_data(
+    TurbineMessage *dst,
+    const TurbineMessage *src)
 {
-    return Turbine_copy(dst,src);
+    return TurbineMessage_copy(dst,src);
 }
 
 
 void 
-TurbinePluginSupport_print_data(
-    const Turbine *sample,
+TurbineMessagePluginSupport_print_data(
+    const TurbineMessage *sample,
     const char *desc,
     unsigned int indent_level)
 {
@@ -187,40 +187,40 @@ TurbinePluginSupport_print_data(
 
 }
 
-Turbine *
-TurbinePluginSupport_create_key_ex(RTIBool allocate_pointers){
-    Turbine *key = NULL;
+TurbineMessage *
+TurbineMessagePluginSupport_create_key_ex(RTIBool allocate_pointers){
+    TurbineMessage *key = NULL;
 
     RTIOsapiHeap_allocateStructure(
-        &key, TurbineKeyHolder);
+        &key, TurbineMessageKeyHolder);
 
-    Turbine_initialize_ex(key,allocate_pointers,RTI_TRUE);
+    TurbineMessage_initialize_ex(key,allocate_pointers,RTI_TRUE);
     return key;
 }
 
 
-Turbine *
-TurbinePluginSupport_create_key(void)
+TurbineMessage *
+TurbineMessagePluginSupport_create_key(void)
 {
-    return  TurbinePluginSupport_create_key_ex(RTI_TRUE);
+    return  TurbineMessagePluginSupport_create_key_ex(RTI_TRUE);
 }
 
 
 void 
-TurbinePluginSupport_destroy_key_ex(
-    TurbineKeyHolder *key,RTIBool deallocate_pointers)
+TurbineMessagePluginSupport_destroy_key_ex(
+    TurbineMessageKeyHolder *key,RTIBool deallocate_pointers)
 {
-    Turbine_finalize_ex(key,deallocate_pointers);
+    TurbineMessage_finalize_ex(key,deallocate_pointers);
 
     RTIOsapiHeap_freeStructure(key);
 }
 
 
 void 
-TurbinePluginSupport_destroy_key(
-    TurbineKeyHolder *key) {
+TurbineMessagePluginSupport_destroy_key(
+    TurbineMessageKeyHolder *key) {
 
-  TurbinePluginSupport_destroy_key_ex(key,RTI_TRUE);
+  TurbineMessagePluginSupport_destroy_key_ex(key,RTI_TRUE);
 
 }
 
@@ -232,7 +232,7 @@ TurbinePluginSupport_destroy_key(
 
 
 PRESTypePluginParticipantData 
-TurbinePlugin_on_participant_attached(
+TurbineMessagePlugin_on_participant_attached(
     void *registration_data,
     const struct PRESTypePluginParticipantInfo *participant_info,
     RTIBool top_level_registration,
@@ -251,7 +251,7 @@ TurbinePlugin_on_participant_attached(
 
 
 void 
-TurbinePlugin_on_participant_detached(
+TurbineMessagePlugin_on_participant_detached(
     PRESTypePluginParticipantData participant_data)
 {
 
@@ -260,7 +260,7 @@ TurbinePlugin_on_participant_detached(
 
 
 PRESTypePluginEndpointData
-TurbinePlugin_on_endpoint_attached(
+TurbineMessagePlugin_on_endpoint_attached(
     PRESTypePluginParticipantData participant_data,
     const struct PRESTypePluginEndpointInfo *endpoint_info,
     RTIBool top_level_registration, 
@@ -280,19 +280,19 @@ TurbinePlugin_on_endpoint_attached(
             participant_data,
             endpoint_info,
             (PRESTypePluginDefaultEndpointDataCreateSampleFunction)
-            TurbinePluginSupport_create_data,
+            TurbineMessagePluginSupport_create_data,
             (PRESTypePluginDefaultEndpointDataDestroySampleFunction)
-            TurbinePluginSupport_destroy_data,
+            TurbineMessagePluginSupport_destroy_data,
             (PRESTypePluginDefaultEndpointDataCreateKeyFunction)
-            TurbinePluginSupport_create_key,
+            TurbineMessagePluginSupport_create_key,
             (PRESTypePluginDefaultEndpointDataDestroyKeyFunction)
-            TurbinePluginSupport_destroy_key);
+            TurbineMessagePluginSupport_destroy_key);
 
     if (epd == NULL) {
         return NULL;
     }
    
-    serializedKeyMaxSize = TurbinePlugin_get_serialized_key_max_size(
+    serializedKeyMaxSize = TurbineMessagePlugin_get_serialized_key_max_size(
         epd,RTI_FALSE,RTI_CDR_ENCAPSULATION_ID_CDR_BE,0);
     
     if (!PRESTypePluginDefaultEndpointData_createMD5Stream(
@@ -305,7 +305,7 @@ TurbinePlugin_on_endpoint_attached(
     
 
     if (endpoint_info->endpointKind == PRES_TYPEPLUGIN_ENDPOINT_WRITER) {
-        serializedSampleMaxSize = TurbinePlugin_get_serialized_sample_max_size(
+        serializedSampleMaxSize = TurbineMessagePlugin_get_serialized_sample_max_size(
             epd,RTI_FALSE,RTI_CDR_ENCAPSULATION_ID_CDR_BE,0);
             
         PRESTypePluginDefaultEndpointData_setMaxSizeSerializedSample(epd, serializedSampleMaxSize);
@@ -314,9 +314,9 @@ TurbinePlugin_on_endpoint_attached(
                 epd,
                 endpoint_info,
             (PRESTypePluginGetSerializedSampleMaxSizeFunction)
-                TurbinePlugin_get_serialized_sample_max_size, epd,
+                TurbineMessagePlugin_get_serialized_sample_max_size, epd,
             (PRESTypePluginGetSerializedSampleSizeFunction)
-            TurbinePlugin_get_serialized_sample_size,
+            TurbineMessagePlugin_get_serialized_sample_size,
             epd) == RTI_FALSE) {
             PRESTypePluginDefaultEndpointData_delete(epd);
             return NULL;
@@ -330,7 +330,7 @@ TurbinePlugin_on_endpoint_attached(
 
 
 void 
-TurbinePlugin_on_endpoint_detached(
+TurbineMessagePlugin_on_endpoint_detached(
     PRESTypePluginEndpointData endpoint_data)
 {  
 
@@ -339,13 +339,13 @@ TurbinePlugin_on_endpoint_detached(
 
 
 void    
-TurbinePlugin_return_sample(
+TurbineMessagePlugin_return_sample(
     PRESTypePluginEndpointData endpoint_data,
-    Turbine *sample,
+    TurbineMessage *sample,
     void *handle)
 {
     
-    Turbine_finalize_optional_members(sample, RTI_TRUE);
+    TurbineMessage_finalize_optional_members(sample, RTI_TRUE);
            
     PRESTypePluginDefaultEndpointData_returnSample(
         endpoint_data, sample, handle);
@@ -354,13 +354,13 @@ TurbinePlugin_return_sample(
 
 
 RTIBool 
-TurbinePlugin_copy_sample(
+TurbineMessagePlugin_copy_sample(
     PRESTypePluginEndpointData endpoint_data,
-    Turbine *dst,
-    const Turbine *src)
+    TurbineMessage *dst,
+    const TurbineMessage *src)
 {
     if (endpoint_data) {} /* To avoid warnings */
-    return TurbinePluginSupport_copy_data(dst,src);
+    return TurbineMessagePluginSupport_copy_data(dst,src);
 }
 
 /* --------------------------------------------------------------------------------------
@@ -368,7 +368,7 @@ TurbinePlugin_copy_sample(
  * -------------------------------------------------------------------------------------- */
 
 unsigned int 
-TurbinePlugin_get_serialized_sample_max_size(
+TurbineMessagePlugin_get_serialized_sample_max_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -376,9 +376,9 @@ TurbinePlugin_get_serialized_sample_max_size(
 
 
 RTIBool 
-TurbinePlugin_serialize(
+TurbineMessagePlugin_serialize(
     PRESTypePluginEndpointData endpoint_data,
-    const Turbine *sample, 
+    const TurbineMessage *sample, 
     struct RTICdrStream *stream,    
     RTIBool serialize_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -442,9 +442,9 @@ TurbinePlugin_serialize(
 
 
 RTIBool 
-TurbinePlugin_deserialize_sample(
+TurbineMessagePlugin_deserialize_sample(
     PRESTypePluginEndpointData endpoint_data,
-    Turbine *sample,
+    TurbineMessage *sample,
     struct RTICdrStream *stream,   
     RTIBool deserialize_encapsulation,
     RTIBool deserialize_sample, 
@@ -470,7 +470,7 @@ TurbinePlugin_deserialize_sample(
     
     
     if(deserialize_sample) {
-        Turbine_initialize_ex(sample, RTI_FALSE, RTI_FALSE);
+        TurbineMessage_initialize_ex(sample, RTI_FALSE, RTI_FALSE);
     
     if (!RTICdrStream_deserializeLong(
         stream, &sample->turbineId)) {
@@ -514,9 +514,9 @@ fin:
  
 
 RTIBool 
-TurbinePlugin_deserialize(
+TurbineMessagePlugin_deserialize(
     PRESTypePluginEndpointData endpoint_data,
-    Turbine **sample,
+    TurbineMessage **sample,
     RTIBool * drop_sample,
     struct RTICdrStream *stream,   
     RTIBool deserialize_encapsulation,
@@ -529,7 +529,7 @@ TurbinePlugin_deserialize(
     
     stream->_xTypesState.unassignable = RTI_FALSE;
 
-    result = TurbinePlugin_deserialize_sample( 
+    result = TurbineMessagePlugin_deserialize_sample( 
         endpoint_data, (sample != NULL)?*sample:NULL,
         stream, deserialize_encapsulation, deserialize_sample, 
         endpoint_plugin_qos);
@@ -547,7 +547,7 @@ TurbinePlugin_deserialize(
 
 
 
-RTIBool TurbinePlugin_skip(
+RTIBool TurbineMessagePlugin_skip(
     PRESTypePluginEndpointData endpoint_data,
     struct RTICdrStream *stream,   
     RTIBool skip_encapsulation,
@@ -616,7 +616,7 @@ fin:
 
 
 unsigned int 
-TurbinePlugin_get_serialized_sample_max_size(
+TurbineMessagePlugin_get_serialized_sample_max_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -669,7 +669,7 @@ TurbinePlugin_get_serialized_sample_max_size(
 
 
 unsigned int 
-TurbinePlugin_get_serialized_sample_min_size(
+TurbineMessagePlugin_get_serialized_sample_min_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -728,12 +728,12 @@ TurbinePlugin_get_serialized_sample_min_size(
  * encapsulation flags.
  */
 unsigned int
-TurbinePlugin_get_serialized_sample_size(
+TurbineMessagePlugin_get_serialized_sample_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
     unsigned int current_alignment,
-    const Turbine * sample) 
+    const TurbineMessage * sample) 
 {
 
     unsigned int initial_alignment = current_alignment;
@@ -793,7 +793,7 @@ TurbinePlugin_get_serialized_sample_size(
 
 
 PRESTypePluginKeyKind 
-TurbinePlugin_get_key_kind(void)
+TurbineMessagePlugin_get_key_kind(void)
 {
 
     return PRES_TYPEPLUGIN_USER_KEY;
@@ -802,9 +802,9 @@ TurbinePlugin_get_key_kind(void)
 
 
 RTIBool 
-TurbinePlugin_serialize_key(
+TurbineMessagePlugin_serialize_key(
     PRESTypePluginEndpointData endpoint_data,
-    const Turbine *sample, 
+    const TurbineMessage *sample, 
     struct RTICdrStream *stream,    
     RTIBool serialize_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -848,9 +848,9 @@ TurbinePlugin_serialize_key(
 }
 
 
-RTIBool TurbinePlugin_deserialize_key_sample(
+RTIBool TurbineMessagePlugin_deserialize_key_sample(
     PRESTypePluginEndpointData endpoint_data,
-    Turbine *sample, 
+    TurbineMessage *sample, 
     struct RTICdrStream *stream,
     RTIBool deserialize_encapsulation,
     RTIBool deserialize_key,
@@ -893,9 +893,9 @@ RTIBool TurbinePlugin_deserialize_key_sample(
 
 
  
-RTIBool TurbinePlugin_deserialize_key(
+RTIBool TurbineMessagePlugin_deserialize_key(
     PRESTypePluginEndpointData endpoint_data,
-    Turbine **sample, 
+    TurbineMessage **sample, 
     RTIBool * drop_sample,
     struct RTICdrStream *stream,
     RTIBool deserialize_encapsulation,
@@ -907,7 +907,7 @@ RTIBool TurbinePlugin_deserialize_key(
     
     stream->_xTypesState.unassignable = RTI_FALSE;
     
-    result = TurbinePlugin_deserialize_key_sample(
+    result = TurbineMessagePlugin_deserialize_key_sample(
         endpoint_data, (sample != NULL)?*sample:NULL, stream,
         deserialize_encapsulation, deserialize_key, endpoint_plugin_qos);
         
@@ -923,7 +923,7 @@ RTIBool TurbinePlugin_deserialize_key(
 
 
 unsigned int
-TurbinePlugin_get_serialized_key_max_size(
+TurbineMessagePlugin_get_serialized_key_max_size(
     PRESTypePluginEndpointData endpoint_data,
     RTIBool include_encapsulation,
     RTIEncapsulationId encapsulation_id,
@@ -966,9 +966,9 @@ TurbinePlugin_get_serialized_key_max_size(
 
 
 RTIBool 
-TurbinePlugin_serialized_sample_to_key(
+TurbineMessagePlugin_serialized_sample_to_key(
     PRESTypePluginEndpointData endpoint_data,
-    Turbine *sample,
+    TurbineMessage *sample,
     struct RTICdrStream *stream, 
     RTIBool deserialize_encapsulation,  
     RTIBool deserialize_key, 
@@ -1039,10 +1039,10 @@ fin:
 
 
 RTIBool 
-TurbinePlugin_instance_to_key(
+TurbineMessagePlugin_instance_to_key(
     PRESTypePluginEndpointData endpoint_data,
-    TurbineKeyHolder *dst, 
-    const Turbine *src)
+    TurbineMessageKeyHolder *dst, 
+    const TurbineMessage *src)
 {  
 
     if (endpoint_data) {} /* To avoid warnings */
@@ -1058,10 +1058,10 @@ TurbinePlugin_instance_to_key(
 
 
 RTIBool 
-TurbinePlugin_key_to_instance(
+TurbineMessagePlugin_key_to_instance(
     PRESTypePluginEndpointData endpoint_data,
-    Turbine *dst, const
-    TurbineKeyHolder *src)
+    TurbineMessage *dst, const
+    TurbineMessageKeyHolder *src)
 {
 
     if (endpoint_data) {} /* To avoid warnings */
@@ -1077,10 +1077,10 @@ TurbinePlugin_key_to_instance(
 
 
 RTIBool 
-TurbinePlugin_instance_to_keyhash(
+TurbineMessagePlugin_instance_to_keyhash(
     PRESTypePluginEndpointData endpoint_data,
     DDS_KeyHash_t *keyhash,
-    const Turbine *instance)
+    const TurbineMessage *instance)
 {
     struct RTICdrStream * md5Stream = NULL;
 
@@ -1096,7 +1096,7 @@ TurbinePlugin_instance_to_keyhash(
     RTICdrStream_resetPosition(md5Stream);
     RTICdrStream_setDirtyBit(md5Stream, RTI_TRUE);
 
-    if (!TurbinePlugin_serialize_key(
+    if (!TurbineMessagePlugin_serialize_key(
             endpoint_data,instance,md5Stream, RTI_FALSE, RTI_CDR_ENCAPSULATION_ID_CDR_BE, RTI_TRUE,NULL)) {
         return RTI_FALSE;
     }
@@ -1117,7 +1117,7 @@ TurbinePlugin_instance_to_keyhash(
 
 
 RTIBool 
-TurbinePlugin_serialized_sample_to_keyhash(
+TurbineMessagePlugin_serialized_sample_to_keyhash(
     PRESTypePluginEndpointData endpoint_data,
     struct RTICdrStream *stream, 
     DDS_KeyHash_t *keyhash,
@@ -1127,7 +1127,7 @@ TurbinePlugin_serialized_sample_to_keyhash(
     char * position = NULL;
 
     RTIBool done = RTI_FALSE;
-    Turbine * sample = NULL;
+    TurbineMessage * sample = NULL;
 
     if (endpoint_plugin_qos) {} /* To avoid warnings */
 
@@ -1144,7 +1144,7 @@ TurbinePlugin_serialized_sample_to_keyhash(
     }
 
 
-    sample = (Turbine *)
+    sample = (TurbineMessage *)
                 PRESTypePluginDefaultEndpointData_getTempSample(endpoint_data);
 
     if (sample == NULL) {
@@ -1170,7 +1170,7 @@ fin:
     }
 
 
-    if (!TurbinePlugin_instance_to_keyhash(
+    if (!TurbineMessagePlugin_instance_to_keyhash(
             endpoint_data, keyhash, sample)) {
         return RTI_FALSE;
     }
@@ -1183,7 +1183,7 @@ fin:
  * Plug-in Installation Methods
  * ------------------------------------------------------------------------ */
  
-struct PRESTypePlugin *TurbinePlugin_new(void) 
+struct PRESTypePlugin *TurbineMessagePlugin_new(void) 
 { 
     struct PRESTypePlugin *plugin = NULL;
     const struct PRESTypePluginVersion PLUGIN_VERSION = 
@@ -1200,110 +1200,110 @@ struct PRESTypePlugin *TurbinePlugin_new(void)
     /* set up parent's function pointers */
     plugin->onParticipantAttached =
         (PRESTypePluginOnParticipantAttachedCallback)
-        TurbinePlugin_on_participant_attached;
+        TurbineMessagePlugin_on_participant_attached;
     plugin->onParticipantDetached =
         (PRESTypePluginOnParticipantDetachedCallback)
-        TurbinePlugin_on_participant_detached;
+        TurbineMessagePlugin_on_participant_detached;
     plugin->onEndpointAttached =
         (PRESTypePluginOnEndpointAttachedCallback)
-        TurbinePlugin_on_endpoint_attached;
+        TurbineMessagePlugin_on_endpoint_attached;
     plugin->onEndpointDetached =
         (PRESTypePluginOnEndpointDetachedCallback)
-        TurbinePlugin_on_endpoint_detached;
+        TurbineMessagePlugin_on_endpoint_detached;
 
     plugin->copySampleFnc =
         (PRESTypePluginCopySampleFunction)
-        TurbinePlugin_copy_sample;
+        TurbineMessagePlugin_copy_sample;
     plugin->createSampleFnc =
         (PRESTypePluginCreateSampleFunction)
-        TurbinePlugin_create_sample;
+        TurbineMessagePlugin_create_sample;
     plugin->destroySampleFnc =
         (PRESTypePluginDestroySampleFunction)
-        TurbinePlugin_destroy_sample;
+        TurbineMessagePlugin_destroy_sample;
 
     plugin->serializeFnc =
         (PRESTypePluginSerializeFunction)
-        TurbinePlugin_serialize;
+        TurbineMessagePlugin_serialize;
     plugin->deserializeFnc =
         (PRESTypePluginDeserializeFunction)
-        TurbinePlugin_deserialize;
+        TurbineMessagePlugin_deserialize;
     plugin->getSerializedSampleMaxSizeFnc =
         (PRESTypePluginGetSerializedSampleMaxSizeFunction)
-        TurbinePlugin_get_serialized_sample_max_size;
+        TurbineMessagePlugin_get_serialized_sample_max_size;
     plugin->getSerializedSampleMinSizeFnc =
         (PRESTypePluginGetSerializedSampleMinSizeFunction)
-        TurbinePlugin_get_serialized_sample_min_size;
+        TurbineMessagePlugin_get_serialized_sample_min_size;
 
 
     plugin->getSampleFnc =
         (PRESTypePluginGetSampleFunction)
-        TurbinePlugin_get_sample;
+        TurbineMessagePlugin_get_sample;
     plugin->returnSampleFnc =
         (PRESTypePluginReturnSampleFunction)
-        TurbinePlugin_return_sample;
+        TurbineMessagePlugin_return_sample;
 
     plugin->getKeyKindFnc =
         (PRESTypePluginGetKeyKindFunction)
-        TurbinePlugin_get_key_kind;
+        TurbineMessagePlugin_get_key_kind;
 
 
     plugin->getSerializedKeyMaxSizeFnc =   
         (PRESTypePluginGetSerializedKeyMaxSizeFunction)
-        TurbinePlugin_get_serialized_key_max_size;
+        TurbineMessagePlugin_get_serialized_key_max_size;
     plugin->serializeKeyFnc =
         (PRESTypePluginSerializeKeyFunction)
-        TurbinePlugin_serialize_key;
+        TurbineMessagePlugin_serialize_key;
     plugin->deserializeKeyFnc =
         (PRESTypePluginDeserializeKeyFunction)
-        TurbinePlugin_deserialize_key;
+        TurbineMessagePlugin_deserialize_key;
     plugin->deserializeKeySampleFnc =
         (PRESTypePluginDeserializeKeySampleFunction)
-        TurbinePlugin_deserialize_key_sample;
+        TurbineMessagePlugin_deserialize_key_sample;
 
     plugin->instanceToKeyHashFnc = 
         (PRESTypePluginInstanceToKeyHashFunction)
-        TurbinePlugin_instance_to_keyhash;
+        TurbineMessagePlugin_instance_to_keyhash;
     plugin->serializedSampleToKeyHashFnc = 
         (PRESTypePluginSerializedSampleToKeyHashFunction)
-        TurbinePlugin_serialized_sample_to_keyhash;
+        TurbineMessagePlugin_serialized_sample_to_keyhash;
 
     plugin->getKeyFnc =
         (PRESTypePluginGetKeyFunction)
-        TurbinePlugin_get_key;
+        TurbineMessagePlugin_get_key;
     plugin->returnKeyFnc =
         (PRESTypePluginReturnKeyFunction)
-        TurbinePlugin_return_key;
+        TurbineMessagePlugin_return_key;
 
     plugin->instanceToKeyFnc =
         (PRESTypePluginInstanceToKeyFunction)
-        TurbinePlugin_instance_to_key;
+        TurbineMessagePlugin_instance_to_key;
     plugin->keyToInstanceFnc =
         (PRESTypePluginKeyToInstanceFunction)
-        TurbinePlugin_key_to_instance;
+        TurbineMessagePlugin_key_to_instance;
     plugin->serializedKeyToKeyHashFnc = NULL; /* Not supported yet */
     
-    plugin->typeCode =  (struct RTICdrTypeCode *)Turbine_get_typecode();
+    plugin->typeCode =  (struct RTICdrTypeCode *)TurbineMessage_get_typecode();
     
     plugin->languageKind = PRES_TYPEPLUGIN_DDS_TYPE; 
 
     /* Serialized buffer */
     plugin->getBuffer = 
         (PRESTypePluginGetBufferFunction)
-        TurbinePlugin_get_buffer;
+        TurbineMessagePlugin_get_buffer;
     plugin->returnBuffer = 
         (PRESTypePluginReturnBufferFunction)
-        TurbinePlugin_return_buffer;
+        TurbineMessagePlugin_return_buffer;
     plugin->getSerializedSampleSizeFnc =
         (PRESTypePluginGetSerializedSampleSizeFunction)
-        TurbinePlugin_get_serialized_sample_size;
+        TurbineMessagePlugin_get_serialized_sample_size;
 
-    plugin->endpointTypeName = TurbineTYPENAME;
+    plugin->endpointTypeName = TurbineMessageTYPENAME;
 
     return plugin;
 }
 
 void
-TurbinePlugin_delete(struct PRESTypePlugin *plugin)
+TurbineMessagePlugin_delete(struct PRESTypePlugin *plugin)
 {
     RTIOsapiHeap_freeStructure(plugin);
 } 
