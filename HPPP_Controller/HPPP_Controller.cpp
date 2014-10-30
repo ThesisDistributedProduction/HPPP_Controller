@@ -5,13 +5,12 @@
 
 #include "ClusterListener.h"
 #include "ClusterSubscriber.h"
-#include "ClusterIdlSubscriber.h"
+#include "DecentralizedParkPilot.h"
+#include "CentralizedParkPilot.h"
 
 using namespace std;
 
 DDS_Boolean shutdown_flag = DDS_BOOLEAN_FALSE;
-
-#define MAX_STRING_SIZE 1024
 
 static bool fileExist(const char *fileName) {
 	std::ifstream stream;
@@ -23,7 +22,7 @@ static bool fileExist(const char *fileName) {
 	return true;
 }
 
-static bool subscriber_shutdown(DDSDomainParticipant *participant)
+static bool participant_shutdown(DDSDomainParticipant *participant)
 {
 	DDS_ReturnCode_t retcode;
 
@@ -49,9 +48,73 @@ static bool subscriber_shutdown(DDSDomainParticipant *participant)
 	return true;
 }
 
-static bool startIDLMessageApplication()
+static bool startCentralizedApplication()
 {
 	DDSDomainParticipantFactory* factory = DDSDomainParticipantFactory::get_instance();
+
+	DDSDomainParticipant *participant = factory->create_participant(
+		0,
+		DDS_PARTICIPANT_QOS_DEFAULT,
+		NULL,
+		DDS_STATUS_MASK_NONE);
+	if (participant == NULL) {
+		printf("create_participant error\n");
+		participant_shutdown(participant);
+		return false;
+	}
+
+	DDSTopic *request_topic = participant->create_topic(
+		"Cluster 1_centralized_request",
+		DDSStringTypeSupport::get_type_name(),
+		DDS_TOPIC_QOS_DEFAULT,
+		NULL,						
+		DDS_STATUS_MASK_NONE);
+	if (request_topic == NULL) {
+		printf("create_topic error\n");
+		participant_shutdown(participant);
+		return false;
+	}
+
+	const char *type_name = TurbineTypeSupport::get_type_name();
+	DDS_ReturnCode_t retcode = TurbineTypeSupport::register_type(
+		participant,
+		type_name);
+	if (retcode != DDS_RETCODE_OK) {
+		printf("register_type error %d\n", retcode);
+		participant_shutdown(participant);
+		return false;
+	}
+
+	DDSTopic *reply_topic = participant->create_topic(
+		"Cluster 1_centralized_reply",
+		type_name,
+		DDS_TOPIC_QOS_DEFAULT,
+		NULL,						//listener
+		DDS_STATUS_MASK_NONE);
+	if (request_topic == NULL) {
+		printf("create_topic error\n");
+		participant_shutdown(participant);
+		return false;
+	}
+
+
+	try
+	{
+		CentralizedParkPilot pp(participant, request_topic, reply_topic);
+
+		pp.calculateNewSetpoints();
+	}
+	catch (std::exception& ex) {
+		std::cerr << "An error occurred: " << ex.what();
+	}
+
+	return participant_shutdown(participant);
+}
+
+static bool startDecentralizedApplication()
+{
+	DDSDomainParticipantFactory* factory = DDSDomainParticipantFactory::get_instance();
+	DDS_ReturnCode_t retcode;
 
 	DDSDomainParticipant *participant = factory->create_participant(
 		0, 
@@ -60,46 +123,69 @@ static bool startIDLMessageApplication()
 		DDS_STATUS_MASK_NONE);
 	if (participant == NULL) {
 		printf("create_participant error\n");
-		subscriber_shutdown(participant);
+		participant_shutdown(participant);
 		return false;
 	}
 
 
-	const char *type_name = TurbineTypeSupport::get_type_name();
-	DDS_ReturnCode_t retcode = TurbineTypeSupport::register_type(
+	const char *turbine_type_name = TurbineTypeSupport::get_type_name();
+	retcode = TurbineTypeSupport::register_type(
 		participant, 
-		type_name);
+		turbine_type_name);
 	if (retcode != DDS_RETCODE_OK) {
 		printf("register_type error %d\n", retcode);
-		subscriber_shutdown(participant);
+		participant_shutdown(participant);
 		return false;
 	}
 
-	DDSTopic *topic = participant->create_topic(
+	DDSTopic *cluster_topic = participant->create_topic(
 		"Cluster 1",
-		type_name,
+		turbine_type_name,
 		DDS_TOPIC_QOS_DEFAULT,
 		NULL,                    
 		DDS_STATUS_MASK_NONE);    
-	if (topic == NULL) {
-		printf("create_topic error\n");
-		subscriber_shutdown(participant);
+	if (cluster_topic == NULL) {
+		printf("create_cluster_topic error\n");
+		participant_shutdown(participant);
+		return false;
+	}
+
+
+	const char *maxProd_reached_type_name = MaxProductionReachedMessageTypeSupport::get_type_name();
+	retcode = MaxProductionReachedMessageTypeSupport::register_type(
+		participant,
+		maxProd_reached_type_name);
+	if (retcode != DDS_RETCODE_OK) {
+		printf("register_type_maxProd_reached_type_name error %d\n", retcode);
+		participant_shutdown(participant);
+		return false;
+	}
+	DDSTopic *maxProd_reached_topic = participant->create_topic(
+		"Cluster 1_maxProd_reached",
+		maxProd_reached_type_name,
+		DDS_TOPIC_QOS_DEFAULT,
+		NULL,
+		DDS_STATUS_MASK_NONE);
+	if (maxProd_reached_topic == NULL) {
+		printf("create_maxProd_reached_topic error\n");
+		participant_shutdown(participant);
 		return false;
 	}
 
 	try
 	{
-		ClusterIdlSubscriber sub(
+		DecentralizedParkPilot pp(
 			participant,
-			topic);
+			cluster_topic,
+			maxProd_reached_topic);
 
-		sub.calculateNewSetpoint();
+		pp.calculateNewSetpoint();
 	}
 	catch (std::exception& ex) {
 		std::cerr << "An error occurred: " << ex.what();
 	}
 
-	return subscriber_shutdown(participant);
+	return participant_shutdown(participant);
 }
 
 static bool startStructMessageApplication() {
@@ -316,8 +402,11 @@ int main() {
 		return main_result;
 	}
 
-	if (startIDLMessageApplication())
+	if (startDecentralizedApplication())
 		main_result = 0;
+
+	//if (startCentralizedApplication())
+	//	main_result = 0;
 
 	//if (startStructMessageApplication())
 		//main_result = 0;

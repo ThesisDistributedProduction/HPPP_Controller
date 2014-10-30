@@ -39,7 +39,19 @@
     <ClInclude Include="TurbineSupport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ClusterIdlSubscriber.h">
+    <ClInclude Include="CentralizedParkPilot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DecentralizedParkPilot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxProductionReachedMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxProductionReachedMessagePlugin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxProductionReachedMessageSupport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,7 +77,19 @@
     <ClCompile Include="TurbinePlugin.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ClusterIdlSubscriber.cpp">
+    <ClCompile Include="CentralizedParkPilot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DecentralizedParkPilot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MaxProductionReachedMessage.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MaxProductionReachedMessagePlugin.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MaxProductionReachedMessageSupport.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

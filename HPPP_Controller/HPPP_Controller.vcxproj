@@ -83,9 +83,13 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ClusterIdlSubscriber.h" />
+    <ClInclude Include="CentralizedParkPilot.h" />
+    <ClInclude Include="DecentralizedParkPilot.h" />
     <ClInclude Include="ClusterListener.h" />
     <ClInclude Include="ClusterSubscriber.h" />
+    <ClInclude Include="MaxProductionReachedMessage.h" />
+    <ClInclude Include="MaxProductionReachedMessagePlugin.h" />
+    <ClInclude Include="MaxProductionReachedMessageSupport.h" />
     <ClInclude Include="Turbine.h" />
     <ClInclude Include="TurbineInfo.h" />
     <ClInclude Include="TurbineMessage.h" />
@@ -93,10 +97,14 @@
     <ClInclude Include="TurbineSupport.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClusterIdlSubscriber.cpp" />
+    <ClCompile Include="CentralizedParkPilot.cpp" />
+    <ClCompile Include="DecentralizedParkPilot.cpp" />
     <ClCompile Include="ClusterSubscriber.cpp" />
     <ClCompile Include="HPPP_Controller.cpp" />
     <ClCompile Include="ClusterListener.cpp" />
+    <ClCompile Include="MaxProductionReachedMessage.cxx" />
+    <ClCompile Include="MaxProductionReachedMessagePlugin.cxx" />
+    <ClCompile Include="MaxProductionReachedMessageSupport.cxx" />
     <ClCompile Include="Turbine.cxx" />
     <ClCompile Include="TurbineInfo.cpp" />
     <ClCompile Include="TurbinePlugin.cxx" />
