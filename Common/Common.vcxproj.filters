@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Turbine">
+      <UniqueIdentifier>{e6742b8c-23af-4460-8768-1f0515357dc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MaxProductionReachedMessage.h">
@@ -33,6 +36,27 @@
     <ClInclude Include="TurbineMessageSupport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Turbine\IncludeMongo.h">
+      <Filter>Turbine</Filter>
+    </ClInclude>
+    <ClInclude Include="Turbine\MongoDatabase.h">
+      <Filter>Turbine</Filter>
+    </ClInclude>
+    <ClInclude Include="Turbine\MongoDatareader.h">
+      <Filter>Turbine</Filter>
+    </ClInclude>
+    <ClInclude Include="Turbine\MongoPrepariedQuery.h">
+      <Filter>Turbine</Filter>
+    </ClInclude>
+    <ClInclude Include="Turbine.h">
+      <Filter>Turbine</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxProdQuery.h">
+      <Filter>Turbine</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxProdDBReader.h">
+      <Filter>Turbine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MaxProductionReachedMessage.cxx">
@@ -52,6 +76,12 @@
     </ClCompile>
     <ClCompile Include="TurbineMessageSupport.cxx">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Turbine\MongoDatabase.cpp">
+      <Filter>Turbine</Filter>
+    </ClCompile>
+    <ClCompile Include="Turbine.cpp">
+      <Filter>Turbine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
