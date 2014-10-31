@@ -18,8 +18,6 @@ using namespace std;
 
 #define TURBINE_ID 2
 #define GLOBAL_SETPOINT 2000
-#define MAX_PRODUCTION 500
-#define CURRENT_PRODUCTION 200
 
 class TurbineStatusListener : public DDSDataReaderListener {
 public:

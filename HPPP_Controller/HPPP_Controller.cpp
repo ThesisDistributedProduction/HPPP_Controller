@@ -189,7 +189,6 @@ static bool startDecentralizedApplication()
 
 int main() {
 	int main_result = 1; /* error by default */
-	
 
 	if (!fileExist("USER_QOS_PROFILES.xml")) {
 		std::cout << "! Unable to locate QoS definition file" << std::endl;
