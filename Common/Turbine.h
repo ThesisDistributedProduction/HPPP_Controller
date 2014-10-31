@@ -4,7 +4,6 @@
 
 #include "MaxProdDBReader.h"
 #include "TurbineSim.h"
-#include "TurbineMessage.h"
 
 class Turbine {
 public:

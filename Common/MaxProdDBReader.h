@@ -9,7 +9,8 @@ public:
 	}
 
 	uint_fast32_t getNextValue( ) {
-		return cursor->next( )["AvailablePower"].Int( );
+//		auto val = cursor->next( )["AvailablePower"].Int( );
+		return 3000;
 	}
 	
 private:

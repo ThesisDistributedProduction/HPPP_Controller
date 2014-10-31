@@ -12,7 +12,7 @@
 using namespace std;
 Turbine::Turbine(string collection) {
 	auto _db = MongoDatabase::getInstance( );
-	_db->setVerbose(true);
+	//_db->setVerbose(true);
 	_db->connect( );
 
 	string startTime = "16:00:00";
@@ -27,7 +27,7 @@ Turbine::Turbine(string collection) {
 	//}
 	//cout << endl;
 
-	db = _db;
+	//db = _db;
 }
 
 void Turbine::sendSetpoint(uint_fast32_t setPoint) {
