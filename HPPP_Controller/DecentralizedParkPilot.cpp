@@ -16,7 +16,9 @@ void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const D
 }
 
 DecentralizedParkPilot::DecentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
+	: _turbine("Turbine3000363Log")
 {
+
 	DDSDataReader* untypedReader = participant->create_datareader(
 		cluster_topic,
 		DDS_DATAREADER_QOS_DEFAULT, 
@@ -80,6 +82,10 @@ DecentralizedParkPilot::~DecentralizedParkPilot() { }
 
 void DecentralizedParkPilot::calculateNewSetpoint()
 {
+	uint_fast32_t localSetpoint = 0;
+	uint_fast32_t curProd = 0;
+	uint_fast32_t maxProd = 0;
+
 	TurbineMessageSeq turbines;
 	DDS_SampleInfoSeq turbineInfos;
 	DDS_ReturnCode_t retcode;
@@ -89,6 +95,9 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		printf("DataReader narrow error\n");
 		return;
 	}
+
+	_turbine.sendSetpoint(localSetpoint);
+	_turbine.readTurbineData(maxProd, curProd);
 
 	TurbineMessage *instance = TurbineMessageTypeSupport::create_data();
 	instance->turbineId = TURBINE_ID;
@@ -113,16 +122,18 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		
 		printReceivedTurbineData(turbines, turbineInfos);
 
-		long localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, MAX_PRODUCTION, CURRENT_PRODUCTION, turbineInfos);
+		uint_fast32_t localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, maxProd, curProd, turbineInfos);
 
+		_turbine.sendSetpoint(localSetpoint);
+		_turbine.readTurbineData(maxProd, curProd);
 
 		result = _reader->return_loan(turbines, turbineInfos);
 		if (result != DDS_RETCODE_OK) {
 			throw runtime_error("A loan return error occurred: " + result);
 		}
 
-		instance->currentProduction = CURRENT_PRODUCTION;
-		instance->maxProduction = MAX_PRODUCTION;
+		instance->currentProduction = curProd;
+		instance->maxProduction = maxProd;
 		instance->setPoint = localSetpoint;
 
 		retcode = _turbine_writer->write(*instance, instance_handle);
@@ -136,11 +147,11 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 	}
 }
 
-long DecentralizedParkPilot::regAlgorithm(
-	long globalSetpoint, 
+uint_fast32_t DecentralizedParkPilot::regAlgorithm(
+	uint_fast32_t globalSetpoint,
 	TurbineMessageSeq turbines,
-	long maxProd,
-	long currentProd,
+	uint_fast32_t maxProd,
+	uint_fast32_t currentProd,
 	DDS_SampleInfoSeq turbineInfos)
 {
 	if (currentProd == maxProd)
@@ -159,7 +170,7 @@ long DecentralizedParkPilot::regAlgorithm(
 			availableTurbinesCount--;
 	}
 
-	long localSetpoint = globalSetpoint / availableTurbinesCount;
+	uint_fast32_t localSetpoint = globalSetpoint / availableTurbinesCount;
 
 	if (localSetpoint > maxProd) {
 		localSetpoint = maxProd;

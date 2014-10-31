@@ -32,5 +32,6 @@ private:
 	TurbineListener _listener;
 	DDSDataWriter* _writer;
 	DDSStringDataWriter* _turbine_writer;
+	bool _allDataReceived;
 };
 
