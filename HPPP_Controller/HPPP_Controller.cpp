@@ -110,7 +110,7 @@ static bool startCentralizedApplication()
 	return participant_shutdown(participant);
 }
 
-static bool startDecentralizedApplication(uint_fast32_t turbine_id)
+static bool startDecentralizedApplication(uint_fast32_t turbineId)
 {
 	DDSDomainParticipantFactory* factory = DDSDomainParticipantFactory::get_instance();
 	DDS_ReturnCode_t retcode;
@@ -174,7 +174,7 @@ static bool startDecentralizedApplication(uint_fast32_t turbine_id)
 	try
 	{
 		DecentralizedParkPilot pp(
-			turbine_id,
+			turbineId,
 			participant,
 			cluster_topic,
 			maxProd_reached_topic);
@@ -191,9 +191,9 @@ static bool startDecentralizedApplication(uint_fast32_t turbine_id)
 int main(int argc, char *argv[], char *envp[]){
 	int main_result = 1; /* error by default */
 
-	uint_fast32_t turbine_id = 0;
+	uint_fast32_t turbineId = 0;
 	if( argc > 1 ) {
-		turbine_id = atoi(argv[1]);
+		turbineId = atoi(argv[1]);
 	}
 
 	if (!fileExist("USER_QOS_PROFILES.xml")) {
@@ -202,7 +202,7 @@ int main(int argc, char *argv[], char *envp[]){
 		return main_result;
 	}
 
-	if( startDecentralizedApplication(turbine_id) )
+	if( startDecentralizedApplication(turbineId) )
 		main_result = 0;
 
 	//if (startCentralizedApplication())
