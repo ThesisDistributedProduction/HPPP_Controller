@@ -103,6 +103,17 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 	instance->turbineId = TURBINE_ID;
 	DDS_InstanceHandle_t instance_handle = _turbine_writer->register_instance(*instance);
 
+	instance->currentProduction = curProd;
+	instance->maxProduction = maxProd;
+	instance->setPoint = localSetpoint;
+
+	retcode = _turbine_writer->write(*instance, instance_handle);
+
+	if (retcode != DDS_RETCODE_OK) {
+		printf("write error %d\n", retcode);
+		throw runtime_error("write error " + retcode);
+	}
+
 	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
 		
 		DDS_ReturnCode_t result = _reader->read(
