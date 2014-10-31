@@ -61,21 +61,21 @@ DecentralizedParkPilot::DecentralizedParkPilot(DDSDomainParticipant* participant
 	}
 
 
-	_writer = publisher->create_datawriter(
-		maxprod_reached_topic,
-		DDS_DATAWRITER_QOS_DEFAULT,
-		NULL,
-		DDS_STATUS_MASK_NONE);
-	if (_writer == NULL) {
-		printf("create_datawriter2 error\n");
-		throw runtime_error("Unable to create writer2");
-	}
+	//_writer = publisher->create_datawriter(
+	//	maxprod_reached_topic,
+	//	DDS_DATAWRITER_QOS_DEFAULT,
+	//	NULL,
+	//	DDS_STATUS_MASK_NONE);
+	//if (_writer == NULL) {
+	//	printf("create_datawriter2 error\n");
+	//	throw runtime_error("Unable to create writer2");
+	//}
 
-	_maxProd_reached_writer = MaxProductionReachedMessageDataWriter::narrow(_writer);
-	if (_turbine_writer == NULL) {
-		printf("DataWriter narrow_maxprod_reached error\n");
-		throw runtime_error("Unable to create turbine_writer");
-	}
+	//_maxProd_reached_writer = MaxProductionReachedMessageDataWriter::narrow(_writer);
+	//if (_turbine_writer == NULL) {
+	//	printf("DataWriter narrow_maxprod_reached error\n");
+	//	throw runtime_error("Unable to create turbine_writer");
+	//}
 }
 
 DecentralizedParkPilot::~DecentralizedParkPilot() { }
@@ -103,19 +103,20 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 	instance->turbineId = TURBINE_ID;
 	DDS_InstanceHandle_t instance_handle = _turbine_writer->register_instance(*instance);
 
-	instance->currentProduction = curProd;
-	instance->maxProduction = maxProd;
-	instance->setPoint = localSetpoint;
-
-	retcode = _turbine_writer->write(*instance, instance_handle);
-
-	if (retcode != DDS_RETCODE_OK) {
-		printf("write error %d\n", retcode);
-		throw runtime_error("write error " + retcode);
-	}
 
 	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
-		
+
+		instance->currentProduction = curProd;
+		instance->maxProduction = maxProd;
+		instance->setPoint = localSetpoint;
+
+		retcode = _turbine_writer->write(*instance, instance_handle);
+
+		if (retcode != DDS_RETCODE_OK) {
+			printf("write error %d\n", retcode);
+			throw runtime_error("write error " + retcode);
+		}
+
 		DDS_ReturnCode_t result = _reader->read(
 			turbines,             
 			turbineInfos,
@@ -130,10 +131,12 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		if (result != DDS_RETCODE_OK) {
 			throw runtime_error("A read error occurred: " + result);
 		}
+
+		cout << "  " << count << " ";
 		
 		printReceivedTurbineData(turbines, turbineInfos);
 
-		uint_fast32_t localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, maxProd, curProd, turbineInfos);
+		localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, curProd, maxProd, turbineInfos);
 
 		_turbine.sendSetpoint(localSetpoint);
 		_turbine.readTurbineData(maxProd, curProd);
@@ -141,17 +144,6 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		result = _reader->return_loan(turbines, turbineInfos);
 		if (result != DDS_RETCODE_OK) {
 			throw runtime_error("A loan return error occurred: " + result);
-		}
-
-		instance->currentProduction = curProd;
-		instance->maxProduction = maxProd;
-		instance->setPoint = localSetpoint;
-
-		retcode = _turbine_writer->write(*instance, instance_handle);
-
-		if (retcode != DDS_RETCODE_OK) {
-			printf("write error %d\n", retcode);
-			throw runtime_error("write error " + retcode);
 		}
 	sleep:
 		Sleep(50);
