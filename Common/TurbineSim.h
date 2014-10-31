@@ -5,7 +5,7 @@
 #define KW 1000		 // 1 kilowatt
 #define MW KW*1000 // 1 megawatt
 
-#define MAX_PRODUCTION_DIFF_SCALING_FACTOR 0.01
+#define MAX_PRODUCTION_DIFF_SCALING_FACTOR 0.15
 
 class TurbineSim {
 public:
@@ -29,7 +29,7 @@ public:
 
 		currentProduction += powerDiff * 0.001;
 		
-		std::cout << "\nsetpunkt:  " << setpunkt << "   powerDiff:    " << powerDiff << std::endl;
+		//std::cout << "\nsetpunkt: " << setpunkt << "   powerDiff: " << powerDiff << " Adjustment from max Prod: " <<adjustPower << std::endl;
 
 		this->maxProduction = maxProduction;
 		return currentProduction;
