@@ -8,8 +8,6 @@
 
 using namespace std;
 
-DDS_Boolean shutdown_flag = DDS_BOOLEAN_FALSE;
-
 static bool fileExist(const char *fileName) {
 	std::ifstream stream;
 	stream.open(fileName);

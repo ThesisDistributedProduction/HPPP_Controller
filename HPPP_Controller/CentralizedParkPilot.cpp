@@ -89,7 +89,6 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 	}
 }
 
-
 CentralizedParkPilot::~CentralizedParkPilot()
 {
 }
@@ -98,12 +97,18 @@ void CentralizedParkPilot::calculateNewSetpoints()
 {
 	int sample_count = 0;
 	DDS_Duration_t receive_period = { 0, 150000000 }; //150 ms
+	DDS_Duration_t sleep_time = { 0, 10000000 }; //10 ms
 	DDS_ReturnCode_t retcode;
 
 	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
 
 
 		retcode = _turbine_writer->write("request", DDS_HANDLE_NIL);
+		
+		while (!_allDataReceived)
+		{
+			NDDSUtility::sleep(sleep_time);
+		}
 
 		if (retcode != DDS_RETCODE_OK) {
 			 cerr << "Write failed: " << retcode << endl;
