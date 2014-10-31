@@ -110,7 +110,7 @@ static bool startCentralizedApplication()
 	return participant_shutdown(participant);
 }
 
-static bool startDecentralizedApplication()
+static bool startDecentralizedApplication(uint_fast32_t turbine_id)
 {
 	DDSDomainParticipantFactory* factory = DDSDomainParticipantFactory::get_instance();
 	DDS_ReturnCode_t retcode;
@@ -174,6 +174,7 @@ static bool startDecentralizedApplication()
 	try
 	{
 		DecentralizedParkPilot pp(
+			turbine_id,
 			participant,
 			cluster_topic,
 			maxProd_reached_topic);
@@ -187,8 +188,13 @@ static bool startDecentralizedApplication()
 	return participant_shutdown(participant);
 }
 
-int main() {
+int main(int argc, char *argv[], char *envp[]){
 	int main_result = 1; /* error by default */
+
+	uint_fast32_t turbine_id = 0;
+	if( argc > 1 ) {
+		turbine_id = atoi(argv[1]);
+	}
 
 	if (!fileExist("USER_QOS_PROFILES.xml")) {
 		std::cout << "! Unable to locate QoS definition file" << std::endl;
@@ -196,7 +202,7 @@ int main() {
 		return main_result;
 	}
 
-	if (startDecentralizedApplication())
+	if( startDecentralizedApplication(turbine_id) )
 		main_result = 0;
 
 	//if (startCentralizedApplication())

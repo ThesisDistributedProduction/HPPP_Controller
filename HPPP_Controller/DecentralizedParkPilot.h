@@ -16,7 +16,7 @@
 
 using namespace std;
 
-#define TURBINE_ID 2
+//#define TURBINE_ID 2
 #define GLOBAL_SETPOINT 2000
 
 class TurbineStatusListener : public DDSDataReaderListener {
@@ -27,7 +27,7 @@ public:
 class DecentralizedParkPilot
 {
 public:
-	DecentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic);
+	DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic);
 	~DecentralizedParkPilot();
 
 	void calculateNewSetpoint();
@@ -38,6 +38,7 @@ private:
 	TurbineMessageDataReader* _reader;
 	TurbineMessageDataWriter* _turbine_writer;
 	Turbine _turbine;
+	uint_fast32_t turbineId;
 
 	MaxProductionReachedMessageDataWriter* _maxProd_reached_writer;
 
