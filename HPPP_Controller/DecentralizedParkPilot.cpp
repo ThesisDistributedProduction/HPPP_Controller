@@ -15,10 +15,10 @@ void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const D
 	}
 }
 
-DecentralizedParkPilot::DecentralizedParkPilot(uint_fast32_t turbine_id, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
+DecentralizedParkPilot::DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
 	: _turbine("Turbine3000363Log")
 {
-	this->turbine_id = turbine_id;
+	this->turbineId = turbineId;
 
 	DDSDataReader* untypedReader = participant->create_datareader(
 		cluster_topic,
@@ -101,7 +101,7 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 	_turbine.readTurbineData(maxProd, curProd);
 
 	TurbineMessage *instance = TurbineMessageTypeSupport::create_data();
-	instance->turbineId = turbine_id;
+	instance->turbineId = turbineId;
 	DDS_InstanceHandle_t instance_handle = _turbine_writer->register_instance(*instance);
 
 	instance->currentProduction = curProd;
@@ -228,7 +228,7 @@ void DecentralizedParkPilot::productionLevelReached(long localAndMaxDiff)
 	DDS_ReturnCode_t retcode;
 
 	MaxProductionReachedMessage *msg = MaxProductionReachedMessageTypeSupport::create_data();
-	msg->turbineId = turbine_id;
+	msg->turbineId = turbineId;
 	DDS_InstanceHandle_t instance_handle = _maxProd_reached_writer->register_instance(*msg);
 	
 	msg->localAndMaxDiff = localAndMaxDiff;
