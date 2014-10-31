@@ -12,6 +12,7 @@
 #include "MaxProductionReachedMessage.h"
 #include "MaxProductionReachedMessagePlugin.h"
 #include "MaxProductionReachedMessageSupport.h"
+#include "Turbine.h"
 
 using namespace std;
 
@@ -38,9 +39,17 @@ private:
 	TurbineStatusListener _listener;
 	TurbineMessageDataReader* _reader;
 	TurbineMessageDataWriter* _turbine_writer;
+	Turbine _turbine;
 
 	MaxProductionReachedMessageDataWriter* _maxProd_reached_writer;
-	long regAlgorithm(long globalSetpoint, TurbineMessageSeq turbines, long maxProd, long currentProd, DDS_SampleInfoSeq turbineInfos);
+
 	void productionLevelReached(long localAndMaxDiff);
 	void printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos);
+
+	uint_fast32_t regAlgorithm(
+		uint_fast32_t globalSetpoint,
+		TurbineMessageSeq turbines,
+		uint_fast32_t maxProd,
+		uint_fast32_t currentProd,
+		DDS_SampleInfoSeq turbineInfos);
 };
