@@ -2,9 +2,12 @@
 #include <ndds/ndds_cpp.h>
 #include <list>
 #include <fstream>
+#include <vector>
 
 #include "DecentralizedParkPilot.h"
 #include "CentralizedParkPilot.h"
+
+#include "Turbine.h"
 
 using namespace std;
 
@@ -186,6 +189,12 @@ static bool startDecentralizedApplication()
 
 int main() {
 	int main_result = 1; /* error by default */
+	string collections[4] = { "Turbine3000363Log", "Turbine3000364Log", "Turbine3000365Log", "Turbine3000366Log" };
+	try {
+		Turbine t(collections[0]);
+	} catch( exception &e) {
+		cout << "exception caught while running Turbine sim, is mongo db installed and setup???\n" << endl;
+	}
 
 	if (!fileExist("USER_QOS_PROFILES.xml")) {
 		std::cout << "! Unable to locate QoS definition file" << std::endl;

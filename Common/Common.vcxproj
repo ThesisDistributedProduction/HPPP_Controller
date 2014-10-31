@@ -11,20 +11,30 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MaxProdDBReader.h" />
+    <ClInclude Include="MaxProdQuery.h" />
     <ClInclude Include="MaxProductionReachedMessage.h" />
     <ClInclude Include="MaxProductionReachedMessagePlugin.h" />
     <ClInclude Include="MaxProductionReachedMessageSupport.h" />
+    <ClInclude Include="Turbine.h" />
     <ClInclude Include="TurbineMessage.h" />
     <ClInclude Include="TurbineMessagePlugin.h" />
     <ClInclude Include="TurbineMessageSupport.h" />
+    <ClInclude Include="TurbineSim.h" />
+    <ClInclude Include="Turbine\IncludeMongo.h" />
+    <ClInclude Include="Turbine\MongoDatabase.h" />
+    <ClInclude Include="Turbine\MongoDatareader.h" />
+    <ClInclude Include="Turbine\MongoPrepariedQuery.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MaxProductionReachedMessage.cxx" />
     <ClCompile Include="MaxProductionReachedMessagePlugin.cxx" />
     <ClCompile Include="MaxProductionReachedMessageSupport.cxx" />
+    <ClCompile Include="Turbine.cpp" />
     <ClCompile Include="TurbineMessage.cxx" />
     <ClCompile Include="TurbineMessagePlugin.cxx" />
     <ClCompile Include="TurbineMessageSupport.cxx" />
+    <ClCompile Include="Turbine\MongoDatabase.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7E945012-47CE-4562-88C1-9700E8F01ECF}</ProjectGuid>
