@@ -14,7 +14,7 @@ void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const D
 	if (!status.last_publication_handle.isValid) {
 		cout << "\nTurbine not valid.";
 	}
-	cout << " N    Time    ID Prod Setpoint   Max" << endl;
+	cout << " N    Time    ID Prod Setpoint  Max GlobalSetpoint" << endl;
 }
 
 DecentralizedParkPilot::DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
@@ -193,11 +193,15 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 
 		DDS_SampleInfo& turbineInfo = turbineInfos[i];
 
-		if (!turbineInfo.valid_data) {
+		if( !turbineInfo.valid_data ) {
 			continue;
 		}
 
 		TurbineMessage& turbineData = turbines[i];
+
+		if( turbineData.turbineId != this->turbineId ) {
+			continue;
+		}
 
 		time_t src_time = (time_t)turbineInfo.source_timestamp.sec;
 		tm* local_src_time = localtime(&src_time);
@@ -210,7 +214,9 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 		cout << setfill(' ') << setw(2) << turbineData.turbineId;
 		cout << setfill(' ') << setw(5) << turbineData.currentProduction;
 		cout << setfill(' ') << setw(9) << turbineData.setPoint;
-		cout << setfill(' ') << setw(6) << turbineData.maxProduction;
+		cout << setfill(' ') << setw(5) << turbineData.maxProduction;
+		cout << setfill(' ') << setw(15) << GLOBAL_SETPOINT;
+		
 
 
 		// if (turbineInfo.sample_state == DDS_READ_SAMPLE_STATE) {
