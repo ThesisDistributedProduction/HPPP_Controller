@@ -8,7 +8,7 @@ cd HPPP_Controller
 IF "%N_INSTANCES%"=="0" GOTO Continue
 
 	echo Starting: %N_INSTANCES%
-	start ..\x64\Release\HPPP_Controller.exe
+	start ..\x64\Release\HPPP_Controller.exe %N_INSTANCES%
 
 set /a N_INSTANCES=%N_INSTANCES%-1
 SHIFT
