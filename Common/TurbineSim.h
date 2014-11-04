@@ -5,12 +5,12 @@
 #define KW 1000		 // 1 kilowatt
 #define MW KW*1000 // 1 megawatt
 
-#define MAX_PRODUCTION_DIFF_SCALING_FACTOR 0.15
+#define MAX_PRODUCTION_DIFF_SCALING_FACTOR 0.1
 
 class TurbineSim {
 public:
 
-	TurbineSim(uint_fast32_t maxProduction = 2 * KW, uint_fast32_t currentProduction = 1 * KW) {
+	TurbineSim(uint_fast32_t maxProduction = 2 * KW, uint_fast32_t currentProduction = 0 * KW) {
 		this->maxProduction = maxProduction;
 		this->currentProduction = currentProduction;
 	}
@@ -20,24 +20,27 @@ public:
 		// positive means more production available
 		double maxProdDiff = (int_fast32_t)maxProduction - ( int_fast32_t )this->maxProduction;
 
-		double adjustPower = maxProdDiff * MAX_PRODUCTION_DIFF_SCALING_FACTOR;
+		double adjustPowerMax = maxProdDiff * MAX_PRODUCTION_DIFF_SCALING_FACTOR;
 
-		currentProduction += adjustPower;
+		currentProduction += adjustPowerMax;
 
 		// positive means production is above setpoint
-		double powerDiff = (double)currentProduction - setpunkt;
+		double powerProdDiff = (double)currentProduction - setpunkt;
 
-		currentProduction -= powerDiff * 0.01; //0.001;
+		double adjustPowerProd = powerProdDiff * 0.1; //0.001;
+		currentProduction -= adjustPowerProd;
 		
 		//std::cout << "\nsetpunkt: " << setpunkt << "   powerDiff: " << powerDiff << " Adjustment from max Prod: " <<adjustPower << std::endl;
 
 		this->maxProduction = maxProduction;
+		if( currentProduction < 0 )
+			currentProduction = 0;
 		return currentProduction;
 	}
 
 private:
 	//Previus values
-	uint_fast32_t maxProduction;
-	uint_fast32_t currentProduction;
+	int_fast32_t maxProduction;
+	int_fast32_t currentProduction;
 };
 
