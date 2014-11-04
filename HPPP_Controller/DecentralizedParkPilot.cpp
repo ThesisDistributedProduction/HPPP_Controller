@@ -3,6 +3,7 @@
 
 void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const DDS_LivelinessChangedStatus& status) 
 {
+	
 	if (status.alive_count_change > 0)
 		cout << "\nTurbine ONLINE." << std::endl;
 	else if (status.alive_count_change < 0)
@@ -13,6 +14,7 @@ void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const D
 	if (!status.last_publication_handle.isValid) {
 		cout << "\nTurbine not valid.";
 	}
+	cout << " N    Time    ID Prod Setpoint  Max GlobalSetpoint" << endl;
 }
 
 DecentralizedParkPilot::DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
@@ -104,7 +106,6 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 	instance->turbineId = turbineId;
 	DDS_InstanceHandle_t instance_handle = _turbine_writer->register_instance(*instance);
 
-
 	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
 
 		instance->currentProduction = curProd;
@@ -132,7 +133,7 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		if (result != DDS_RETCODE_OK) {
 			throw runtime_error("A read error occurred: " + result);
 		}
-		
+
 		printReceivedTurbineData(turbines, turbineInfos);
 
 		localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, maxProd, curProd, localSetpoint, turbineInfos);
@@ -186,32 +187,41 @@ uint_fast32_t DecentralizedParkPilot::regAlgorithm(
 void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos)
 {
 	for (int i = 0; i < turbines.length(); ++i) {
-		cout << "\n";
-		cout << turbines.length();
+		cout << "\r";
+		cout << setfill(' ') << setw(2) << turbines.length( );
 
 		DDS_SampleInfo& turbineInfo = turbineInfos[i];
 
-		if (!turbineInfo.valid_data) {
+		if( !turbineInfo.valid_data ) {
 			continue;
 		}
 
 		TurbineMessage& turbineData = turbines[i];
 
+		if( turbineData.turbineId != this->turbineId ) {
+			continue;
+		}
+
 		time_t src_time = (time_t)turbineInfo.source_timestamp.sec;
 		tm* local_src_time = localtime(&src_time);
-		cout << "[" << local_src_time->tm_hour
+		cout << " [" << local_src_time->tm_hour
 			<< ":" << std::setw(2) << std::setfill('0')
 			<< local_src_time->tm_min
 			<< ":" << std::setw(2) << std::setfill('0')
 			<< local_src_time->tm_sec << "] ";
-		cout << "Id: " << turbineData.turbineId;
-		cout << ", Curr. prod.: " << turbineData.currentProduction;
-		cout << ", Max. prod.: " << turbineData.maxProduction;
+
+		cout << setfill(' ') << setw(2) << turbineData.turbineId;
+		cout << setfill(' ') << setw(5) << turbineData.currentProduction;
+		cout << setfill(' ') << setw(9) << turbineData.setPoint;
+		cout << setfill(' ') << setw(5) << turbineData.maxProduction;
+		cout << setfill(' ') << setw(15) << GLOBAL_SETPOINT;
+		
 
 
-		if (turbineInfo.sample_state == DDS_READ_SAMPLE_STATE) {
-			cout << " (cached)";
-		}
+		// if (turbineInfo.sample_state == DDS_READ_SAMPLE_STATE) {
+		//	 cout << " (cached)";
+		// }
+		std::cout.flush( );
 	}
 }
 
