@@ -1,17 +1,19 @@
 
 @echo off
 set N_INSTANCES=%1
+set START_ID=%2
+
+IF "%START_ID%"=="" set START_ID=1
 
 cd HPPP_Controller
 
 :Loop
 IF "%N_INSTANCES%"=="0" GOTO Continue
+	set /a id=%START_ID%+%N_INSTANCES%
+	echo Starting: %id%
+	start ..\x64\Release\HPPP_Controller.exe %id%
 
-	echo Starting: %N_INSTANCES%
-	start ..\x64\Release\HPPP_Controller.exe %N_INSTANCES%
-
-set /a N_INSTANCES=%N_INSTANCES%-1
-SHIFT
+	set /a N_INSTANCES=%N_INSTANCES%-1
 GOTO Loop
 :Continue
 
