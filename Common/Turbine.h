@@ -7,7 +7,7 @@
 
 class Turbine {
 public:
-	Turbine(std::string collection);
+	Turbine(uint_fast32_t id);
 
 	void sendSetpoint(uint_fast32_t setPoint);
 

@@ -18,7 +18,7 @@ void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const D
 }
 
 DecentralizedParkPilot::DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
-	: _turbine("Turbine3000363Log")
+	: _turbine(turbineId)
 {
 	this->turbineId = turbineId;
 	this->_ms_last_write_timestamp = chrono::duration_cast< chrono::milliseconds >(

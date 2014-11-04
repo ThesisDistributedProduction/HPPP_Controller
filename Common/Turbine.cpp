@@ -10,15 +10,17 @@
 
 
 using namespace std;
-Turbine::Turbine(string collection) {
+Turbine::Turbine(uint_fast32_t id) {
 	auto _db = MongoDatabase::getInstance( );
 	//_db->setVerbose(true);
 	_db->connect( );
 
 	string startTime = "16:00:00";
 	string stopTime = "17:00:00";
+		
+	string collections[4] = { "Turbine3000363Log", "Turbine3000364Log", "Turbine3000365Log", "Turbine3000366Log" };
 
-	MaxProdQuery query(collection, startTime, stopTime);
+	MaxProdQuery query(collections[ id % 4], startTime, stopTime);
 	_db->query(query, datareader);
 
 	//cout << "max.prod: ";
