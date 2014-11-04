@@ -27,7 +27,7 @@ public:
 		// positive means production is above setpoint
 		double powerDiff = (double)currentProduction - setpunkt;
 
-		currentProduction += powerDiff * 0.001;
+		currentProduction -= powerDiff * 0.01; //0.001;
 		
 		//std::cout << "\nsetpunkt: " << setpunkt << "   powerDiff: " << powerDiff << " Adjustment from max Prod: " <<adjustPower << std::endl;
 
