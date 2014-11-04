@@ -8,8 +8,8 @@
   or consult the RTI Connext manual.
 */
 
-#ifndef TurbineMessage_1893946714_h
-#define TurbineMessage_1893946714_h
+#ifndef TurbineMessage_1893946758_h
+#define TurbineMessage_1893946758_h
 
 #ifndef NDDS_STANDALONE_TYPE
     #ifdef __cplusplus
@@ -26,7 +26,7 @@
 #endif
 
 
-#define TurbineMessage_LAST_MEMBER_ID 3
+#define TurbineMessage_LAST_MEMBER_ID 5
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -74,6 +74,10 @@ public:
     DDS_Long  currentProduction;
 
     DDS_Long  setPoint;
+
+    DDS_Long  msSinceLastWrite;
+
+    DDS_Long  cacheCount;
 
             
 };                        
@@ -137,4 +141,4 @@ RTIBool TurbineMessage_copy(
 
 
 
-#endif /* TurbineMessage_1893946714_h */
+#endif /* TurbineMessage_1893946758_h */

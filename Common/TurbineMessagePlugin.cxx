@@ -184,6 +184,14 @@ TurbineMessagePluginSupport_print_data(
         &sample->setPoint, "setPoint", indent_level + 1);
             
 
+    RTICdrType_printLong(
+        &sample->msSinceLastWrite, "msSinceLastWrite", indent_level + 1);
+            
+
+    RTICdrType_printLong(
+        &sample->cacheCount, "cacheCount", indent_level + 1);
+            
+
 
 }
 
@@ -429,6 +437,18 @@ TurbineMessagePlugin_serialize(
     }
             
 
+    if (!RTICdrStream_serializeLong(
+        stream, &sample->msSinceLastWrite)) {
+        return RTI_FALSE;
+    }
+            
+
+    if (!RTICdrStream_serializeLong(
+        stream, &sample->cacheCount)) {
+        return RTI_FALSE;
+    }
+            
+
     }
 
 
@@ -489,6 +509,16 @@ TurbineMessagePlugin_deserialize_sample(
 
     if (!RTICdrStream_deserializeLong(
         stream, &sample->setPoint)) {
+        goto fin;
+    }
+
+    if (!RTICdrStream_deserializeLong(
+        stream, &sample->msSinceLastWrite)) {
+        goto fin;
+    }
+
+    if (!RTICdrStream_deserializeLong(
+        stream, &sample->cacheCount)) {
         goto fin;
     }
 
@@ -594,6 +624,16 @@ RTIBool TurbineMessagePlugin_skip(
     }
             
 
+    if (!RTICdrStream_skipLong(stream)) {
+        goto fin;
+    }
+            
+
+    if (!RTICdrStream_skipLong(stream)) {
+        goto fin;
+    }
+            
+
 
     }
     
@@ -643,6 +683,14 @@ TurbineMessagePlugin_get_serialized_sample_max_size(
 
     }
 
+
+    current_alignment +=  RTICdrType_getLongMaxSizeSerialized(
+        current_alignment);
+            
+
+    current_alignment +=  RTICdrType_getLongMaxSizeSerialized(
+        current_alignment);
+            
 
     current_alignment +=  RTICdrType_getLongMaxSizeSerialized(
         current_alignment);
@@ -713,6 +761,14 @@ TurbineMessagePlugin_get_serialized_sample_min_size(
         current_alignment);
             
 
+    current_alignment +=  RTICdrType_getLongMaxSizeSerialized(
+        current_alignment);
+            
+
+    current_alignment +=  RTICdrType_getLongMaxSizeSerialized(
+        current_alignment);
+            
+
     if (include_encapsulation) {
         current_alignment += encapsulation_size;
     }
@@ -757,6 +813,14 @@ TurbineMessagePlugin_get_serialized_sample_size(
 
     }
 
+
+    current_alignment += RTICdrType_getLongMaxSizeSerialized(
+        current_alignment);
+            
+
+    current_alignment += RTICdrType_getLongMaxSizeSerialized(
+        current_alignment);
+            
 
     current_alignment += RTICdrType_getLongMaxSizeSerialized(
         current_alignment);
@@ -999,6 +1063,16 @@ TurbineMessagePlugin_serialized_sample_to_key(
         stream, &sample->turbineId)) {
         return RTI_FALSE;
     }
+
+    if (!RTICdrStream_skipLong(stream)) {
+        goto fin;
+    }
+            
+
+    if (!RTICdrStream_skipLong(stream)) {
+        goto fin;
+    }
+            
 
     if (!RTICdrStream_skipLong(stream)) {
         goto fin;

@@ -46,7 +46,7 @@ DDS_TypeCode* TurbineMessage_get_typecode()
     static RTIBool is_initialized = RTI_FALSE;
 
 
-    static DDS_TypeCode_Member TurbineMessage_g_tc_members[4]=
+    static DDS_TypeCode_Member TurbineMessage_g_tc_members[6]=
     {
         {
             (char *)"turbineId",/* Member name */
@@ -115,6 +115,40 @@ DDS_TypeCode* TurbineMessage_get_typecode()
             DDS_PRIVATE_MEMBER,/* Ignored */
             1,
             NULL/* Ignored */
+        },
+        {
+            (char *)"msSinceLastWrite",/* Member name */
+            {
+                4,/* Representation ID */
+                DDS_BOOLEAN_FALSE,/* Is a pointer? */
+                -1, /* Bitfield bits */
+                NULL/* Member type code is assigned later */
+            },
+            0, /* Ignored */
+            0, /* Ignored */
+            0, /* Ignored */
+            NULL, /* Ignored */
+            RTI_CDR_REQUIRED_MEMBER, /* Member flags */
+            DDS_PRIVATE_MEMBER,/* Ignored */
+            1,
+            NULL/* Ignored */
+        },
+        {
+            (char *)"cacheCount",/* Member name */
+            {
+                5,/* Representation ID */
+                DDS_BOOLEAN_FALSE,/* Is a pointer? */
+                -1, /* Bitfield bits */
+                NULL/* Member type code is assigned later */
+            },
+            0, /* Ignored */
+            0, /* Ignored */
+            0, /* Ignored */
+            NULL, /* Ignored */
+            RTI_CDR_REQUIRED_MEMBER, /* Member flags */
+            DDS_PRIVATE_MEMBER,/* Ignored */
+            1,
+            NULL/* Ignored */
         }
     };
 
@@ -128,7 +162,7 @@ DDS_TypeCode* TurbineMessage_get_typecode()
         0, /* Ignored */
         0, /* Ignored */
         NULL, /* Ignored */
-        4, /* Number of members */
+        6, /* Number of members */
         TurbineMessage_g_tc_members, /* Members */
         DDS_VM_NONE /* Ignored */
     }}; /* Type code for TurbineMessage*/
@@ -142,6 +176,8 @@ DDS_TypeCode* TurbineMessage_get_typecode()
     TurbineMessage_g_tc_members[1]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
     TurbineMessage_g_tc_members[2]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
     TurbineMessage_g_tc_members[3]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
+    TurbineMessage_g_tc_members[4]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
+    TurbineMessage_g_tc_members[5]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
 
     is_initialized = RTI_TRUE;
 
@@ -196,6 +232,16 @@ RTIBool TurbineMessage_initialize_w_params(
     }                
             
 
+    if (!RTICdrType_initLong(&sample->msSinceLastWrite)) {
+        return RTI_FALSE;
+    }                
+            
+
+    if (!RTICdrType_initLong(&sample->cacheCount)) {
+        return RTI_FALSE;
+    }                
+            
+
 
     return RTI_TRUE;
 }
@@ -232,6 +278,8 @@ void TurbineMessage_finalize_w_params(
 
 
 
+
+
 }
 
 void TurbineMessage_finalize_optional_members(
@@ -249,6 +297,8 @@ void TurbineMessage_finalize_optional_members(
     deallocParamsTmp.delete_pointers = (DDS_Boolean)deletePointers;
     deallocParamsTmp.delete_optional_members = DDS_BOOLEAN_TRUE;    
              
+
+
 
 
 
@@ -281,6 +331,18 @@ RTIBool TurbineMessage_copy(
 
     if (!RTICdrType_copyLong(
         &dst->setPoint, &src->setPoint)) {
+        return RTI_FALSE;
+    }
+            
+
+    if (!RTICdrType_copyLong(
+        &dst->msSinceLastWrite, &src->msSinceLastWrite)) {
+        return RTI_FALSE;
+    }
+            
+
+    if (!RTICdrType_copyLong(
+        &dst->cacheCount, &src->cacheCount)) {
         return RTI_FALSE;
     }
             

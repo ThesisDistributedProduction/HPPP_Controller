@@ -14,7 +14,7 @@ void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const D
 	if (!status.last_publication_handle.isValid) {
 		cout << "\nTurbine not valid.";
 	}
-	cout << " N    Time   ID Prod Setpoint  Max GlobalSetpoint" << endl;
+	cout << " N    Time     ID Prod Setpoint  Max  GlobalSetpoint CycleTime(ms) CacheCount" << endl;
 }
 
 DecentralizedParkPilot::DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
@@ -91,7 +91,7 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 	uint_fast32_t localSetpoint = 0;
 	uint_fast32_t curProd = 0;
 	uint_fast32_t maxProd = 0;
-	chrono::milliseconds ms;
+	uint_fast32_t cacheCount = 0;
 
 	TurbineMessageSeq turbines;
 	DDS_SampleInfoSeq turbineInfos;
@@ -115,13 +115,13 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		instance->currentProduction = curProd;
 		instance->maxProduction = maxProd;
 		instance->setPoint = localSetpoint;
-
-		//to send
-		ms = chrono::duration_cast< chrono::milliseconds >(
+		instance->msSinceLastWrite = (chrono::duration_cast< chrono::milliseconds >(
 			chrono::high_resolution_clock::now().time_since_epoch()
-			) - this->_ms_last_write_timestamp;
+			) - this->_ms_last_write_timestamp).count();
+		instance->cacheCount = cacheCount;
+		
 
-		//update timestamp to now
+		//update timestamp
 		_ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
 			chrono::high_resolution_clock::now().time_since_epoch()
 			);
@@ -148,9 +148,9 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 			throw runtime_error("A read error occurred: " + result);
 		}
 
-		printReceivedTurbineData(turbines, turbineInfos, ms);
+		printReceivedTurbineData(turbines, turbineInfos);
 
-		localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, maxProd, curProd, localSetpoint, turbineInfos);
+		localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, maxProd, curProd, localSetpoint, turbineInfos, cacheCount);
 
 		_turbine.sendSetpoint(localSetpoint);
 		_turbine.readTurbineData(maxProd, curProd);
@@ -160,7 +160,7 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 			throw runtime_error("A loan return error occurred: " + result);
 		}
 	sleep:
-		Sleep(50);
+		Sleep(20);
 	}
 }
 
@@ -170,8 +170,10 @@ uint_fast32_t DecentralizedParkPilot::regAlgorithm(
 	uint_fast32_t maxProd,
 	uint_fast32_t currentProd,
 	uint_fast32_t setPoint,
-	DDS_SampleInfoSeq turbineInfos)
+	DDS_SampleInfoSeq turbineInfos,
+	uint_fast32_t &cacheCount )
 {
+	cacheCount = 0;
 	if (currentProd >= maxProd)
 		return maxProd;
 
@@ -182,6 +184,10 @@ uint_fast32_t DecentralizedParkPilot::regAlgorithm(
 		if (!turbineInfos[i].valid_data) {
 			availableTurbinesCount--;
 			continue;
+		}
+
+		if (turbineInfos[i].sample_state == DDS_READ_SAMPLE_STATE) {
+			cacheCount++;
 		}
 
 		if (turbines[i].currentProduction >= turbines[i].maxProduction)
@@ -202,25 +208,23 @@ uint_fast32_t DecentralizedParkPilot::regAlgorithm(
 	return localSetpoint;
 }
 
-void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos, chrono::milliseconds ms)
+void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos)
 {
 	for (int i = 0; i < turbines.length(); ++i) {
-		cout << "\r";
-		cout << setfill(' ') << setw(2) << turbines.length( );
-
 		DDS_SampleInfo& turbineInfo = turbineInfos[i];
 
 		if( !turbineInfo.valid_data ) {
 			continue;
 		}
 
-		turbineInfo.source_timestamp;
-
 		TurbineMessage& turbineData = turbines[i];
 
 		if( turbineData.turbineId != this->turbineId ) {
 			continue;
 		}
+		
+		cout << "\r";
+		cout << setfill(' ') << setw(2) << turbines.length();
 
 		time_t src_time = (time_t)turbineInfo.source_timestamp.sec;
 		tm* local_src_time = localtime(&src_time);
@@ -231,17 +235,13 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 			<< local_src_time->tm_sec << "] ";
 
 		cout << setfill(' ') << setw(2) << turbineData.turbineId;
-		cout << setfill(' ') << setw(5) << turbineData.currentProduction;
-		cout << setfill(' ') << setw(9) << turbineData.setPoint;
-		cout << setfill(' ') << setw(5) << turbineData.maxProduction;
-		cout << setfill(' ') << setw(15) << GLOBAL_SETPOINT;
-		cout << setfill(' ') << setw(25) << ms.count();
-		
+		cout << setfill(' ') << setw(6) << turbineData.currentProduction;
+		cout << setfill(' ') << setw(7) << turbineData.setPoint;
+		cout << setfill(' ') << setw(8) << turbineData.maxProduction;
+		cout << setfill(' ') << setw(10) << GLOBAL_SETPOINT;
+		cout << setfill(' ') << setw(12) << turbineData.msSinceLastWrite;
+		cout << setfill(' ') << setw(13) << turbineData.cacheCount;
 
-
-		// if (turbineInfo.sample_state == DDS_READ_SAMPLE_STATE) {
-		//	 cout << " (cached)";
-		// }
 		std::cout.flush( );
 	}
 }

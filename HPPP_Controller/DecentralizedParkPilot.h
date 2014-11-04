@@ -45,7 +45,7 @@ private:
 	MaxProductionReachedMessageDataWriter* _maxProd_reached_writer;
 
 	void productionLevelReached(long localAndMaxDiff);
-	void printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos, chrono::milliseconds ms);
+	void printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos);
 
 	uint_fast32_t regAlgorithm(
 		uint_fast32_t globalSetpoint,
@@ -53,5 +53,6 @@ private:
 		uint_fast32_t maxProd,
 		uint_fast32_t currentProd,
 		uint_fast32_t setPoint,
-		DDS_SampleInfoSeq turbineInfos);
+		DDS_SampleInfoSeq turbineInfos,
+		uint_fast32_t &cacheCount);
 };
