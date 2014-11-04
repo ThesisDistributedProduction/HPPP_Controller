@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <chrono>
 
 #include "TurbineMessage.h"
 #include "TurbineMessageSupport.h"
@@ -39,11 +40,12 @@ private:
 	TurbineMessageDataWriter* _turbine_writer;
 	Turbine _turbine;
 	uint_fast32_t turbineId;
+	chrono::milliseconds _ms_last_write_timestamp;
 
 	MaxProductionReachedMessageDataWriter* _maxProd_reached_writer;
 
 	void productionLevelReached(long localAndMaxDiff);
-	void printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos);
+	void printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos, chrono::milliseconds ms);
 
 	uint_fast32_t regAlgorithm(
 		uint_fast32_t globalSetpoint,

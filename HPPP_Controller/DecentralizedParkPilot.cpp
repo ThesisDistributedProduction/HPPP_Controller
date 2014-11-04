@@ -21,6 +21,9 @@ DecentralizedParkPilot::DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomai
 	: _turbine("Turbine3000363Log")
 {
 	this->turbineId = turbineId;
+	this->_ms_last_write_timestamp = chrono::duration_cast< chrono::milliseconds >(
+		chrono::high_resolution_clock::now().time_since_epoch()
+		);
 
 	DDSDataReader* untypedReader = participant->create_datareader(
 		cluster_topic,
@@ -88,6 +91,7 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 	uint_fast32_t localSetpoint = 0;
 	uint_fast32_t curProd = 0;
 	uint_fast32_t maxProd = 0;
+	chrono::milliseconds ms;
 
 	TurbineMessageSeq turbines;
 	DDS_SampleInfoSeq turbineInfos;
@@ -112,6 +116,16 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		instance->maxProduction = maxProd;
 		instance->setPoint = localSetpoint;
 
+		//to send
+		ms = chrono::duration_cast< chrono::milliseconds >(
+			chrono::high_resolution_clock::now().time_since_epoch()
+			) - this->_ms_last_write_timestamp;
+
+		//update timestamp to now
+		_ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
+			chrono::high_resolution_clock::now().time_since_epoch()
+			);
+
 		retcode = _turbine_writer->write(*instance, instance_handle);
 
 		if (retcode != DDS_RETCODE_OK) {
@@ -134,7 +148,7 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 			throw runtime_error("A read error occurred: " + result);
 		}
 
-		printReceivedTurbineData(turbines, turbineInfos);
+		printReceivedTurbineData(turbines, turbineInfos, ms);
 
 		localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, maxProd, curProd, localSetpoint, turbineInfos);
 
@@ -188,7 +202,7 @@ uint_fast32_t DecentralizedParkPilot::regAlgorithm(
 	return localSetpoint;
 }
 
-void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos)
+void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos, chrono::milliseconds ms)
 {
 	for (int i = 0; i < turbines.length(); ++i) {
 		cout << "\r";
@@ -199,6 +213,8 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 		if( !turbineInfo.valid_data ) {
 			continue;
 		}
+
+		turbineInfo.source_timestamp;
 
 		TurbineMessage& turbineData = turbines[i];
 
@@ -219,6 +235,7 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 		cout << setfill(' ') << setw(9) << turbineData.setPoint;
 		cout << setfill(' ') << setw(5) << turbineData.maxProduction;
 		cout << setfill(' ') << setw(15) << GLOBAL_SETPOINT;
+		cout << setfill(' ') << setw(25) << ms.count();
 		
 
 
