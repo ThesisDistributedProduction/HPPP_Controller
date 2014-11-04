@@ -14,7 +14,7 @@ void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const D
 	if (!status.last_publication_handle.isValid) {
 		cout << "\nTurbine not valid.";
 	}
-	cout << " N    Time    ID Prod Setpoint  Max GlobalSetpoint" << endl;
+	cout << " N    Time   ID Prod Setpoint  Max GlobalSetpoint" << endl;
 }
 
 DecentralizedParkPilot::DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
