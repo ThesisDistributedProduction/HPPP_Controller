@@ -170,11 +170,15 @@ uint_fast32_t DecentralizedParkPilot::regAlgorithm(
 			continue;
 		}
 
-		if (turbines[i].currentProduction == turbines[i].maxProduction)
+		if (turbines[i].currentProduction >= turbines[i].maxProduction)
 			availableTurbinesCount--;
 	}
+	uint_fast32_t localSetpoint = 0;
 
-	uint_fast32_t localSetpoint = globalSetpoint / availableTurbinesCount;
+	if (availableTurbinesCount <= 0)
+		localSetpoint = globalSetpoint;
+	else
+		localSetpoint = globalSetpoint / availableTurbinesCount;
 
 	if (localSetpoint > maxProd) {
 		localSetpoint = maxProd;
