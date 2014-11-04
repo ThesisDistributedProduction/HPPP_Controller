@@ -50,5 +50,6 @@ private:
 		TurbineMessageSeq turbines,
 		uint_fast32_t maxProd,
 		uint_fast32_t currentProd,
+		uint_fast32_t setPoint,
 		DDS_SampleInfoSeq turbineInfos);
 };

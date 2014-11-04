@@ -134,11 +134,9 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 			throw runtime_error("A read error occurred: " + result);
 		}
 
-		// cout << "  " << count << " ";
-		
 		printReceivedTurbineData(turbines, turbineInfos);
 
-		localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, curProd, maxProd, turbineInfos);
+		localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, maxProd, curProd, localSetpoint, turbineInfos);
 
 		_turbine.sendSetpoint(localSetpoint);
 		_turbine.readTurbineData(maxProd, curProd);
@@ -157,9 +155,10 @@ uint_fast32_t DecentralizedParkPilot::regAlgorithm(
 	TurbineMessageSeq turbines,
 	uint_fast32_t maxProd,
 	uint_fast32_t currentProd,
+	uint_fast32_t setPoint,
 	DDS_SampleInfoSeq turbineInfos)
 {
-	if (currentProd == maxProd)
+	if (currentProd >= maxProd)
 		return maxProd;
 
 	int availableTurbinesCount = turbines.length();
