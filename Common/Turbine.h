@@ -14,7 +14,6 @@ public:
 	void readTurbineData(uint_fast32_t &maxProduction, uint_fast32_t &currentProduction);
 
 private:
-	void *db;
 	TurbineSim tSim;
 	MaxProdDBReader datareader;
 	uint_fast32_t maxProduction;

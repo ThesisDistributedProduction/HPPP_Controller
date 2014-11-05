@@ -28,7 +28,12 @@ public:
 		double powerProdDiff = (double)currentProduction - setpunkt;
 
 		double adjustPowerProd = powerProdDiff * 0.1; //0.001;
-		currentProduction -= adjustPowerProd;
+		if( adjustPowerProd < -0.1 || adjustPowerProd > 0.1 ) {
+			if( adjustPowerProd < 1 && adjustPowerProd > -1 ) {
+				adjustPowerProd = ( adjustPowerProd > 0 ? 1 : -1 );
+			}
+			currentProduction -= adjustPowerProd;
+		}
 		
 		//std::cout << "\nsetpunkt: " << setpunkt << "   powerDiff: " << powerDiff << " Adjustment from max Prod: " <<adjustPower << std::endl;
 
