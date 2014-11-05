@@ -11,7 +11,6 @@ cd DecentralizedParkPilot
 IF "%N_INSTANCES%"=="0" GOTO Continue
 	set /a id=%START_ID%+%N_INSTANCES%
 	echo Starting: %id%
-	pwd
 	start ..\x64\Release\DecentralizedParkPilot.exe %id%
 
 	set /a N_INSTANCES=%N_INSTANCES%-1
