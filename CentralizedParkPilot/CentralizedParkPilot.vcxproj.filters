@@ -18,18 +18,12 @@
     <ClInclude Include="CentralizedParkPilot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DecentralizedParkPilot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HPPP_Controller.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CentralizedParkPilot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DecentralizedParkPilot.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

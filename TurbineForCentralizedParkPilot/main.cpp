@@ -4,8 +4,7 @@
 #include <fstream>
 #include <vector>
 
-#include "DecentralizedParkPilot.h"
-#include "CentralizedParkPilot.h"
+#include "TurbineCentralized.h"
 
 #include "Turbine.h"
 
@@ -47,7 +46,7 @@ static bool participant_shutdown(DDSDomainParticipant *participant)
 	return true;
 }
 
-static bool startCentralizedApplication()
+static bool startTurbineForCentralizedApplication()
 {
 	DDSDomainParticipantFactory* factory = DDSDomainParticipantFactory::get_instance();
 
@@ -99,87 +98,9 @@ static bool startCentralizedApplication()
 
 	try
 	{
-		CentralizedParkPilot pp(participant, request_topic, reply_topic);
+		/*CentralizedParkPilot pp(participant, request_topic, reply_topic);
 
-		pp.calculateNewSetpoints();
-	}
-	catch (std::exception& ex) {
-		std::cerr << "An error occurred: " << ex.what();
-	}
-
-	return participant_shutdown(participant);
-}
-
-static bool startDecentralizedApplication(uint_fast32_t turbineId)
-{
-	DDSDomainParticipantFactory* factory = DDSDomainParticipantFactory::get_instance();
-	DDS_ReturnCode_t retcode;
-
-	DDSDomainParticipant *participant = factory->create_participant(
-		0, 
-		DDS_PARTICIPANT_QOS_DEFAULT,
-		NULL, 
-		DDS_STATUS_MASK_NONE);
-	if (participant == NULL) {
-		printf("create_participant error\n");
-		participant_shutdown(participant);
-		return false;
-	}
-
-
-	const char *turbine_type_name = TurbineMessageTypeSupport::get_type_name();
-	retcode = TurbineMessageTypeSupport::register_type(
-		participant, 
-		turbine_type_name);
-	if (retcode != DDS_RETCODE_OK) {
-		printf("register_type error %d\n", retcode);
-		participant_shutdown(participant);
-		return false;
-	}
-
-	DDSTopic *cluster_topic = participant->create_topic(
-		"Cluster 1",
-		turbine_type_name,
-		DDS_TOPIC_QOS_DEFAULT,
-		NULL,                    
-		DDS_STATUS_MASK_NONE);    
-	if (cluster_topic == NULL) {
-		printf("create_cluster_topic error\n");
-		participant_shutdown(participant);
-		return false;
-	}
-
-
-	const char *maxProd_reached_type_name = MaxProductionReachedMessageTypeSupport::get_type_name();
-	retcode = MaxProductionReachedMessageTypeSupport::register_type(
-		participant,
-		maxProd_reached_type_name);
-	if (retcode != DDS_RETCODE_OK) {
-		printf("register_type_maxProd_reached_type_name error %d\n", retcode);
-		participant_shutdown(participant);
-		return false;
-	}
-	DDSTopic *maxProd_reached_topic = participant->create_topic(
-		"Cluster 1_maxProd_reached",
-		maxProd_reached_type_name,
-		DDS_TOPIC_QOS_DEFAULT,
-		NULL,
-		DDS_STATUS_MASK_NONE);
-	if (maxProd_reached_topic == NULL) {
-		printf("create_maxProd_reached_topic error\n");
-		participant_shutdown(participant);
-		return false;
-	}
-
-	try
-	{
-		DecentralizedParkPilot pp(
-			turbineId,
-			participant,
-			cluster_topic,
-			maxProd_reached_topic);
-
-		pp.calculateNewSetpoint();
+		pp.calculateNewSetpoints();*/
 	}
 	catch (std::exception& ex) {
 		std::cerr << "An error occurred: " << ex.what();
@@ -202,14 +123,8 @@ int main(int argc, char *argv[], char *envp[]){
 		return main_result;
 	}
 
-	if( startDecentralizedApplication(turbineId) )
+	if (startTurbineForCentralizedApplication())
 		main_result = 0;
-
-	//if (startCentralizedApplication())
-	//	main_result = 0;
-
-	//if (startStructMessageApplication())
-		//main_result = 0;
 
 	return main_result;
 }

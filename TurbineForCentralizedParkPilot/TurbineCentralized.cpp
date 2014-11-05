@@ -1,8 +1,10 @@
-#include "CentralizedParkPilot.h"
+#include "TurbineCentralized.h"
 
-void TurbineListener::on_data_available(DDSDataReader* reader)
+void RequestListener::on_data_available(DDSDataReader* reader)
 {
-	TurbineMessageSeq turbines;
+
+
+	/*TurbineMessageSeq turbines;
 	DDS_SampleInfoSeq info_seq;
 	DDS_ReturnCode_t retcode;
 
@@ -14,10 +16,10 @@ void TurbineListener::on_data_available(DDSDataReader* reader)
 
 	retcode = _reader->take(
 		turbines,
-		info_seq, 
+		info_seq,
 		DDS_LENGTH_UNLIMITED,
-		DDS_ANY_SAMPLE_STATE, 
-		DDS_ANY_VIEW_STATE, 
+		DDS_ANY_SAMPLE_STATE,
+		DDS_ANY_VIEW_STATE,
 		DDS_ANY_INSTANCE_STATE);
 
 	if (retcode == DDS_RETCODE_NO_DATA) {
@@ -37,11 +39,10 @@ void TurbineListener::on_data_available(DDSDataReader* reader)
 	retcode = _reader->return_loan(turbines, info_seq);
 	if (retcode != DDS_RETCODE_OK) {
 		printf("return loan error %d\n", retcode);
-	}
+	}*/
 }
 
-
-CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* request_topic, DDSTopic* reply_topic)
+TurbineCentralized::TurbineCentralized(DDSDomainParticipant* participant, DDSTopic* request_topic, DDSTopic* reply_topic)
 {
 	DDSSubscriber *subscriber = participant->create_subscriber(
 		DDS_SUBSCRIBER_QOS_DEFAULT,
@@ -53,7 +54,7 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 	}
 
 	DDSDataReader* untypedReader = subscriber->create_datareader(
-		reply_topic,
+		request_topic,
 		DDS_DATAREADER_QOS_DEFAULT,
 		&_listener,
 		DDS_STATUS_MASK_ALL);			//(DDS_DATA_AVAILABLE_STATUS)
@@ -72,8 +73,8 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 		throw runtime_error("Unable to create DataPublisher");
 	}
 
-	_writer = publisher->create_datawriter(
-		request_topic,
+	DDSDataWriter* _writer = publisher->create_datawriter(
+		reply_topic,
 		DDS_DATAWRITER_QOS_DEFAULT,
 		NULL,
 		DDS_STATUS_MASK_NONE);
@@ -82,42 +83,15 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 		throw runtime_error("Unable to create writer");
 	}
 
-	_turbine_writer = DDSStringDataWriter::narrow(_writer);
-	if (_turbine_writer == NULL) {
-		printf("DataWriter narrow error\n");
-		throw runtime_error("Unable to create turbine_writer");
+	_turbine_data_writer = TurbineMessageDataWriter::narrow(_writer);
+	if (_turbine_data_writer == NULL) {
+		printf("_turbine_data_writer narrow error\n");
+		throw runtime_error("Unable to create _turbine_data_writer");
 	}
+
 }
 
-CentralizedParkPilot::~CentralizedParkPilot()
+
+TurbineCentralized::~TurbineCentralized()
 {
-}
-
-void CentralizedParkPilot::calculateNewSetpoints()
-{
-	int sample_count = 0;
-	DDS_Duration_t receive_period = { 0, 150000000 }; //150 ms
-	DDS_Duration_t sleep_time = { 0, 10000000 }; //10 ms
-	DDS_ReturnCode_t retcode;
-
-	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
-
-
-		retcode = _turbine_writer->write("request", DDS_HANDLE_NIL);
-		
-		while (!_allDataReceived)
-		{
-			NDDSUtility::sleep(sleep_time);
-		}
-
-		if (retcode != DDS_RETCODE_OK) {
-			 cerr << "Write failed: " << retcode << endl;
-			 return;
-		}
-
-		printf("Centralized park pilot subscriber sleeping for %d ms...\n",
-			(receive_period.nanosec / 1000000) );
-
-		NDDSUtility::sleep(receive_period);
-	}
 }

@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{5D82DA6D-925B-41B8-BF5E-761C5021E8AA}</ProjectGuid>
+    <ProjectGuid>{0DC19950-720F-45B9-AEBE-1E9136822B31}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>HPPP_Controller</RootNamespace>
+    <RootNamespace>TurbineForCentralizedParkPilot</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -42,24 +42,23 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(BOOST_HOME);$(SolutionDir)\MongoClientLib\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\MongoClientLib\lib;$(BOOST_HOME)\lib64-msvc-12.0;$(LibraryPath)</LibraryPath>
     <ReferencePath>$(VC_ReferencesPath_x64);$(BOOST_HOME);</ReferencePath>
+    <LibraryPath>$(SolutionDir)\MongoClientLib\lib;$(BOOST_HOME)\lib64-msvc-12.0;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(BOOST_HOME);$(SolutionDir)\MongoClientLib\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\MongoClientLib\lib;$(BOOST_HOME)\lib64-msvc-12.0;$(LibraryPath)</LibraryPath>
     <ReferencePath>$(VC_ReferencesPath_x64);$(BOOST_HOME);</ReferencePath>
+    <LibraryPath>$(SolutionDir)\MongoClientLib\lib;$(BOOST_HOME)\lib64-msvc-12.0;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NDDSHOME)\ndds.5.1.0\include;$(NDDSHOME)\ndds.5.1.0\include\ndds;..\src\idl;$(SolutionDir)\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalUsingDirectories>
-      </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -71,14 +70,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NDDSHOME)\ndds.5.1.0\include;$(NDDSHOME)\ndds.5.1.0\include\ndds;..\src\idl;$(SolutionDir)\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalUsingDirectories>
-      </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,13 +88,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CentralizedParkPilot.h" />
-    <ClInclude Include="DecentralizedParkPilot.h" />
+    <ClInclude Include="TurbineCentralized.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CentralizedParkPilot.cpp" />
-    <ClCompile Include="DecentralizedParkPilot.cpp" />
-    <ClCompile Include="HPPP_Controller.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="TurbineCentralized.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.vcxproj">

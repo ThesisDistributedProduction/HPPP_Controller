@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HPPP_Controller", "HPPP_Controller\HPPP_Controller.vcxproj", "{5D82DA6D-925B-41B8-BF5E-761C5021E8AA}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common\Common.vcxproj", "{7E945012-47CE-4562-88C1-9700E8F01ECF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CentralizedParkPilot", "CentralizedParkPilot\CentralizedParkPilot.vcxproj", "{40D94948-D737-49D0-9B2B-C4AC08B0F600}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DecentralizedParkPilot", "DecentralizedParkPilot\DecentralizedParkPilot.vcxproj", "{5D82DA6D-925B-41B8-BF5E-761C5021E8AA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TurbineForCentralizedParkPilot", "TurbineForCentralizedParkPilot\TurbineForCentralizedParkPilot.vcxproj", "{0DC19950-720F-45B9-AEBE-1E9136822B31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +17,22 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5D82DA6D-925B-41B8-BF5E-761C5021E8AA}.Debug|x64.ActiveCfg = Debug|x64
-		{5D82DA6D-925B-41B8-BF5E-761C5021E8AA}.Debug|x64.Build.0 = Debug|x64
-		{5D82DA6D-925B-41B8-BF5E-761C5021E8AA}.Release|x64.ActiveCfg = Release|x64
-		{5D82DA6D-925B-41B8-BF5E-761C5021E8AA}.Release|x64.Build.0 = Release|x64
 		{7E945012-47CE-4562-88C1-9700E8F01ECF}.Debug|x64.ActiveCfg = Debug|x64
 		{7E945012-47CE-4562-88C1-9700E8F01ECF}.Debug|x64.Build.0 = Debug|x64
 		{7E945012-47CE-4562-88C1-9700E8F01ECF}.Release|x64.ActiveCfg = Release|x64
 		{7E945012-47CE-4562-88C1-9700E8F01ECF}.Release|x64.Build.0 = Release|x64
+		{40D94948-D737-49D0-9B2B-C4AC08B0F600}.Debug|x64.ActiveCfg = Debug|x64
+		{40D94948-D737-49D0-9B2B-C4AC08B0F600}.Debug|x64.Build.0 = Debug|x64
+		{40D94948-D737-49D0-9B2B-C4AC08B0F600}.Release|x64.ActiveCfg = Release|x64
+		{40D94948-D737-49D0-9B2B-C4AC08B0F600}.Release|x64.Build.0 = Release|x64
+		{5D82DA6D-925B-41B8-BF5E-761C5021E8AA}.Debug|x64.ActiveCfg = Debug|x64
+		{5D82DA6D-925B-41B8-BF5E-761C5021E8AA}.Debug|x64.Build.0 = Debug|x64
+		{5D82DA6D-925B-41B8-BF5E-761C5021E8AA}.Release|x64.ActiveCfg = Release|x64
+		{5D82DA6D-925B-41B8-BF5E-761C5021E8AA}.Release|x64.Build.0 = Release|x64
+		{0DC19950-720F-45B9-AEBE-1E9136822B31}.Debug|x64.ActiveCfg = Debug|x64
+		{0DC19950-720F-45B9-AEBE-1E9136822B31}.Debug|x64.Build.0 = Debug|x64
+		{0DC19950-720F-45B9-AEBE-1E9136822B31}.Release|x64.ActiveCfg = Release|x64
+		{0DC19950-720F-45B9-AEBE-1E9136822B31}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

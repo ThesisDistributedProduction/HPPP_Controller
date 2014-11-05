@@ -30,8 +30,7 @@ public:
 
 private:
 	TurbineListener _listener;
-	DDSDataWriter* _writer;
-	DDSStringDataWriter* _turbine_writer;
+	DDSStringDataWriter* _request_writer;
 	bool _allDataReceived;
 };
 

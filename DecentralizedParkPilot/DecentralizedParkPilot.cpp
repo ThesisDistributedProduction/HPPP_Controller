@@ -202,7 +202,6 @@ uint_fast32_t DecentralizedParkPilot::regAlgorithm(
 
 	if (localSetpoint > maxProd) {
 		localSetpoint = maxProd;
-		//productionLevelReached((maxProd - localSetpoint));
 	}
 
 	return localSetpoint;
@@ -228,7 +227,8 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 
 		time_t src_time = (time_t)turbineInfo.source_timestamp.sec;
 		tm* local_src_time = localtime(&src_time);
-		cout << " [" << local_src_time->tm_hour
+
+		cout << " [" << std::setw(2) << std::setfill('0') << local_src_time->tm_hour
 			<< ":" << std::setw(2) << std::setfill('0')
 			<< local_src_time->tm_min
 			<< ":" << std::setw(2) << std::setfill('0')
