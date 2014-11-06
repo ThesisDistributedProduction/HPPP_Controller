@@ -11,6 +11,7 @@
 
 using namespace std;
 Turbine::Turbine(uint_fast32_t id) {
+	this->turbineId = id;
 	auto _db = MongoDatabase::getInstance( );
 	//_db->setVerbose(true);
 	_db->connect( );
@@ -33,6 +34,7 @@ Turbine::Turbine(uint_fast32_t id) {
 }
 
 void Turbine::sendSetpoint(uint_fast32_t setPoint) {
+	this->setPoint = setPoint;
 	maxProduction = datareader.getNextValue( );
 	currentProduction = tSim.calculate(setPoint, maxProduction);
 }

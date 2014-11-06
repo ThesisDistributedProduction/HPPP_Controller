@@ -2,11 +2,11 @@
 
 void TurbineListener::on_data_available(DDSDataReader* reader)
 {
-	TurbineMessageSeq turbines;
+	TurbineDataMessageSeq turbines;
 	DDS_SampleInfoSeq info_seq;
 	DDS_ReturnCode_t retcode;
 
-	TurbineMessageDataReader* _reader = TurbineMessageDataReader::narrow(reader);
+	TurbineDataMessageDataReader* _reader = TurbineDataMessageDataReader::narrow(reader);
 	if (_reader == NULL) {
 		printf("DataReader narrow error\n");
 		throw runtime_error("Unable to narrow data reader into TurbineDataReader");
@@ -30,7 +30,7 @@ void TurbineListener::on_data_available(DDSDataReader* reader)
 
 	for (int i = 0; i < turbines.length(); ++i) {
 		if (info_seq[i].valid_data) {
-			TurbineMessageTypeSupport::print_data(&turbines[i]);
+			TurbineDataMessageTypeSupport::print_data(&turbines[i]);
 		}
 	}
 
@@ -43,26 +43,6 @@ void TurbineListener::on_data_available(DDSDataReader* reader)
 
 CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* request_topic, DDSTopic* reply_topic)
 {
-	DDSSubscriber *subscriber = participant->create_subscriber(
-		DDS_SUBSCRIBER_QOS_DEFAULT,
-		NULL,
-		DDS_STATUS_MASK_NONE);
-	if (subscriber == NULL) {
-		printf("create_subscriber error\n");
-		throw runtime_error("Unable to create subscriber");
-	}
-
-	DDSDataReader* untypedReader = subscriber->create_datareader(
-		reply_topic,
-		DDS_DATAREADER_QOS_DEFAULT,
-		&_listener,
-		DDS_STATUS_MASK_ALL);			//(DDS_DATA_AVAILABLE_STATUS)
-	if (untypedReader == NULL) {
-		printf("create_datareader error\n");
-		throw runtime_error("Unable to create DataReader");
-	}
-
-
 	DDSPublisher* publisher = participant->create_publisher(
 		DDS_PUBLISHER_QOS_DEFAULT,
 		NULL,
@@ -82,10 +62,30 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 		throw runtime_error("Unable to create writer");
 	}
 
-	_request_writer = DDSStringDataWriter::narrow(_writer);
+	_request_writer = RequestMessageDataWriter::narrow(_writer);
 	if (_request_writer == NULL) {
 		printf("DataWriter narrow error\n");
 		throw runtime_error("Unable to create turbine_writer");
+	}
+
+
+	DDSSubscriber *subscriber = participant->create_subscriber(
+		DDS_SUBSCRIBER_QOS_DEFAULT,
+		NULL,
+		DDS_STATUS_MASK_NONE);
+	if (subscriber == NULL) {
+		printf("create_subscriber error\n");
+		throw runtime_error("Unable to create subscriber");
+	}
+
+	DDSDataReader* untypedReader = subscriber->create_datareader(
+		reply_topic,
+		DDS_DATAREADER_QOS_DEFAULT,
+		&_listener,
+		DDS_STATUS_MASK_ALL);			//(DDS_DATA_AVAILABLE_STATUS)
+	if (untypedReader == NULL) {
+		printf("create_datareader error\n");
+		throw runtime_error("Unable to create DataReader");
 	}
 }
 
@@ -99,11 +99,28 @@ void CentralizedParkPilot::calculateNewSetpoints()
 	DDS_Duration_t receive_period = { 0, 150000000 }; //150 ms
 	DDS_Duration_t sleep_time = { 0, 10000000 }; //10 ms
 	DDS_ReturnCode_t retcode;
+	chrono::milliseconds ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
+		chrono::high_resolution_clock::now().time_since_epoch());
+
+	RequestMessage* instance = RequestMessageTypeSupport::create_data();
+	/*instance->msSinceLastWrite = _turbine->getTurbineId();
+	instance_handle = _turbine_data_writer->register_instance(*instance);*/
+
+	//instance->cacheCount = cacheCount;
+
 
 	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
 
+		instance->msSinceLastWrite = (chrono::duration_cast< chrono::milliseconds >(
+			chrono::high_resolution_clock::now().time_since_epoch()) - ms_last_write_timestamp).count();
 
-		retcode = _request_writer->write("request", DDS_HANDLE_NIL);
+		retcode = _request_writer->write(*instance, DDS_HANDLE_NIL);
+
+		//update timestamp
+		ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
+			chrono::high_resolution_clock::now().time_since_epoch()
+			);
+
 		
 		while (!_allDataReceived)
 		{

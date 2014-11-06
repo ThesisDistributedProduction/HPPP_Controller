@@ -16,26 +16,17 @@
     <Filter Include="Turbine">
       <UniqueIdentifier>{e6742b8c-23af-4460-8768-1f0515357dc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Messages">
+      <UniqueIdentifier>{bd4f0242-e2b2-42ca-be0e-404ce3109076}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Messages\Decentralized">
+      <UniqueIdentifier>{c77c44b2-cbc2-4eb0-a398-7b424fffe303}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Messages\Centralized">
+      <UniqueIdentifier>{92b90c1e-ae50-42e8-8ccb-6a1a6366650a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MaxProductionReachedMessage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MaxProductionReachedMessagePlugin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MaxProductionReachedMessageSupport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TurbineMessage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TurbineMessagePlugin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TurbineMessageSupport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Turbine\IncludeMongo.h">
       <Filter>Turbine</Filter>
     </ClInclude>
@@ -60,31 +51,103 @@
     <ClInclude Include="TurbineSim.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MaxProductionReachedMessage.h">
+      <Filter>Messages\Decentralized</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxProductionReachedMessagePlugin.h">
+      <Filter>Messages\Decentralized</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxProductionReachedMessageSupport.h">
+      <Filter>Messages\Decentralized</Filter>
+    </ClInclude>
+    <ClInclude Include="TurbineMessage.h">
+      <Filter>Messages\Decentralized</Filter>
+    </ClInclude>
+    <ClInclude Include="TurbineMessagePlugin.h">
+      <Filter>Messages\Decentralized</Filter>
+    </ClInclude>
+    <ClInclude Include="TurbineMessageSupport.h">
+      <Filter>Messages\Decentralized</Filter>
+    </ClInclude>
+    <ClInclude Include="RequestMessage.h">
+      <Filter>Messages\Centralized</Filter>
+    </ClInclude>
+    <ClInclude Include="RequestMessagePlugin.h">
+      <Filter>Messages\Centralized</Filter>
+    </ClInclude>
+    <ClInclude Include="RequestMessageSupport.h">
+      <Filter>Messages\Centralized</Filter>
+    </ClInclude>
+    <ClInclude Include="SetpointMessage.h">
+      <Filter>Messages\Centralized</Filter>
+    </ClInclude>
+    <ClInclude Include="SetpointMessagePlugin.h">
+      <Filter>Messages\Centralized</Filter>
+    </ClInclude>
+    <ClInclude Include="SetpointMessageSupport.h">
+      <Filter>Messages\Centralized</Filter>
+    </ClInclude>
+    <ClInclude Include="TurbineDataMessage.h">
+      <Filter>Messages\Centralized</Filter>
+    </ClInclude>
+    <ClInclude Include="TurbineDataMessagePlugin.h">
+      <Filter>Messages\Centralized</Filter>
+    </ClInclude>
+    <ClInclude Include="TurbineDataMessageSupport.h">
+      <Filter>Messages\Centralized</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MaxProductionReachedMessage.cxx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MaxProductionReachedMessagePlugin.cxx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MaxProductionReachedMessageSupport.cxx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TurbineMessage.cxx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TurbineMessagePlugin.cxx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TurbineMessageSupport.cxx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Turbine\MongoDatabase.cpp">
       <Filter>Turbine</Filter>
     </ClCompile>
     <ClCompile Include="Turbine.cpp">
       <Filter>Turbine</Filter>
+    </ClCompile>
+    <ClCompile Include="MaxProductionReachedMessage.cxx">
+      <Filter>Messages\Decentralized</Filter>
+    </ClCompile>
+    <ClCompile Include="MaxProductionReachedMessagePlugin.cxx">
+      <Filter>Messages\Decentralized</Filter>
+    </ClCompile>
+    <ClCompile Include="MaxProductionReachedMessageSupport.cxx">
+      <Filter>Messages\Decentralized</Filter>
+    </ClCompile>
+    <ClCompile Include="TurbineMessage.cxx">
+      <Filter>Messages\Decentralized</Filter>
+    </ClCompile>
+    <ClCompile Include="TurbineMessagePlugin.cxx">
+      <Filter>Messages\Decentralized</Filter>
+    </ClCompile>
+    <ClCompile Include="TurbineMessageSupport.cxx">
+      <Filter>Messages\Decentralized</Filter>
+    </ClCompile>
+    <ClCompile Include="RequestMessage.cxx">
+      <Filter>Messages\Centralized</Filter>
+    </ClCompile>
+    <ClCompile Include="RequestMessagePlugin.cxx">
+      <Filter>Messages\Centralized</Filter>
+    </ClCompile>
+    <ClCompile Include="RequestMessageSupport.cxx">
+      <Filter>Messages\Centralized</Filter>
+    </ClCompile>
+    <ClCompile Include="SetpointMessage.cxx">
+      <Filter>Messages\Centralized</Filter>
+    </ClCompile>
+    <ClCompile Include="SetpointMessagePlugin.cxx">
+      <Filter>Messages\Centralized</Filter>
+    </ClCompile>
+    <ClCompile Include="SetpointMessageSupport.cxx">
+      <Filter>Messages\Centralized</Filter>
+    </ClCompile>
+    <ClCompile Include="TurbineDataMessage.cxx">
+      <Filter>Messages\Centralized</Filter>
+    </ClCompile>
+    <ClCompile Include="TurbineDataMessagePlugin.cxx">
+      <Filter>Messages\Centralized</Filter>
+    </ClCompile>
+    <ClCompile Include="TurbineDataMessageSupport.cxx">
+      <Filter>Messages\Centralized</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
