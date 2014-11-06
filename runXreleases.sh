@@ -1,19 +1,19 @@
 #!/bin/bash
 
-N=$1
-START=$2
-
-if  [ -n "$1" ]; then
-	N = 1
-fi
+N=1
+START=1
 
 if  [ -n "$2" ]; then
-	START = 1
+	START=$2
+fi
+
+if  [ -n "$1" ]; then
+	N=$(($1+START-1))
 fi
 
 cd DecentralizedParkPilot
 
-echo "N: " $N "  start: " $START
+echo "Starting nodes form $START to start $N"
 
 for (( i=START; i<=N; i++ )); do
 	echo "staring with id: " $i

@@ -161,7 +161,6 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		}
 	sleep:
 		this_thread::sleep_for(chrono::milliseconds(20));
-		//Sleep(20);
 	}
 }
 
