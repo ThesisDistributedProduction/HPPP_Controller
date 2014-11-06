@@ -46,8 +46,10 @@ static bool participant_shutdown(DDSDomainParticipant *participant)
 	return true;
 }
 
-static bool startTurbineForCentralizedApplication()
+static bool startTurbineForCentralizedApplication(uint_fast32_t turbineId)
 {
+	DDS_ReturnCode_t retcode;
+
 	DDSDomainParticipantFactory* factory = DDSDomainParticipantFactory::get_instance();
 
 	DDSDomainParticipant *participant = factory->create_participant(
@@ -61,9 +63,19 @@ static bool startTurbineForCentralizedApplication()
 		return false;
 	}
 
+	const char *req_type_name = RequestMessageTypeSupport::get_type_name();
+	retcode = RequestMessageTypeSupport::register_type(
+		participant,
+		req_type_name);
+	if (retcode != DDS_RETCODE_OK) {
+		printf("register_type error %d\n", retcode);
+		participant_shutdown(participant);
+		return false;
+	}
+
 	DDSTopic *request_topic = participant->create_topic(
 		"Cluster 1_centralized_request",
-		DDSStringTypeSupport::get_type_name(),
+		req_type_name,
 		DDS_TOPIC_QOS_DEFAULT,
 		NULL,						
 		DDS_STATUS_MASK_NONE);
@@ -73,10 +85,10 @@ static bool startTurbineForCentralizedApplication()
 		return false;
 	}
 
-	const char *type_name = TurbineMessageTypeSupport::get_type_name();
-	DDS_ReturnCode_t retcode = TurbineMessageTypeSupport::register_type(
+	const char *rep_type_name = TurbineDataMessageTypeSupport::get_type_name();
+	retcode = TurbineDataMessageTypeSupport::register_type(
 		participant,
-		type_name);
+		rep_type_name);
 	if (retcode != DDS_RETCODE_OK) {
 		printf("register_type error %d\n", retcode);
 		participant_shutdown(participant);
@@ -85,7 +97,7 @@ static bool startTurbineForCentralizedApplication()
 
 	DDSTopic *reply_topic = participant->create_topic(
 		"Cluster 1_centralized_reply",
-		type_name,
+		rep_type_name,
 		DDS_TOPIC_QOS_DEFAULT,
 		NULL,						//listener
 		DDS_STATUS_MASK_NONE);
@@ -95,9 +107,16 @@ static bool startTurbineForCentralizedApplication()
 		return false;
 	}
 
+	Turbine turbine(turbineId);
 
 	try
 	{
+		TurbineCentralized tc(turbine, participant, request_topic, reply_topic);
+
+		while (true) {
+			Sleep(2000);
+		}
+
 		/*CentralizedParkPilot pp(participant, request_topic, reply_topic);
 
 		pp.calculateNewSetpoints();*/
@@ -123,7 +142,7 @@ int main(int argc, char *argv[], char *envp[]){
 		return main_result;
 	}
 
-	if (startTurbineForCentralizedApplication())
+	if (startTurbineForCentralizedApplication(turbineId))
 		main_result = 0;
 
 	return main_result;

@@ -5,10 +5,19 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <chrono>
 
-#include "TurbineMessage.h"
-#include "TurbineMessageSupport.h"
-#include "TurbineMessagePlugin.h"
+#include "RequestMessage.h"
+#include "RequestMessageSupport.h"
+#include "RequestMessagePlugin.h"
+
+#include "TurbineDataMessage.h"
+#include "TurbineDataMessageSupport.h"
+#include "TurbineDataMessagePlugin.h"
+
+#include "SetpointMessage.h"
+#include "SetpointMessageSupport.h"
+#include "SetpointMessagePlugin.h"
 
 using namespace std;
 
@@ -30,7 +39,7 @@ public:
 
 private:
 	TurbineListener _listener;
-	DDSStringDataWriter* _request_writer;
+	RequestMessageDataWriter* _request_writer;
 	bool _allDataReceived;
 };
 
