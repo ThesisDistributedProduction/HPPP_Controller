@@ -16,7 +16,6 @@ public:
 
 	uint_fast32_t getTurbineId() { return turbineId; }
 private:
-	void *db;
 	TurbineSim tSim;
 	MaxProdDBReader datareader;
 	uint_fast32_t maxProduction;
