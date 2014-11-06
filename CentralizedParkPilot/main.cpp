@@ -6,8 +6,6 @@
 
 #include "CentralizedParkPilot.h"
 
-#include "Turbine.h"
-
 using namespace std;
 
 static bool fileExist(const char *fileName) {
@@ -63,51 +61,6 @@ static bool startCentralizedApplication(uint_fast32_t number_of_turbines)
 		return false;
 	}
 
-	const char *req_type_name = RequestMessageTypeSupport::get_type_name();
-	retcode = RequestMessageTypeSupport::register_type(
-		participant,
-		req_type_name);
-	if (retcode != DDS_RETCODE_OK) {
-		printf("register_type error %d\n", retcode);
-		participant_shutdown(participant);
-		return false;
-	}
-
-	DDSTopic *request_topic = participant->create_topic(
-		"Cluster 1_centralized_request",
-		req_type_name,
-		DDS_TOPIC_QOS_DEFAULT,
-		NULL,						
-		DDS_STATUS_MASK_NONE);
-	if (request_topic == NULL) {
-		printf("create_topic error\n");
-		participant_shutdown(participant);
-		return false;
-	}
-
-	const char *rep_type_name = TurbineDataMessageTypeSupport::get_type_name();
-	retcode = TurbineDataMessageTypeSupport::register_type(
-		participant,
-		rep_type_name);
-	if (retcode != DDS_RETCODE_OK) {
-		printf("register_type error %d\n", retcode);
-		participant_shutdown(participant);
-		return false;
-	}
-
-	DDSTopic *reply_topic = participant->create_topic(
-		"Cluster 1_centralized_reply",
-		rep_type_name,
-		DDS_TOPIC_QOS_DEFAULT,
-		NULL,						//listener
-		DDS_STATUS_MASK_NONE);
-	if (request_topic == NULL) {
-		printf("create_topic error\n");
-		participant_shutdown(participant);
-		return false;
-	}
-
-
 	const char *set_type_name = SetpointMessageTypeSupport::get_type_name();
 	retcode = SetpointMessageTypeSupport::register_type(
 		participant,
@@ -124,7 +77,7 @@ static bool startCentralizedApplication(uint_fast32_t number_of_turbines)
 		DDS_TOPIC_QOS_DEFAULT,
 		NULL,						//listener
 		DDS_STATUS_MASK_NONE);
-	if (request_topic == NULL) {
+	if (setpoint_topic == NULL) {
 		printf("create_topic error\n");
 		participant_shutdown(participant);
 		return false;
@@ -133,7 +86,7 @@ static bool startCentralizedApplication(uint_fast32_t number_of_turbines)
 
 	try
 	{
-		CentralizedParkPilot pp(participant, request_topic, reply_topic, setpoint_topic);
+		CentralizedParkPilot pp(participant, setpoint_topic, number_of_turbines);
 
 		pp.calculateNewSetpoints();
 	}
