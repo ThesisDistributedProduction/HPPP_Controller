@@ -99,7 +99,32 @@ static bool startTurbineForCentralizedApplication(uint_fast32_t turbineId)
 		"Cluster 1_centralized_reply",
 		rep_type_name,
 		DDS_TOPIC_QOS_DEFAULT,
-		NULL,						//listener
+		NULL,						
+		DDS_STATUS_MASK_NONE);
+	if (request_topic == NULL) {
+		printf("create_topic error\n");
+		participant_shutdown(participant);
+		return false;
+	}
+
+	const char *setpoint_type_name = SetpointMessageTypeSupport::get_type_name();
+	retcode = SetpointMessageTypeSupport::register_type(
+		participant,
+		setpoint_type_name);
+	if (retcode != DDS_RETCODE_OK) {
+		printf("register_type error %d\n", retcode);
+		participant_shutdown(participant);
+		return false;
+	}
+
+	std::string topic_name = "Cluster 1_Turbine ";
+	topic_name += std::to_string(turbineId);
+
+	DDSTopic *setpoint_topic = participant->create_topic(
+		topic_name.c_str(),
+		setpoint_type_name,
+		DDS_TOPIC_QOS_DEFAULT,
+		NULL,						
 		DDS_STATUS_MASK_NONE);
 	if (request_topic == NULL) {
 		printf("create_topic error\n");
@@ -111,15 +136,11 @@ static bool startTurbineForCentralizedApplication(uint_fast32_t turbineId)
 
 	try
 	{
-		TurbineCentralized tc(turbine, participant, request_topic, reply_topic);
+		TurbineCentralized tc(turbine, participant, request_topic, reply_topic, setpoint_topic);
 
 		while (true) {
 			Sleep(2000);
 		}
-
-		/*CentralizedParkPilot pp(participant, request_topic, reply_topic);
-
-		pp.calculateNewSetpoints();*/
 	}
 	catch (std::exception& ex) {
 		std::cerr << "An error occurred: " << ex.what();

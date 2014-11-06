@@ -41,7 +41,7 @@ void TurbineListener::on_data_available(DDSDataReader* reader)
 }
 
 
-CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* request_topic, DDSTopic* reply_topic)
+CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* request_topic, DDSTopic* reply_topic, DDSTopic* setpoint_topic)
 {
 	DDSPublisher* publisher = participant->create_publisher(
 		DDS_PUBLISHER_QOS_DEFAULT,

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
+#include "ndds/ndds_requestreply_cpp.h"
 
 #include "RequestMessage.h"
 #include "RequestMessageSupport.h"
@@ -32,7 +33,7 @@ public:
 class CentralizedParkPilot
 {
 public:
-	CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* request_topic, DDSTopic* reply_topic);
+	CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* request_topic, DDSTopic* reply_topic, DDSTopic* setpoint_topic);
 	~CentralizedParkPilot();
 	
 	void calculateNewSetpoints();
@@ -40,6 +41,7 @@ public:
 private:
 	TurbineListener _listener;
 	RequestMessageDataWriter* _request_writer;
+	SetpointMessageDataWriter* _setpoint_writer;
 	bool _allDataReceived;
 };
 

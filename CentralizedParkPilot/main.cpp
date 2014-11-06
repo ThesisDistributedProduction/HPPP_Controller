@@ -46,7 +46,7 @@ static bool participant_shutdown(DDSDomainParticipant *participant)
 	return true;
 }
 
-static bool startCentralizedApplication()
+static bool startCentralizedApplication(uint_fast32_t number_of_turbines)
 {
 	DDS_ReturnCode_t retcode;
 
@@ -108,9 +108,32 @@ static bool startCentralizedApplication()
 	}
 
 
+	const char *set_type_name = SetpointMessageTypeSupport::get_type_name();
+	retcode = SetpointMessageTypeSupport::register_type(
+		participant,
+		set_type_name);
+	if (retcode != DDS_RETCODE_OK) {
+		printf("register_type error %d\n", retcode);
+		participant_shutdown(participant);
+		return false;
+	}
+
+	DDSTopic *setpoint_topic = participant->create_topic(
+		"Cluster 1_Turbine 0",
+		set_type_name,
+		DDS_TOPIC_QOS_DEFAULT,
+		NULL,						//listener
+		DDS_STATUS_MASK_NONE);
+	if (request_topic == NULL) {
+		printf("create_topic error\n");
+		participant_shutdown(participant);
+		return false;
+	}
+
+
 	try
 	{
-		CentralizedParkPilot pp(participant, request_topic, reply_topic);
+		CentralizedParkPilot pp(participant, request_topic, reply_topic, setpoint_topic);
 
 		pp.calculateNewSetpoints();
 	}
@@ -124,9 +147,9 @@ static bool startCentralizedApplication()
 int main(int argc, char *argv[], char *envp[]){
 	int main_result = 1; /* error by default */
 
-	uint_fast32_t turbineId = 0;
+	uint_fast32_t number_of_turbines = 0;
 	if( argc > 1 ) {
-		turbineId = atoi(argv[1]);
+		number_of_turbines = atoi(argv[1]);
 	}
 
 	if (!fileExist("USER_QOS_PROFILES.xml")) {
@@ -135,7 +158,7 @@ int main(int argc, char *argv[], char *envp[]){
 		return main_result;
 	}
 
-	if (startCentralizedApplication())
+	if (startCentralizedApplication(number_of_turbines))
 		main_result = 0;
 
 	return main_result;
