@@ -160,7 +160,8 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 			throw runtime_error("A loan return error occurred: " + result);
 		}
 	sleep:
-		Sleep(20);
+		this_thread::sleep_for(chrono::milliseconds(20));
+		//Sleep(20);
 	}
 }
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "Turbine\MongoDatareader.h"
+#include "Turbine/MongoDatareader.h"
 
 class MaxProdDBReader : public iMongoDatareader {
 public:

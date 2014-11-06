@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Turbine\MongoPrepariedQuery.h"
+#include "Turbine/MongoPrepariedQuery.h"
 
 #include <memory>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "Turbine\IncludeMongo.h"
+#include "Turbine/IncludeMongo.h"
 
 class MaxProdQuery : public iMongoPrepairedQuery {
 public:
@@ -44,7 +44,8 @@ private:
 
 	mongo::Date_t MakeTime(std::string str) {
 		boost::posix_time::ptime time(boost::posix_time::time_from_string(str));
-		return mongo::Date_t(mktime(&to_tm(time)) * 1000);
+		auto time2 = to_tm(time);
+		return mongo::Date_t(mktime(&time2) * 1000);
 	}
 
 	std::string collection;

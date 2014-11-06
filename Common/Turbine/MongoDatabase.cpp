@@ -34,7 +34,7 @@ void MongoDatabase::connect(string connectionString) {
 void MongoDatabase::query(iMongoPrepairedQuery &query, iMongoDatareader &reader) {
 	if( isVerbose ) {
 		if( query.getCollection( ).find('.') == string::npos ) {
-			throw new exception("MongoDatabase.h: getCollection function returns a invalid collection specification.");
+			throw runtime_error("MongoDatabase.h: getCollection function returns a invalid collection specification.");
 		}
 		cout << "quering " << query.getCollection( ) <<" with:" << query.getQuery( )->toString( ) << endl;
 		cout << "Filter: " << query.getFilter( )->toString( ) << endl;
