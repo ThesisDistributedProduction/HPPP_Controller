@@ -21,8 +21,13 @@ for (( i=START; i<=N; i++ )); do
 done
 
 cd ..
+echo
+echo "staring instances please wait..."
+echo
+sleep 5s
 
-ps
+echo $(ps -a | grep DecentralizedPa | wc -l) instances are running
+echo
 echo "Press any key to kill all instances"
 read
 

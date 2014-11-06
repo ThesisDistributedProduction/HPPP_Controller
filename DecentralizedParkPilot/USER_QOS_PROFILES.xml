@@ -69,6 +69,14 @@
                     <name>TurbineParticipant</name>
                     <role_name>TurbineParticipantRole</role_name>
                 </participant_name>
+                <transport_builtin>
+					 <!--
+						 The transport_builtin mask identifies which builtin
+						 transports the domain participant uses. The default value
+						 is UDPv4 | SHMEM.
+					 -->
+					<mask>UDPv4</mask>
+                </transport_builtin>
 			</participant_qos>
         </qos_profile>
 
