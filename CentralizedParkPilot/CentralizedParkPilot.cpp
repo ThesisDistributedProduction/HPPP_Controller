@@ -1,48 +1,27 @@
 #include "CentralizedParkPilot.h"
 
-void TurbineListener::on_data_available(DDSDataReader* reader)
+CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* setpoint_topic, uint_fast32_t number_of_turbines)
+	: _requester(participant, "TurbineData")
 {
-	TurbineDataMessageSeq turbines;
-	DDS_SampleInfoSeq info_seq;
-	DDS_ReturnCode_t retcode;
+	this->_number_of_turbines = number_of_turbines;
+	/* Create the requester with the participant, and a QoS profile
+	* defined in USER_QOS_PROFILES.xml
+	*/
+	/*connext::RequesterParams requester_params(participant);
+	requester_params.service_name("PrimeCalculator");
+	requester_params.qos_profile(
+		"RequestReplyExampleProfiles", "RequesterExampleProfile");
 
-	TurbineDataMessageDataReader* _reader = TurbineDataMessageDataReader::narrow(reader);
-	if (_reader == NULL) {
-		printf("DataReader narrow error\n");
-		throw runtime_error("Unable to narrow data reader into TurbineDataReader");
-	}
+    connext::Requester<PrimeNumberRequest, PrimeNumberReply> requester(
+            requester_params);
+	*/
 
-	retcode = _reader->take(
-		turbines,
-		info_seq, 
-		DDS_LENGTH_UNLIMITED,
-		DDS_ANY_SAMPLE_STATE, 
-		DDS_ANY_VIEW_STATE, 
-		DDS_ANY_INSTANCE_STATE);
-
-	if (retcode == DDS_RETCODE_NO_DATA) {
-		return;
-	}
-	else if (retcode != DDS_RETCODE_OK) {
-		printf("take error %d\n", retcode);
-		return;
-	}
-
-	for (int i = 0; i < turbines.length(); ++i) {
-		if (info_seq[i].valid_data) {
-			TurbineDataMessageTypeSupport::print_data(&turbines[i]);
-		}
-	}
-
-	retcode = _reader->return_loan(turbines, info_seq);
-	if (retcode != DDS_RETCODE_OK) {
-		printf("return loan error %d\n", retcode);
-	}
-}
+	/* In this example we create the requester on the stack, but you
+	* can create on the heap as well
+	*/
 
 
-CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* request_topic, DDSTopic* reply_topic)
-{
+
 	DDSPublisher* publisher = participant->create_publisher(
 		DDS_PUBLISHER_QOS_DEFAULT,
 		NULL,
@@ -53,7 +32,7 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 	}
 
 	DDSDataWriter* _writer = publisher->create_datawriter(
-		request_topic,
+		setpoint_topic,
 		DDS_DATAWRITER_QOS_DEFAULT,
 		NULL,
 		DDS_STATUS_MASK_NONE);
@@ -62,30 +41,10 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 		throw runtime_error("Unable to create writer");
 	}
 
-	_request_writer = RequestMessageDataWriter::narrow(_writer);
-	if (_request_writer == NULL) {
+	_setpoint_writer = SetpointMessageDataWriter::narrow(_writer);
+	if (_setpoint_writer == NULL) {
 		printf("DataWriter narrow error\n");
-		throw runtime_error("Unable to create turbine_writer");
-	}
-
-
-	DDSSubscriber *subscriber = participant->create_subscriber(
-		DDS_SUBSCRIBER_QOS_DEFAULT,
-		NULL,
-		DDS_STATUS_MASK_NONE);
-	if (subscriber == NULL) {
-		printf("create_subscriber error\n");
-		throw runtime_error("Unable to create subscriber");
-	}
-
-	DDSDataReader* untypedReader = subscriber->create_datareader(
-		reply_topic,
-		DDS_DATAREADER_QOS_DEFAULT,
-		&_listener,
-		DDS_STATUS_MASK_ALL);			//(DDS_DATA_AVAILABLE_STATUS)
-	if (untypedReader == NULL) {
-		printf("create_datareader error\n");
-		throw runtime_error("Unable to create DataReader");
+		throw runtime_error("Unable to create _setpoint_writer");
 	}
 }
 
@@ -98,42 +57,56 @@ void CentralizedParkPilot::calculateNewSetpoints()
 	int sample_count = 0;
 	DDS_Duration_t receive_period = { 0, 150000000 }; //150 ms
 	DDS_Duration_t sleep_time = { 0, 10000000 }; //10 ms
-	DDS_ReturnCode_t retcode;
 	chrono::milliseconds ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
 		chrono::high_resolution_clock::now().time_since_epoch());
 
-	RequestMessage* instance = RequestMessageTypeSupport::create_data();
-	/*instance->msSinceLastWrite = _turbine->getTurbineId();
-	instance_handle = _turbine_data_writer->register_instance(*instance);*/
-
-	//instance->cacheCount = cacheCount;
-
+	WriteSample<RequestMessage> request;
 
 	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
 
-		instance->msSinceLastWrite = (chrono::duration_cast< chrono::milliseconds >(
+		request.data().msSinceLastWrite = (chrono::duration_cast< chrono::milliseconds >(
 			chrono::high_resolution_clock::now().time_since_epoch()) - ms_last_write_timestamp).count();
 
-		retcode = _request_writer->write(*instance, DDS_HANDLE_NIL);
-
+		_requester.send_request(request);
 		//update timestamp
 		ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
 			chrono::high_resolution_clock::now().time_since_epoch()
 			);
 
-		
-		while (!_allDataReceived)
-		{
-			NDDSUtility::sleep(sleep_time);
-		}
+		/* Receive replies */
+		const DDS::Duration_t MAX_WAIT = { 20, 0 };
 
-		if (retcode != DDS_RETCODE_OK) {
-			 cerr << "Write failed: " << retcode << endl;
-			 return;
+		bool in_progress = true;
+		while (in_progress) {
+			LoanedSamples<TurbineDataMessage> replies = _requester.receive_replies(this->_number_of_turbines, this->_number_of_turbines, MAX_WAIT);
+
+			/* When receive_replies times out,
+			* it returns an empty reply collection
+			*/
+			if (replies.length() == 0) {
+				throw std::runtime_error("Timed out waiting for replies");
+				return;
+			}
+
+			/* Print the prime numbers we receive */
+			typedef LoanedSamples<TurbineDataMessage>::iterator iterator;
+			for (iterator it = replies.begin(); it != replies.end(); ++it) {
+				if (it->info().valid_data) {
+
+					//regulering
+
+
+
+				}
+			}
+
+			/* We don't need to call replies.return_loan(); the destructor
+			* takes care of doing it every time replies goes out of scope
+			*/
 		}
 
 		printf("Centralized park pilot subscriber sleeping for %d ms...\n",
-			(receive_period.nanosec / 1000000) );
+			(receive_period.nanosec / 1000000));
 
 		NDDSUtility::sleep(receive_period);
 	}

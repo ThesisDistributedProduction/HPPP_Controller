@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
+#include <sstream>
 
 #include "RequestMessage.h"
 #include "RequestMessageSupport.h"
@@ -53,10 +54,10 @@ private:
 class TurbineCentralized
 {
 public:
-	TurbineCentralized(Turbine& turbine, DDSDomainParticipant* participant, DDSTopic* request_topic, DDSTopic* reply_topic);
+	TurbineCentralized(Turbine& turbine, DDSDomainParticipant* participant, DDSTopic* request_topic, DDSTopic* reply_topic, DDSTopic* setpoint_topic);
 	~TurbineCentralized();
 private:
 	RequestListener _request_listener;
-	//SetpointListener _setpoint_listener;
+	SetpointListener _setpoint_listener;
 };
 

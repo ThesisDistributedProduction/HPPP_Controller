@@ -6,8 +6,6 @@
 
 #include "CentralizedParkPilot.h"
 
-#include "Turbine.h"
-
 using namespace std;
 
 static bool fileExist(const char *fileName) {
@@ -46,7 +44,7 @@ static bool participant_shutdown(DDSDomainParticipant *participant)
 	return true;
 }
 
-static bool startCentralizedApplication()
+static bool startCentralizedApplication(uint_fast32_t number_of_turbines)
 {
 	DDS_ReturnCode_t retcode;
 
@@ -63,45 +61,23 @@ static bool startCentralizedApplication()
 		return false;
 	}
 
-	const char *req_type_name = RequestMessageTypeSupport::get_type_name();
-	retcode = RequestMessageTypeSupport::register_type(
+	const char *set_type_name = SetpointMessageTypeSupport::get_type_name();
+	retcode = SetpointMessageTypeSupport::register_type(
 		participant,
-		req_type_name);
+		set_type_name);
 	if (retcode != DDS_RETCODE_OK) {
 		printf("register_type error %d\n", retcode);
 		participant_shutdown(participant);
 		return false;
 	}
 
-	DDSTopic *request_topic = participant->create_topic(
-		"Cluster 1_centralized_request",
-		req_type_name,
-		DDS_TOPIC_QOS_DEFAULT,
-		NULL,						
-		DDS_STATUS_MASK_NONE);
-	if (request_topic == NULL) {
-		printf("create_topic error\n");
-		participant_shutdown(participant);
-		return false;
-	}
-
-	const char *rep_type_name = TurbineDataMessageTypeSupport::get_type_name();
-	retcode = TurbineDataMessageTypeSupport::register_type(
-		participant,
-		rep_type_name);
-	if (retcode != DDS_RETCODE_OK) {
-		printf("register_type error %d\n", retcode);
-		participant_shutdown(participant);
-		return false;
-	}
-
-	DDSTopic *reply_topic = participant->create_topic(
-		"Cluster 1_centralized_reply",
-		rep_type_name,
+	DDSTopic *setpoint_topic = participant->create_topic(
+		"Cluster 1_Turbine 0",
+		set_type_name,
 		DDS_TOPIC_QOS_DEFAULT,
 		NULL,						//listener
 		DDS_STATUS_MASK_NONE);
-	if (request_topic == NULL) {
+	if (setpoint_topic == NULL) {
 		printf("create_topic error\n");
 		participant_shutdown(participant);
 		return false;
@@ -110,7 +86,7 @@ static bool startCentralizedApplication()
 
 	try
 	{
-		CentralizedParkPilot pp(participant, request_topic, reply_topic);
+		CentralizedParkPilot pp(participant, setpoint_topic, number_of_turbines);
 
 		pp.calculateNewSetpoints();
 	}
@@ -124,9 +100,9 @@ static bool startCentralizedApplication()
 int main(int argc, char *argv[], char *envp[]){
 	int main_result = 1; /* error by default */
 
-	uint_fast32_t turbineId = 0;
+	uint_fast32_t number_of_turbines = 0;
 	if( argc > 1 ) {
-		turbineId = atoi(argv[1]);
+		number_of_turbines = atoi(argv[1]);
 	}
 
 	if (!fileExist("USER_QOS_PROFILES.xml")) {
@@ -135,7 +111,7 @@ int main(int argc, char *argv[], char *envp[]){
 		return main_result;
 	}
 
-	if (startCentralizedApplication())
+	if (startCentralizedApplication(number_of_turbines))
 		main_result = 0;
 
 	return main_result;

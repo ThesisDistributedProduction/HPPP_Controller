@@ -1,11 +1,11 @@
 #pragma once
 
-#include <ndds/ndds_cpp.h>
 #include <time.h>
 #include <string>
 #include <iostream>
 #include <iomanip>
 #include <chrono>
+#include <ndds/ndds_requestreply_cpp.h>
 
 #include "RequestMessage.h"
 #include "RequestMessageSupport.h"
@@ -20,26 +20,19 @@
 #include "SetpointMessagePlugin.h"
 
 using namespace std;
-
-class TurbineListener : public DDSDataReaderListener {
-public:
-	//void on_liveliness_changed(DDSDataReader* reader, const DDS_LivelinessChangedStatus& status);
-
-	virtual void on_data_available(DDSDataReader* reader);
-};
-
+using namespace connext;
 
 class CentralizedParkPilot
 {
 public:
-	CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* request_topic, DDSTopic* reply_topic);
+	CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* setpoint_topic, uint_fast32_t number_of_turbines);
 	~CentralizedParkPilot();
 	
 	void calculateNewSetpoints();
 
 private:
-	TurbineListener _listener;
-	RequestMessageDataWriter* _request_writer;
-	bool _allDataReceived;
+	Requester<RequestMessage, TurbineDataMessage> _requester;
+	uint_fast32_t _number_of_turbines;
+	SetpointMessageDataWriter* _setpoint_writer;
 };
 
