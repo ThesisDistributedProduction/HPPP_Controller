@@ -8,8 +8,8 @@
   or consult the RTI Connext manual.
 */
 
-#ifndef SetpointMessage_986307849_h
-#define SetpointMessage_986307849_h
+#ifndef SetpointMessage_986307874_h
+#define SetpointMessage_986307874_h
 
 #ifndef NDDS_STANDALONE_TYPE
     #ifdef __cplusplus
@@ -26,7 +26,7 @@
 #endif
 
 
-#define SetpointMessage_LAST_MEMBER_ID 0
+#define SetpointMessage_LAST_MEMBER_ID 1
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -67,6 +67,8 @@ public:
 
 #endif
     
+    DDS_Long  turbineId;
+
     DDS_Long  setPoint;
 
             
@@ -131,4 +133,4 @@ RTIBool SetpointMessage_copy(
 
 
 
-#endif /* SetpointMessage_986307849_h */
+#endif /* SetpointMessage_986307874_h */

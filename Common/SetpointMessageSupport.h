@@ -8,8 +8,8 @@
   or consult the RTI Connext manual.
 */
 
-#ifndef SetpointMessageSupport_986307849_h
-#define SetpointMessageSupport_986307849_h
+#ifndef SetpointMessageSupport_986307874_h
+#define SetpointMessageSupport_986307874_h
 
 /* Uses */
 #include "SetpointMessage.h"
@@ -70,4 +70,4 @@ DDS_DATAREADER_C(SetpointMessageDataReader, SetpointMessageSeq, SetpointMessage)
 
 
 
-#endif  /* SetpointMessageSupport_986307849_h */
+#endif  /* SetpointMessageSupport_986307874_h */

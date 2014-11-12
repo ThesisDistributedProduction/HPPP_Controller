@@ -4,23 +4,6 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 	: _requester(participant, "TurbineData")
 {
 	this->_number_of_turbines = number_of_turbines;
-	/* Create the requester with the participant, and a QoS profile
-	* defined in USER_QOS_PROFILES.xml
-	*/
-	/*connext::RequesterParams requester_params(participant);
-	requester_params.service_name("PrimeCalculator");
-	requester_params.qos_profile(
-		"RequestReplyExampleProfiles", "RequesterExampleProfile");
-
-    connext::Requester<PrimeNumberRequest, PrimeNumberReply> requester(
-            requester_params);
-	*/
-
-	/* In this example we create the requester on the stack, but you
-	* can create on the heap as well
-	*/
-
-
 
 	DDSPublisher* publisher = participant->create_publisher(
 		DDS_PUBLISHER_QOS_DEFAULT,
@@ -46,6 +29,14 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 		printf("DataWriter narrow error\n");
 		throw runtime_error("Unable to create _setpoint_writer");
 	}
+
+	for (size_t i = 0; i < number_of_turbines; i++)
+	{
+		TurbineOutlet* out = new TurbineOutlet(i, _setpoint_writer);
+		out->registerTurbine();
+		_turbineOutlets.push_back(out);
+	}
+
 }
 
 CentralizedParkPilot::~CentralizedParkPilot()
@@ -56,58 +47,87 @@ void CentralizedParkPilot::calculateNewSetpoints()
 {
 	int sample_count = 0;
 	DDS_Duration_t receive_period = { 0, 150000000 }; //150 ms
-	DDS_Duration_t sleep_time = { 0, 10000000 }; //10 ms
+	DDS_Duration_t sleep_time = { 0, 20000000 }; //20 ms
 	chrono::milliseconds ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
 		chrono::high_resolution_clock::now().time_since_epoch());
 
-	WriteSample<RequestMessage> request;
 
 	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
+
+		WriteSample<RequestMessage> request;
+
 
 		request.data().msSinceLastWrite = (chrono::duration_cast< chrono::milliseconds >(
 			chrono::high_resolution_clock::now().time_since_epoch()) - ms_last_write_timestamp).count();
 
+		cout << "Cycle time(ms): " << request.data().msSinceLastWrite << endl;
+
 		_requester.send_request(request);
+
 		//update timestamp
 		ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
 			chrono::high_resolution_clock::now().time_since_epoch()
 			);
 
-		/* Receive replies */
-		const DDS::Duration_t MAX_WAIT = { 20, 0 };
+		LoanedSamples<TurbineDataMessage> replies = _requester.receive_replies(this->_number_of_turbines, this->_number_of_turbines, receive_period);
 
-		bool in_progress = true;
-		while (in_progress) {
-			LoanedSamples<TurbineDataMessage> replies = _requester.receive_replies(this->_number_of_turbines, this->_number_of_turbines, MAX_WAIT);
-
-			/* When receive_replies times out,
-			* it returns an empty reply collection
-			*/
-			if (replies.length() == 0) {
-				throw std::runtime_error("Timed out waiting for replies");
-				return;
-			}
-
-			/* Print the prime numbers we receive */
-			typedef LoanedSamples<TurbineDataMessage>::iterator iterator;
-			for (iterator it = replies.begin(); it != replies.end(); ++it) {
-				if (it->info().valid_data) {
-
-					//regulering
-
-
-
-				}
-			}
-
-			/* We don't need to call replies.return_loan(); the destructor
-			* takes care of doing it every time replies goes out of scope
-			*/
+		if (replies.length() == 0) {
+			cout << "continue" << endl;
+			continue;
 		}
 
-		printf("Centralized park pilot subscriber sleeping for %d ms...\n",
-			(receive_period.nanosec / 1000000));
+		int availableTurbinesCount = replies.length();
 
-		NDDSUtility::sleep(receive_period);
+		typedef LoanedSamples<TurbineDataMessage>::iterator iterator;
+		long localSetpoint = 0;
+
+		//regulering
+		for (iterator it = replies.begin(); it != replies.end(); ++it) {
+			if (it->info().valid_data) {
+
+				cout << "Id: " << it->data().turbineId
+					<< "CurProd: " << it->data().currentProduction
+					<< "MaxProd: " << it->data().maxProduction
+					<< endl;
+
+				if (it->data().currentProduction >= it->data().maxProduction) {
+					availableTurbinesCount--;
+					_turbineOutlets[it->data().turbineId]->setIsProducingMax(true);
+				}
+
+				_turbineOutlets[it->data().turbineId]->setCurProd(it->data().currentProduction);
+				_turbineOutlets[it->data().turbineId]->setMaxProd(it->data().maxProduction);
+				_turbineOutlets[it->data().turbineId]->setIsProducingMax(false);
+			}
+			else
+				availableTurbinesCount--;
+		}
+
+		for (iterator it = replies.begin(); it != replies.end(); ++it) {
+			if (it->info().valid_data) {
+
+				if (availableTurbinesCount <= 0)
+					localSetpoint = GLOBAL_SETPOINT;
+				else
+					localSetpoint = GLOBAL_SETPOINT / availableTurbinesCount;
+
+				if (localSetpoint > it->data().maxProduction) {
+					localSetpoint = it->data().maxProduction;
+				}
+
+				_turbineOutlets[it->data().turbineId]->setSetpoint(localSetpoint);
+				_turbineOutlets[it->data().turbineId]->publishData();
+			}
+		}		
+
+
+		/* We don't need to call replies.return_loan(); the destructor
+		* takes care of doing it every time replies goes out of scope
+		*/
+
+		//printf("Centralized park pilot subscriber sleeping for %d ms...\n",
+		//	(receive_period.nanosec / 1000000));
+
+		//NDDSUtility::sleep(receive_period);
 	}
 }

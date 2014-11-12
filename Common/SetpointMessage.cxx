@@ -46,12 +46,29 @@ DDS_TypeCode* SetpointMessage_get_typecode()
     static RTIBool is_initialized = RTI_FALSE;
 
 
-    static DDS_TypeCode_Member SetpointMessage_g_tc_members[1]=
+    static DDS_TypeCode_Member SetpointMessage_g_tc_members[2]=
     {
+        {
+            (char *)"turbineId",/* Member name */
+            {
+                0,/* Representation ID */
+                DDS_BOOLEAN_FALSE,/* Is a pointer? */
+                -1, /* Bitfield bits */
+                NULL/* Member type code is assigned later */
+            },
+            0, /* Ignored */
+            0, /* Ignored */
+            0, /* Ignored */
+            NULL, /* Ignored */
+            RTI_CDR_KEY_MEMBER, /* Member flags */
+            DDS_PRIVATE_MEMBER,/* Ignored */
+            1,
+            NULL/* Ignored */
+        },
         {
             (char *)"setPoint",/* Member name */
             {
-                0,/* Representation ID */
+                1,/* Representation ID */
                 DDS_BOOLEAN_FALSE,/* Is a pointer? */
                 -1, /* Bitfield bits */
                 NULL/* Member type code is assigned later */
@@ -77,7 +94,7 @@ DDS_TypeCode* SetpointMessage_get_typecode()
         0, /* Ignored */
         0, /* Ignored */
         NULL, /* Ignored */
-        1, /* Number of members */
+        2, /* Number of members */
         SetpointMessage_g_tc_members, /* Members */
         DDS_VM_NONE /* Ignored */
     }}; /* Type code for SetpointMessage*/
@@ -88,6 +105,7 @@ DDS_TypeCode* SetpointMessage_get_typecode()
 
 
     SetpointMessage_g_tc_members[0]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
+    SetpointMessage_g_tc_members[1]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_long;
 
     is_initialized = RTI_TRUE;
 
@@ -121,6 +139,11 @@ RTIBool SetpointMessage_initialize_w_params(
     
     if (allocParams) {} /* To avoid warnings */
         
+
+    if (!RTICdrType_initLong(&sample->turbineId)) {
+        return RTI_FALSE;
+    }                
+            
 
     if (!RTICdrType_initLong(&sample->setPoint)) {
         return RTI_FALSE;
@@ -160,6 +183,7 @@ void SetpointMessage_finalize_w_params(
 
 
 
+
 }
 
 void SetpointMessage_finalize_optional_members(
@@ -179,12 +203,19 @@ void SetpointMessage_finalize_optional_members(
              
 
 
+
 }
 
 RTIBool SetpointMessage_copy(
     SetpointMessage* dst,
     const SetpointMessage* src)
 {
+
+    if (!RTICdrType_copyLong(
+        &dst->turbineId, &src->turbineId)) {
+        return RTI_FALSE;
+    }
+            
 
     if (!RTICdrType_copyLong(
         &dst->setPoint, &src->setPoint)) {

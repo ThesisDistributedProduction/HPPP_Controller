@@ -63,50 +63,6 @@ static bool startTurbineForCentralizedApplication(uint_fast32_t turbineId)
 		return false;
 	}
 
-	const char *req_type_name = RequestMessageTypeSupport::get_type_name();
-	retcode = RequestMessageTypeSupport::register_type(
-		participant,
-		req_type_name);
-	if (retcode != DDS_RETCODE_OK) {
-		printf("register_type error %d\n", retcode);
-		participant_shutdown(participant);
-		return false;
-	}
-
-	DDSTopic *request_topic = participant->create_topic(
-		"Cluster 1_centralized_request",
-		req_type_name,
-		DDS_TOPIC_QOS_DEFAULT,
-		NULL,						
-		DDS_STATUS_MASK_NONE);
-	if (request_topic == NULL) {
-		printf("create_topic error\n");
-		participant_shutdown(participant);
-		return false;
-	}
-
-	const char *rep_type_name = TurbineDataMessageTypeSupport::get_type_name();
-	retcode = TurbineDataMessageTypeSupport::register_type(
-		participant,
-		rep_type_name);
-	if (retcode != DDS_RETCODE_OK) {
-		printf("register_type error %d\n", retcode);
-		participant_shutdown(participant);
-		return false;
-	}
-
-	DDSTopic *reply_topic = participant->create_topic(
-		"Cluster 1_centralized_reply",
-		rep_type_name,
-		DDS_TOPIC_QOS_DEFAULT,
-		NULL,						
-		DDS_STATUS_MASK_NONE);
-	if (request_topic == NULL) {
-		printf("create_topic error\n");
-		participant_shutdown(participant);
-		return false;
-	}
-
 	const char *setpoint_type_name = SetpointMessageTypeSupport::get_type_name();
 	retcode = SetpointMessageTypeSupport::register_type(
 		participant,
@@ -117,8 +73,8 @@ static bool startTurbineForCentralizedApplication(uint_fast32_t turbineId)
 		return false;
 	}
 
-	std::string topic_name = "Cluster 1_Turbine ";
-	topic_name += std::to_string(turbineId);
+	std::string topic_name = "Cluster 1";
+	//topic_name += std::to_string(turbineId);
 
 	DDSTopic *setpoint_topic = participant->create_topic(
 		topic_name.c_str(),
@@ -126,21 +82,33 @@ static bool startTurbineForCentralizedApplication(uint_fast32_t turbineId)
 		DDS_TOPIC_QOS_DEFAULT,
 		NULL,						
 		DDS_STATUS_MASK_NONE);
-	if (request_topic == NULL) {
+	if (setpoint_topic == NULL) {
 		printf("create_topic error\n");
 		participant_shutdown(participant);
 		return false;
+	}
+	std::string contentFilterExpression = "turbineId=" + std::to_string(turbineId);
+
+	//std::string contentFilterExpression = "key='BLA'";
+
+	const DDS_StringSeq noFilterParams;
+	string cftName = string(setpoint_topic->get_name()) + string(" (filtered)");
+	DDSTopicDescription* cft = participant->create_contentfilteredtopic(
+		cftName.c_str(),
+		setpoint_topic,
+		contentFilterExpression.c_str(),
+		noFilterParams);
+	if (cft == NULL) {
+		throw std::runtime_error("Unable to create ContentFilteredTopic");
 	}
 
 	Turbine turbine(turbineId);
 
 	try
 	{
-		TurbineCentralized tc(turbine, participant, request_topic, reply_topic, setpoint_topic);
+		TurbineCentralized tc(turbine, participant, cft);
 
-		while (true) {
-			Sleep(2000);
-		}
+		tc.waitForRequests();
 	}
 	catch (std::exception& ex) {
 		std::cerr << "An error occurred: " << ex.what();
@@ -157,11 +125,11 @@ int main(int argc, char *argv[], char *envp[]){
 		turbineId = atoi(argv[1]);
 	}
 
-	if (!fileExist("USER_QOS_PROFILES.xml")) {
-		std::cout << "! Unable to locate QoS definition file" << std::endl;
-		std::cout << "! (USER_QOS_PROFILES.xml) in current directory." << std::endl;
-		return main_result;
-	}
+	//if (!fileExist("USER_QOS_PROFILES.xml")) {
+	//	std::cout << "! Unable to locate QoS definition file" << std::endl;
+	//	std::cout << "! (USER_QOS_PROFILES.xml) in current directory." << std::endl;
+	//	return main_result;
+	//}
 
 	if (startTurbineForCentralizedApplication(turbineId))
 		main_result = 0;

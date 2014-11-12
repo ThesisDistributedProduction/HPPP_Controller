@@ -97,6 +97,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CentralizedParkPilot.h" />
+    <ClInclude Include="TurbineOutlet.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CentralizedParkPilot.cpp" />
