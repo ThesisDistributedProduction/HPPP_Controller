@@ -36,7 +36,8 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 		out->registerTurbine();
 		_turbineOutlets.push_back(out);
 	}
-
+	std::cout << endl << "CENTRALIZED PARK PILOT" << endl;
+	std::cout << "CycleTime(ms)  N  GlobalSetpoint  GlobalProd  GlobalMax" << endl;
 }
 
 CentralizedParkPilot::~CentralizedParkPilot()
@@ -51,6 +52,7 @@ void CentralizedParkPilot::calculateNewSetpoints()
 	chrono::milliseconds ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
 		chrono::high_resolution_clock::now().time_since_epoch());
 
+	long cycle_time = 0;
 
 	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
 
@@ -60,9 +62,11 @@ void CentralizedParkPilot::calculateNewSetpoints()
 		request.data().msSinceLastWrite = (chrono::duration_cast< chrono::milliseconds >(
 			chrono::high_resolution_clock::now().time_since_epoch()) - ms_last_write_timestamp).count();
 
-		cout << "Cycle time(ms): " << request.data().msSinceLastWrite << endl;
-
 		_requester.send_request(request);
+
+
+		cycle_time = request.data().msSinceLastWrite;
+		
 
 		//update timestamp
 		ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
@@ -72,40 +76,48 @@ void CentralizedParkPilot::calculateNewSetpoints()
 		LoanedSamples<TurbineDataMessage> replies = _requester.receive_replies(this->_number_of_turbines, this->_number_of_turbines, receive_period);
 
 		if (replies.length() == 0) {
-			cout << "continue" << endl;
+			//cout << "continue" << endl;
 			continue;
 		}
+
 
 		int availableTurbinesCount = replies.length();
 
 		typedef LoanedSamples<TurbineDataMessage>::iterator iterator;
 		long localSetpoint = 0;
+		long globalCurProd = 0;
+		long globalMaxProd = 0;
 
 		//regulering
 		for (iterator it = replies.begin(); it != replies.end(); ++it) {
 			if (it->info().valid_data) {
 
-				cout << "Id: " << it->data().turbineId
-					<< "CurProd: " << it->data().currentProduction
-					<< "MaxProd: " << it->data().maxProduction
-					<< endl;
-
 				if (it->data().currentProduction >= it->data().maxProduction) {
 					availableTurbinesCount--;
-					_turbineOutlets[it->data().turbineId - START_ID]->setIsProducingMax(true);
 				}
+
+				globalCurProd += it->data().currentProduction;
+				globalMaxProd += it->data().maxProduction;
 
 				_turbineOutlets[it->data().turbineId - START_ID]->setCurProd(it->data().currentProduction);
 				_turbineOutlets[it->data().turbineId - START_ID]->setMaxProd(it->data().maxProduction);
-				_turbineOutlets[it->data().turbineId - START_ID]->setIsProducingMax(false);
 			}
 			else
 				availableTurbinesCount--;
 		}
 
+		std::cout << "\r";
+		std::cout << setfill(' ') << setw(7) << cycle_time;
+		std::cout << setfill(' ') << setw(9) << replies.length();
+		std::cout << setfill(' ') << setw(11) << GLOBAL_SETPOINT;
+		std::cout << setfill(' ') << setw(14) << globalCurProd;
+		std::cout << setfill(' ') << setw(12) << globalMaxProd;
+
+		std::cout.flush();
+
+
 		for (iterator it = replies.begin(); it != replies.end(); ++it) {
 			if (it->info().valid_data) {
-
 				if (availableTurbinesCount <= 0)
 					localSetpoint = GLOBAL_SETPOINT;
 				else
