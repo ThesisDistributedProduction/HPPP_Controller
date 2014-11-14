@@ -112,8 +112,6 @@ public:
 				time_t src_time = (time_t)request.info().source_timestamp.sec;
 				tm* local_src_time = localtime(&src_time);
 
-				//cout << " Id: " << _reply.data().turbineId << " CurProd: " << _reply.data().currentProduction << " MaxProd: " << _reply.data().maxProduction << endl;
-
 				cout << "\r";
 				cout << " [" << std::setw(2) << std::setfill('0') << local_src_time->tm_hour
 					<< ":" << std::setw(2) << std::setfill('0')
@@ -124,7 +122,6 @@ public:
 				cout << setfill(' ') << setw(6) << _reply.data().currentProduction;
 				cout << setfill(' ') << setw(6) << _reply.data().maxProduction;
 				cout << setfill(' ') << setw(8) << request.data().msSinceLastWrite;
-				//cout << setfill(' ') << setw(13) << turbineData.cacheCount;
 
 				std::cout.flush();
 

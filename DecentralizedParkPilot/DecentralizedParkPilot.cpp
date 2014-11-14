@@ -14,6 +14,7 @@ void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const D
 	if (!status.last_publication_handle.isValid) {
 		cout << "\nTurbine not valid.";
 	}
+	std::cout << endl << "DECENTRALIZED PARK PILOT" << endl;
 	cout << " N    Time     ID Prod Setpoint  Max  GlobalSetpoint CycleTime(ms) CacheCount" << endl;
 }
 

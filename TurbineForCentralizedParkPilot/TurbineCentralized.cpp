@@ -64,6 +64,8 @@ TurbineCentralized::TurbineCentralized(Turbine& turbine, DDSDomainParticipant* p
 		throw runtime_error("Unable to narrow data reader into TurbineMessageDataReader");
 	}
 
-	cout << "  Time(ms)    ID Prod  Max  CycleTime(ms)" << endl;
+
+	cout << endl << "CENTRALIZED TURBINE" << endl;
+	cout << "    Time      ID Prod  Max  CycleTime(ms)" << endl;
 
 }

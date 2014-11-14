@@ -18,7 +18,6 @@ public:
 	{ 
 		_instance = SetpointMessageTypeSupport::create_data();
 		_instance->turbineId = turbineId;
-		this->_isProducingMax = false;
 	}
 
 	~TurbineOutlet();
@@ -35,14 +34,10 @@ public:
 		}
 	}
 
-	void setIsSetpointSet(bool isSetpointSet) { _isSetpointSet = isSetpointSet; }
-	void setIsProducingMax(bool isProducingMax) { _isProducingMax = isProducingMax; }
 	void setCurProd(long curProd) { _curProd = curProd; }
 	void setMaxProd(long maxProd) { _maxProd = maxProd; }
 	void setSetpoint(long setPoint) { _setPoint = setPoint; }
 
-	bool getIsSetpointSet() { return _isSetpointSet; }
-	bool getSetpointHasBeenSet() { return _isProducingMax; }
 	long getCurProd() { return _curProd; }
 	long getMaxProd() { return _maxProd; }
 	long getSetpoint() { return _setPoint; }
@@ -53,8 +48,6 @@ public:
 	}
 
 private:
-	bool _isSetpointSet;
-	bool _isProducingMax;
 	long _curProd;
 	long _maxProd;
 	long _setPoint;
