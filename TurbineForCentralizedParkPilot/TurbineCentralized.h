@@ -118,8 +118,7 @@ public:
 					<< local_src_time->tm_min
 					<< ":" << std::setw(2) << std::setfill('0')
 					<< local_src_time->tm_sec << "] ";
-				cout << setfill(' ') << setw(3) << _reply.data().turbineId;
-				cout << setfill(' ') << setw(6) << _reply.data().currentProduction;
+				cout << setfill(' ') << setw(5) << _reply.data().currentProduction;
 				cout << setfill(' ') << setw(6) << _reply.data().maxProduction;
 				cout << setfill(' ') << setw(8) << request.data().msSinceLastWrite;
 
