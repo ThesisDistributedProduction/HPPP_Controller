@@ -17,7 +17,7 @@ Turbine::Turbine(uint_fast32_t id) {
 	_db->connect( );
 
 	string startTime = "16:00:00";
-	string stopTime = "17:00:00";
+	string stopTime = "20:00:00";
 		
 	string collections[4] = { "Turbine3000363Log", "Turbine3000364Log", "Turbine3000365Log", "Turbine3000366Log" };
 

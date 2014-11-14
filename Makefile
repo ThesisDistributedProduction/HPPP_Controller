@@ -57,25 +57,50 @@ else
 endif
 
 
-LIBS = -L$(NDDSHOME)/lib/$(ARCH) -L$(HOME)/mongo-client-install/lib $(NDDSLIBS) $(BOOSTLIBS) $(SYSLIBS)
+LIBS = -L$(NDDSHOME)/lib/$(ARCH) -L./MongoClientLib/lib $(NDDSLIBS) $(BOOSTLIBS) $(SYSLIBS)
 
 #INC=-I/usr/informix/incl/c++ /opt/informix/incl/public
-INCLUDES=-I$(HOME)/mongo-client-install/include \
+INCLUDES=-I./MongoClientLib/include \
 	-I./Common \
 	-I$(NDDSHOME)/include/ \
 	-I$(NDDSHOME)/include/ndds
 
-SOURCES_CPP = $(wildcard Common/*.cpp) \
-					$(wildcard Common/Turbine/*.cpp) \
-					$(wildcard DecentralizedParkPilot/*.cpp)
-					
-SOURCES_CXX = $(wildcard Common/*.cxx)
+SOURCES_COMMON_CXX 		= $(wildcard Common/*.cxx)
+SOURCES_COMMON_CPP 		= $(wildcard Common/*.cpp) \
+						  $(wildcard Common/Turbine/*.cpp)
 
-EXECUTABLE    = DecentralizedParkPilot_exe
-SOURCES_CPP_NODIR = $(notdir $(SOURCES_CPP))
-SOURCES_CXX_NODIR = $(notdir $(SOURCES_CXX))
-SOURCES = $(SOURCES_CPP) #$(SOURCES_CXX)
-OBJECTS	= $(SOURCES_CPP_NODIR:%.cpp=objs/%.o) $(SOURCES_CXX_NODIR:%.cxx=objs/%.o)
+SOURCES_COMMON = $(SOURCES_COMMON_CPP) $(SOURCES_COMMON_CXX)
+
+SOURCES_COMMON_CPP_NODIR = $(notdir $(SOURCES_COMMON_CPP)) 
+SOURCES_COMMON_CXX_NODIR = $(notdir $(SOURCES_COMMON_CXX))
+
+
+SOURCES_NON_CEN	= 		$(wildcard DecentralizedParkPilot/*.cpp)
+
+SOURCES_NON_CEN_NODIR = $(notdir $(SOURCES_NON_CEN)) 
+
+
+SOURCES_CEN	= 	$(wildcard TurbineForCentralizedParkPilot/*.cpp) \
+	 			$(wildcard CentralizedParkPilot/*.cpp)
+
+SOURCES_CEN_NODIR = $(notdir $(SOURCES_CEN))
+
+
+#EXECUTABLE    = DecentralizedParkPilot_exe TurbineForCentralizedParkPilot_exe CentralizedParkPilot_exe
+EXECUTABLE_NON_CEN    = DecentralizedParkPilot_exe
+EXECUTABLES_CEN    = TurbineForCentralizedParkPilot_exe CentralizedParkPilot_exe
+
+EXECUTABLES = $(EXECUTABLE_NON_CEN)
+#EXECUTABLES = $(EXECUTABLE_NON_CEN) #$(EXECUTABLES_CEN)
+
+OBJECTS_NON_CEN	= 	$(SOURCES_NON_CEN_NODIR:%.cpp=objs/%.o) \
+					$(SOURCES_COMMON_CXX_NODIR:%.cxx=objs/%.o) \
+					$(SOURCES_COMMON_CPP_NODIR:%.cpp=objs/%.o)			
+
+OBJECTS_CEN	= 		$(SOURCES_CEN_NODIR:%.cpp=objs/%.o) \
+					$(SOURCES_COMMON_CXX_NODIR:%.cxx=objs/%.o) \
+					$(SOURCES_COMMON_CPP_NODIR:%.cpp=objs/%.o)			
+
 
 #$(info )
 #$(info [${SOURCES}])
@@ -89,17 +114,16 @@ OBJECTS	= $(SOURCES_CPP_NODIR:%.cpp=objs/%.o) $(SOURCES_CXX_NODIR:%.cxx=objs/%.o
 #build: $(OBJECTS) $(EXECUTABLE:%=objs/%.o) \
 #	       $(EXECUTABLE:%=objs/%.out)
 
-all: $(SOURCES) $(EXECUTABLE)
+all: $(EXECUTABLES)
 	
 #  Build executable files 
-$(EXECUTABLE): $(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
+$(EXECUTABLE_NON_CEN): $(SOURCES_NON_CEN) $(SOURCES_COMMON) $(OBJECTS_NON_CEN) 
+	$(CC) $(LDFLAGS) $(OBJECTS_NON_CEN) -o $@ $(LIBS)
 
+$(EXECUTABLES_CEN): $(SOURCES_CEN) $(SOURCES_COMMON) $(OBJECTS_CEN)
+	$(CC) $(LDFLAGS) $(OBJECTS_CEN) -o $@ $(LIBS)
 
 #  Build object files 
-objs/%.o: DecentralizedParkPilot/%.cpp
-	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
-
 objs/%.o: Common/Turbine/%.cpp
 	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
 
@@ -108,6 +132,16 @@ objs/%.o: Common/%.cpp
 
 objs/%.o: Common/%.cxx
 	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+objs/%.o: DecentralizedParkPilot/%.cpp
+	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+objs/%.o: TurbineForCentralizedParkPilot/%.cpp
+	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+objs/%.o: CentralizedParkPilot/%.cpp
+	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
+
 
 clean:
 	@rm -Rf objs/*
