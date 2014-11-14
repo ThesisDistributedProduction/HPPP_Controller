@@ -28,9 +28,6 @@ void SetpointListener::on_data_available(DDSDataReader* reader)
 			return;
 		}
 		if (info.valid_data) {
-
-			cout << "Setpoint: " << setPointMsg.setPoint << endl;
-
 			_turbine->sendSetpoint(setPointMsg.setPoint);
 		}
 	}
@@ -66,5 +63,7 @@ TurbineCentralized::TurbineCentralized(Turbine& turbine, DDSDomainParticipant* p
 	if (_reader == NULL) {
 		throw runtime_error("Unable to narrow data reader into TurbineMessageDataReader");
 	}
+
+	cout << "  Time(ms)    ID Prod  Max  CycleTime(ms)" << endl;
 
 }

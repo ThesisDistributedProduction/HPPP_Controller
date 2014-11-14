@@ -26,6 +26,7 @@ using namespace std;
 using namespace connext;
 
 #define GLOBAL_SETPOINT 2000
+#define START_ID 1
 
 class CentralizedParkPilot
 {

@@ -120,7 +120,7 @@ static bool startTurbineForCentralizedApplication(uint_fast32_t turbineId)
 int main(int argc, char *argv[], char *envp[]){
 	int main_result = 1; /* error by default */
 
-	uint_fast32_t turbineId = 0;
+	uint_fast32_t turbineId = 1;
 	if( argc > 1 ) {
 		turbineId = atoi(argv[1]);
 	}

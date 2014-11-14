@@ -30,7 +30,7 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 		throw runtime_error("Unable to create _setpoint_writer");
 	}
 
-	for (size_t i = 0; i < number_of_turbines; i++)
+	for (size_t i = 1; i < (number_of_turbines + START_ID); i++)
 	{
 		TurbineOutlet* out = new TurbineOutlet(i, _setpoint_writer);
 		out->registerTurbine();
@@ -92,12 +92,12 @@ void CentralizedParkPilot::calculateNewSetpoints()
 
 				if (it->data().currentProduction >= it->data().maxProduction) {
 					availableTurbinesCount--;
-					_turbineOutlets[it->data().turbineId]->setIsProducingMax(true);
+					_turbineOutlets[it->data().turbineId - START_ID]->setIsProducingMax(true);
 				}
 
-				_turbineOutlets[it->data().turbineId]->setCurProd(it->data().currentProduction);
-				_turbineOutlets[it->data().turbineId]->setMaxProd(it->data().maxProduction);
-				_turbineOutlets[it->data().turbineId]->setIsProducingMax(false);
+				_turbineOutlets[it->data().turbineId - START_ID]->setCurProd(it->data().currentProduction);
+				_turbineOutlets[it->data().turbineId - START_ID]->setMaxProd(it->data().maxProduction);
+				_turbineOutlets[it->data().turbineId - START_ID]->setIsProducingMax(false);
 			}
 			else
 				availableTurbinesCount--;
@@ -115,8 +115,8 @@ void CentralizedParkPilot::calculateNewSetpoints()
 					localSetpoint = it->data().maxProduction;
 				}
 
-				_turbineOutlets[it->data().turbineId]->setSetpoint(localSetpoint);
-				_turbineOutlets[it->data().turbineId]->publishData();
+				_turbineOutlets[it->data().turbineId - START_ID]->setSetpoint(localSetpoint);
+				_turbineOutlets[it->data().turbineId - START_ID]->publishData();
 			}
 		}		
 

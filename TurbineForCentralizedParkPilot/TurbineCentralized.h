@@ -89,7 +89,7 @@ public:
 
 	void waitForRequests()
 	{
-		DDS_Duration_t MAX_WAIT = { 0, 20000000 }; //10 ms
+		DDS_Duration_t MAX_WAIT = { 0, 10000000 }; //10 ms
 		uint_fast32_t curProd = 0;
 		uint_fast32_t maxProd = 0;
 		while (true) {
@@ -97,13 +97,11 @@ public:
 			// Receive one request
 			bool received = _replier.receive_request(request, MAX_WAIT);
 			if (!received) {
-				std::cout << "Requests not received" << std::endl;
 				continue;
 			}
 
 			WriteSample<TurbineDataMessage> _reply;
 			if (request.info().valid_data) {
-				cout << "Cycle time(ms): " << request.data().msSinceLastWrite;
 
 				_turbine->readTurbineData(maxProd, curProd);
 
@@ -111,7 +109,24 @@ public:
 				_reply.data().currentProduction = curProd;
 				_reply.data().maxProduction = maxProd;
 
-				cout << " Id: " << _reply.data().turbineId << " CurProd: " << _reply.data().currentProduction << " MaxProd: " << _reply.data().maxProduction << endl;
+				time_t src_time = (time_t)request.info().source_timestamp.sec;
+				tm* local_src_time = localtime(&src_time);
+
+				//cout << " Id: " << _reply.data().turbineId << " CurProd: " << _reply.data().currentProduction << " MaxProd: " << _reply.data().maxProduction << endl;
+
+				cout << "\r";
+				cout << " [" << std::setw(2) << std::setfill('0') << local_src_time->tm_hour
+					<< ":" << std::setw(2) << std::setfill('0')
+					<< local_src_time->tm_min
+					<< ":" << std::setw(2) << std::setfill('0')
+					<< local_src_time->tm_sec << "] ";
+				cout << setfill(' ') << setw(3) << _reply.data().turbineId;
+				cout << setfill(' ') << setw(6) << _reply.data().currentProduction;
+				cout << setfill(' ') << setw(6) << _reply.data().maxProduction;
+				cout << setfill(' ') << setw(8) << request.data().msSinceLastWrite;
+				//cout << setfill(' ') << setw(13) << turbineData.cacheCount;
+
+				std::cout.flush();
 
 				_replier.send_reply(_reply, request.identity());
 			}
