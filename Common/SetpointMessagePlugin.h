@@ -8,8 +8,8 @@
   or consult the RTI Connext manual.
 */
 
-#ifndef SetpointMessagePlugin_986307849_h
-#define SetpointMessagePlugin_986307849_h
+#ifndef SetpointMessagePlugin_986307874_h
+#define SetpointMessagePlugin_986307874_h
 
 #include "SetpointMessage.h"
 
@@ -34,10 +34,29 @@ struct RTICdrStream;
 extern "C" {
 #endif
 
+/* The type used to store keys for instances of type struct
+ * SetpointMessage.
+ *
+ * By default, this type is struct SetpointMessage
+ * itself. However, if for some reason this choice is not practical for your
+ * system (e.g. if sizeof(struct SetpointMessage)
+ * is very large), you may redefine this typedef in terms of another type of
+ * your choosing. HOWEVER, if you define the KeyHolder type to be something
+ * other than struct SetpointMessage, the
+ * following restriction applies: the key of struct
+ * SetpointMessage must consist of a
+ * single field of your redefined KeyHolder type and that field must be the
+ * first field in struct SetpointMessage.
+*/
+typedef  class SetpointMessage SetpointMessageKeyHolder;
+
 
 #define SetpointMessagePlugin_get_sample PRESTypePluginDefaultEndpointData_getSample  
 #define SetpointMessagePlugin_get_buffer PRESTypePluginDefaultEndpointData_getBuffer 
 #define SetpointMessagePlugin_return_buffer PRESTypePluginDefaultEndpointData_returnBuffer 
+
+#define SetpointMessagePlugin_get_key PRESTypePluginDefaultEndpointData_getKey 
+#define SetpointMessagePlugin_return_key PRESTypePluginDefaultEndpointData_returnKey
  
 
 #define SetpointMessagePlugin_create_sample PRESTypePluginDefaultEndpointData_createSample 
@@ -81,6 +100,20 @@ SetpointMessagePluginSupport_print_data(
     const char *desc,
     unsigned int indent);
 
+
+NDDSUSERDllExport extern SetpointMessage*
+SetpointMessagePluginSupport_create_key_ex(RTIBool allocate_pointers);
+
+NDDSUSERDllExport extern SetpointMessage*
+SetpointMessagePluginSupport_create_key(void);
+
+NDDSUSERDllExport extern void 
+SetpointMessagePluginSupport_destroy_key_ex(
+    SetpointMessageKeyHolder *key,RTIBool deallocate_pointers);
+
+NDDSUSERDllExport extern void 
+SetpointMessagePluginSupport_destroy_key(
+    SetpointMessageKeyHolder *key);
 
 /* ----------------------------------------------------------------------------
     Callback functions:
@@ -245,6 +278,32 @@ SetpointMessagePlugin_serialized_sample_to_key(
     RTIBool deserialize_key, 
     void *endpoint_plugin_qos);
 
+ 
+NDDSUSERDllExport extern RTIBool 
+SetpointMessagePlugin_instance_to_key(
+    PRESTypePluginEndpointData endpoint_data,
+    SetpointMessageKeyHolder *key, 
+    const SetpointMessage *instance);
+
+NDDSUSERDllExport extern RTIBool 
+SetpointMessagePlugin_key_to_instance(
+    PRESTypePluginEndpointData endpoint_data,
+    SetpointMessage *instance, 
+    const SetpointMessageKeyHolder *key);
+
+NDDSUSERDllExport extern RTIBool 
+SetpointMessagePlugin_instance_to_keyhash(
+    PRESTypePluginEndpointData endpoint_data,
+    DDS_KeyHash_t *keyhash,
+    const SetpointMessage *instance);
+
+NDDSUSERDllExport extern RTIBool 
+SetpointMessagePlugin_serialized_sample_to_keyhash(
+    PRESTypePluginEndpointData endpoint_data,
+    struct RTICdrStream *stream, 
+    DDS_KeyHash_t *keyhash,
+    RTIBool deserialize_encapsulation,
+    void *endpoint_plugin_qos); 
      
 /* Plugin Functions */
 NDDSUSERDllExport extern struct PRESTypePlugin*
@@ -265,4 +324,4 @@ SetpointMessagePlugin_delete(struct PRESTypePlugin *);
 #define NDDSUSERDllExport
 #endif        
 
-#endif /* SetpointMessagePlugin_986307849_h */
+#endif /* SetpointMessagePlugin_986307874_h */

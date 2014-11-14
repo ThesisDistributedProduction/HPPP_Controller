@@ -9,7 +9,7 @@ IF "%START_ID%"=="" set START_ID=1
 IF "%N_INSTANCES%"=="0" GOTO Continue
 	set /a id=%START_ID%+%N_INSTANCES%
 	echo Starting: %id%
-	start /B run.bat
+	start /B runDecentralized.bat
 
 	set /a N_INSTANCES=%N_INSTANCES%-1
 GOTO Loop

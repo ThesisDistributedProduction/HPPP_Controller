@@ -54,7 +54,7 @@ static bool startCentralizedApplication(uint_fast32_t number_of_turbines)
 		0,
 		DDS_PARTICIPANT_QOS_DEFAULT,
 		NULL,
-		DDS_STATUS_MASK_NONE);
+		DDS_STATUS_MASK_ALL);
 	if (participant == NULL) {
 		printf("create_participant error\n");
 		participant_shutdown(participant);
@@ -72,7 +72,7 @@ static bool startCentralizedApplication(uint_fast32_t number_of_turbines)
 	}
 
 	DDSTopic *setpoint_topic = participant->create_topic(
-		"Cluster 1_Turbine 0",
+		"Cluster 1",
 		set_type_name,
 		DDS_TOPIC_QOS_DEFAULT,
 		NULL,						//listener
@@ -100,16 +100,16 @@ static bool startCentralizedApplication(uint_fast32_t number_of_turbines)
 int main(int argc, char *argv[], char *envp[]){
 	int main_result = 1; /* error by default */
 
-	uint_fast32_t number_of_turbines = 0;
+	uint_fast32_t number_of_turbines = 1;
 	if( argc > 1 ) {
 		number_of_turbines = atoi(argv[1]);
 	}
 
-	if (!fileExist("USER_QOS_PROFILES.xml")) {
-		std::cout << "! Unable to locate QoS definition file" << std::endl;
-		std::cout << "! (USER_QOS_PROFILES.xml) in current directory." << std::endl;
-		return main_result;
-	}
+	//if (!fileExist("USER_QOS_PROFILES.xml")) {
+	//	std::cout << "! Unable to locate QoS definition file" << std::endl;
+	//	std::cout << "! (USER_QOS_PROFILES.xml) in current directory." << std::endl;
+	//	return main_result;
+	//}
 
 	if (startCentralizedApplication(number_of_turbines))
 		main_result = 0;

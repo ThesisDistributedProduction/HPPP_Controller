@@ -169,9 +169,50 @@ SetpointMessagePluginSupport_print_data(
 
 
     RTICdrType_printLong(
+        &sample->turbineId, "turbineId", indent_level + 1);
+            
+
+    RTICdrType_printLong(
         &sample->setPoint, "setPoint", indent_level + 1);
             
 
+
+}
+
+SetpointMessage *
+SetpointMessagePluginSupport_create_key_ex(RTIBool allocate_pointers){
+    SetpointMessage *key = NULL;
+
+    RTIOsapiHeap_allocateStructure(
+        &key, SetpointMessageKeyHolder);
+
+    SetpointMessage_initialize_ex(key,allocate_pointers,RTI_TRUE);
+    return key;
+}
+
+
+SetpointMessage *
+SetpointMessagePluginSupport_create_key(void)
+{
+    return  SetpointMessagePluginSupport_create_key_ex(RTI_TRUE);
+}
+
+
+void 
+SetpointMessagePluginSupport_destroy_key_ex(
+    SetpointMessageKeyHolder *key,RTIBool deallocate_pointers)
+{
+    SetpointMessage_finalize_ex(key,deallocate_pointers);
+
+    RTIOsapiHeap_freeStructure(key);
+}
+
+
+void 
+SetpointMessagePluginSupport_destroy_key(
+    SetpointMessageKeyHolder *key) {
+
+  SetpointMessagePluginSupport_destroy_key_ex(key,RTI_TRUE);
 
 }
 
@@ -221,8 +262,11 @@ SetpointMessagePlugin_on_endpoint_attached(
 
     unsigned int serializedSampleMaxSize;
 
-   if (top_level_registration) {} /* To avoid warnings */
-   if (containerPluginContext) {} /* To avoid warnings */
+    unsigned int serializedKeyMaxSize;
+
+    if (top_level_registration) {} /* To avoid warnings */
+    if (containerPluginContext) {} /* To avoid warnings */
+
 
     epd = PRESTypePluginDefaultEndpointData_new(
             participant_data,
@@ -231,12 +275,25 @@ SetpointMessagePlugin_on_endpoint_attached(
             SetpointMessagePluginSupport_create_data,
             (PRESTypePluginDefaultEndpointDataDestroySampleFunction)
             SetpointMessagePluginSupport_destroy_data,
-            NULL, NULL);
+            (PRESTypePluginDefaultEndpointDataCreateKeyFunction)
+            SetpointMessagePluginSupport_create_key,
+            (PRESTypePluginDefaultEndpointDataDestroyKeyFunction)
+            SetpointMessagePluginSupport_destroy_key);
 
     if (epd == NULL) {
         return NULL;
     }
-
+   
+    serializedKeyMaxSize = SetpointMessagePlugin_get_serialized_key_max_size(
+        epd,RTI_FALSE,RTI_CDR_ENCAPSULATION_ID_CDR_BE,0);
+    
+    if (!PRESTypePluginDefaultEndpointData_createMD5Stream(
+            epd,serializedKeyMaxSize)) 
+    {
+        PRESTypePluginDefaultEndpointData_delete(epd);
+        return NULL;
+    }
+    
     
 
     if (endpoint_info->endpointKind == PRES_TYPEPLUGIN_ENDPOINT_WRITER) {
@@ -341,6 +398,12 @@ SetpointMessagePlugin_serialize(
     if(serialize_sample) {
     
     if (!RTICdrStream_serializeLong(
+        stream, &sample->turbineId)) {
+        return RTI_FALSE;
+    }
+            
+
+    if (!RTICdrStream_serializeLong(
         stream, &sample->setPoint)) {
         return RTI_FALSE;
     }
@@ -389,6 +452,11 @@ SetpointMessagePlugin_deserialize_sample(
     if(deserialize_sample) {
         SetpointMessage_initialize_ex(sample, RTI_FALSE, RTI_FALSE);
     
+    if (!RTICdrStream_deserializeLong(
+        stream, &sample->turbineId)) {
+        goto fin;
+    }
+
     if (!RTICdrStream_deserializeLong(
         stream, &sample->setPoint)) {
         goto fin;
@@ -481,6 +549,11 @@ RTIBool SetpointMessagePlugin_skip(
     }
             
 
+    if (!RTICdrStream_skipLong(stream)) {
+        goto fin;
+    }
+            
+
 
     }
     
@@ -535,6 +608,10 @@ SetpointMessagePlugin_get_serialized_sample_max_size(
         current_alignment);
             
 
+    current_alignment +=  RTICdrType_getLongMaxSizeSerialized(
+        current_alignment);
+            
+
     if (include_encapsulation) {
         current_alignment += encapsulation_size;
     }
@@ -571,6 +648,10 @@ SetpointMessagePlugin_get_serialized_sample_min_size(
 
     }
 
+
+    current_alignment +=  RTICdrType_getLongMaxSizeSerialized(
+        current_alignment);
+            
 
     current_alignment +=  RTICdrType_getLongMaxSizeSerialized(
         current_alignment);
@@ -625,6 +706,10 @@ SetpointMessagePlugin_get_serialized_sample_size(
         current_alignment);
             
 
+    current_alignment += RTICdrType_getLongMaxSizeSerialized(
+        current_alignment);
+            
+
     if (include_encapsulation) {
         current_alignment += encapsulation_size;
     }
@@ -647,7 +732,7 @@ PRESTypePluginKeyKind
 SetpointMessagePlugin_get_key_kind(void)
 {
 
-    return PRES_TYPEPLUGIN_NO_KEY;
+    return PRES_TYPEPLUGIN_USER_KEY;
      
 }
 
@@ -681,16 +766,12 @@ SetpointMessagePlugin_serialize_key(
 
     if(serialize_key) {
 
-        if (!SetpointMessagePlugin_serialize(
-                endpoint_data,
-                sample,
-                stream,
-                RTI_FALSE, encapsulation_id,
-                RTI_TRUE,
-                endpoint_plugin_qos)) {
-            return RTI_FALSE;
-        }
-    
+    if (!RTICdrStream_serializeLong(
+        stream, &sample->turbineId)) {
+        return RTI_FALSE;
+    }
+            
+
     }
 
 
@@ -730,13 +811,11 @@ RTIBool SetpointMessagePlugin_deserialize_key_sample(
 
     if (deserialize_key) {
 
-        if (!SetpointMessagePlugin_deserialize_sample(
-                endpoint_data, sample, stream,
-                RTI_FALSE, RTI_TRUE, 
-                endpoint_plugin_qos)) {
-            return RTI_FALSE;
-        }
-    
+    if (!RTICdrStream_deserializeLong(
+        stream, &sample->turbineId)) {
+        return RTI_FALSE;
+    }
+
     }
 
 
@@ -810,9 +889,10 @@ SetpointMessagePlugin_get_serialized_key_max_size(
     }
         
 
-    current_alignment += SetpointMessagePlugin_get_serialized_sample_max_size(
-        endpoint_data,RTI_FALSE, encapsulation_id, current_alignment);
-    
+    current_alignment +=  RTICdrType_getLongMaxSizeSerialized(
+        current_alignment);
+            
+
     if (include_encapsulation) {
         current_alignment += encapsulation_size;
     }
@@ -834,6 +914,9 @@ SetpointMessagePlugin_serialized_sample_to_key(
 
     RTIBool done = RTI_FALSE;
 
+    if (endpoint_data) {} /* To avoid warnings */
+    if (endpoint_plugin_qos) {} /* To avoid warnings */
+
     if (stream == NULL) goto fin; /* To avoid warnings */
 
 
@@ -848,11 +931,15 @@ SetpointMessagePlugin_serialized_sample_to_key(
 
     if (deserialize_key) {
 
-        if (!SetpointMessagePlugin_deserialize_sample(
-            endpoint_data, sample, stream, RTI_FALSE, 
-            RTI_TRUE, endpoint_plugin_qos)) {
-            return RTI_FALSE;
-        }
+    if (!RTICdrStream_deserializeLong(
+        stream, &sample->turbineId)) {
+        return RTI_FALSE;
+    }
+
+    if (!RTICdrStream_skipLong(stream)) {
+        goto fin;
+    }
+            
 
     }
 
@@ -874,6 +961,148 @@ fin:
 }
 
 
+
+
+
+RTIBool 
+SetpointMessagePlugin_instance_to_key(
+    PRESTypePluginEndpointData endpoint_data,
+    SetpointMessageKeyHolder *dst, 
+    const SetpointMessage *src)
+{  
+
+    if (endpoint_data) {} /* To avoid warnings */
+
+    if (!RTICdrType_copyLong(
+        &dst->turbineId, &src->turbineId)) {
+        return RTI_FALSE;
+    }
+            
+
+    return RTI_TRUE;
+}
+
+
+RTIBool 
+SetpointMessagePlugin_key_to_instance(
+    PRESTypePluginEndpointData endpoint_data,
+    SetpointMessage *dst, const
+    SetpointMessageKeyHolder *src)
+{
+
+    if (endpoint_data) {} /* To avoid warnings */
+
+    if (!RTICdrType_copyLong(
+        &dst->turbineId, &src->turbineId)) {
+        return RTI_FALSE;
+    }
+            
+
+    return RTI_TRUE;
+}
+
+
+RTIBool 
+SetpointMessagePlugin_instance_to_keyhash(
+    PRESTypePluginEndpointData endpoint_data,
+    DDS_KeyHash_t *keyhash,
+    const SetpointMessage *instance)
+{
+    struct RTICdrStream * md5Stream = NULL;
+
+    md5Stream = PRESTypePluginDefaultEndpointData_getMD5Stream(endpoint_data);
+
+    if (md5Stream == NULL) {
+        return RTI_FALSE;
+    }
+
+    RTIOsapiMemory_zero(
+        RTICdrStream_getBuffer(md5Stream),
+        RTICdrStream_getBufferLength(md5Stream));
+    RTICdrStream_resetPosition(md5Stream);
+    RTICdrStream_setDirtyBit(md5Stream, RTI_TRUE);
+
+    if (!SetpointMessagePlugin_serialize_key(
+            endpoint_data,instance,md5Stream, RTI_FALSE, RTI_CDR_ENCAPSULATION_ID_CDR_BE, RTI_TRUE,NULL)) {
+        return RTI_FALSE;
+    }
+    
+    if (PRESTypePluginDefaultEndpointData_getMaxSizeSerializedKey(endpoint_data) > (unsigned int)(MIG_RTPS_KEY_HASH_MAX_LENGTH)) {
+        RTICdrStream_computeMD5(md5Stream, keyhash->value);
+    } else {
+        RTIOsapiMemory_zero(keyhash->value,MIG_RTPS_KEY_HASH_MAX_LENGTH);
+        RTIOsapiMemory_copy(
+            keyhash->value, 
+            RTICdrStream_getBuffer(md5Stream), 
+            RTICdrStream_getCurrentPositionOffset(md5Stream));
+    }
+
+    keyhash->length = MIG_RTPS_KEY_HASH_MAX_LENGTH;
+    return RTI_TRUE;
+}
+
+
+RTIBool 
+SetpointMessagePlugin_serialized_sample_to_keyhash(
+    PRESTypePluginEndpointData endpoint_data,
+    struct RTICdrStream *stream, 
+    DDS_KeyHash_t *keyhash,
+    RTIBool deserialize_encapsulation,
+    void *endpoint_plugin_qos) 
+{   
+    char * position = NULL;
+
+    RTIBool done = RTI_FALSE;
+    SetpointMessage * sample = NULL;
+
+    if (endpoint_plugin_qos) {} /* To avoid warnings */
+
+
+    if (stream == NULL) goto fin; /* To avoid warnings */
+
+
+    if(deserialize_encapsulation) {
+        if (!RTICdrStream_deserializeAndSetCdrEncapsulation(stream)) {
+            return RTI_FALSE;
+        }
+
+        position = RTICdrStream_resetAlignment(stream);
+    }
+
+
+    sample = (SetpointMessage *)
+                PRESTypePluginDefaultEndpointData_getTempSample(endpoint_data);
+
+    if (sample == NULL) {
+        return RTI_FALSE;
+    }
+
+
+    if (!RTICdrStream_deserializeLong(
+        stream, &sample->turbineId)) {
+        return RTI_FALSE;
+    }
+
+    done = RTI_TRUE;
+fin:
+    if (done != RTI_TRUE && 
+        RTICdrStream_getRemainder(stream) >=
+            RTI_CDR_PARAMETER_HEADER_ALIGNMENT) {
+        return RTI_FALSE;   
+    }
+
+    if(deserialize_encapsulation) {
+        RTICdrStream_restoreAlignment(stream,position);
+    }
+
+
+    if (!SetpointMessagePlugin_instance_to_keyhash(
+            endpoint_data, keyhash, sample)) {
+        return RTI_FALSE;
+    }
+
+    return RTI_TRUE;
+}
 
 
 /* ------------------------------------------------------------------------
@@ -943,20 +1172,41 @@ struct PRESTypePlugin *SetpointMessagePlugin_new(void)
         (PRESTypePluginGetKeyKindFunction)
         SetpointMessagePlugin_get_key_kind;
 
- 
-    /* These functions are only used for keyed types. As this is not a keyed
-    type they are all set to NULL
-    */
-    plugin->serializeKeyFnc = NULL;
-    plugin->deserializeKeyFnc = NULL;
-    plugin->getKeyFnc = NULL;
-    plugin->returnKeyFnc = NULL;
-    plugin->instanceToKeyFnc = NULL;
-    plugin->keyToInstanceFnc = NULL;
-    plugin->getSerializedKeyMaxSizeFnc = NULL;
-    plugin->instanceToKeyHashFnc = NULL;
-    plugin->serializedSampleToKeyHashFnc = NULL;
-    plugin->serializedKeyToKeyHashFnc = NULL;
+
+    plugin->getSerializedKeyMaxSizeFnc =   
+        (PRESTypePluginGetSerializedKeyMaxSizeFunction)
+        SetpointMessagePlugin_get_serialized_key_max_size;
+    plugin->serializeKeyFnc =
+        (PRESTypePluginSerializeKeyFunction)
+        SetpointMessagePlugin_serialize_key;
+    plugin->deserializeKeyFnc =
+        (PRESTypePluginDeserializeKeyFunction)
+        SetpointMessagePlugin_deserialize_key;
+    plugin->deserializeKeySampleFnc =
+        (PRESTypePluginDeserializeKeySampleFunction)
+        SetpointMessagePlugin_deserialize_key_sample;
+
+    plugin->instanceToKeyHashFnc = 
+        (PRESTypePluginInstanceToKeyHashFunction)
+        SetpointMessagePlugin_instance_to_keyhash;
+    plugin->serializedSampleToKeyHashFnc = 
+        (PRESTypePluginSerializedSampleToKeyHashFunction)
+        SetpointMessagePlugin_serialized_sample_to_keyhash;
+
+    plugin->getKeyFnc =
+        (PRESTypePluginGetKeyFunction)
+        SetpointMessagePlugin_get_key;
+    plugin->returnKeyFnc =
+        (PRESTypePluginReturnKeyFunction)
+        SetpointMessagePlugin_return_key;
+
+    plugin->instanceToKeyFnc =
+        (PRESTypePluginInstanceToKeyFunction)
+        SetpointMessagePlugin_instance_to_key;
+    plugin->keyToInstanceFnc =
+        (PRESTypePluginKeyToInstanceFunction)
+        SetpointMessagePlugin_key_to_instance;
+    plugin->serializedKeyToKeyHashFnc = NULL; /* Not supported yet */
     
     plugin->typeCode =  (struct RTICdrTypeCode *)SetpointMessage_get_typecode();
     
