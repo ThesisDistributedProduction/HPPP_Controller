@@ -7,6 +7,7 @@
 #include <chrono>
 #include <vector>
 #include <ndds/ndds_requestreply_cpp.h>
+#include <thread>
 
 #include "RequestMessage.h"
 #include "RequestMessageSupport.h"

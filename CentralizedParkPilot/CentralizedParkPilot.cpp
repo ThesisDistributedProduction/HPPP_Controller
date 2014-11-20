@@ -54,6 +54,8 @@ void CentralizedParkPilot::calculateNewSetpoints()
 
 	long cycle_time = 0;
 
+	this_thread::sleep_for(chrono::milliseconds(5000));
+
 	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
 
 		WriteSample<RequestMessage> request;
@@ -73,7 +75,7 @@ void CentralizedParkPilot::calculateNewSetpoints()
 			chrono::high_resolution_clock::now().time_since_epoch()
 			);
 
-		LoanedSamples<TurbineDataMessage> replies = _requester.receive_replies(this->_number_of_turbines, this->_number_of_turbines, receive_period);
+		LoanedSamples<TurbineDataMessage> replies = _requester.receive_replies(this->_number_of_turbines, this->_number_of_turbines, DURATION_INFINITE);
 
 		if (replies.length() == 0) {
 			//cout << "continue" << endl;

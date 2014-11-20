@@ -95,7 +95,7 @@ public:
 		while (true) {
 			Sample<RequestMessage> request;
 			// Receive one request
-			bool received = _replier.receive_request(request, MAX_WAIT);
+			bool received = _replier.receive_request(request, DURATION_INFINITE);
 			if (!received) {
 				continue;
 			}
