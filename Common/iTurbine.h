@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 class iTurbine {
 public:
 	virtual void sendSetpoint(uint_fast32_t setPoint) = 0;
