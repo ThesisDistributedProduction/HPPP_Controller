@@ -14,7 +14,7 @@
 #include "MaxProductionReachedMessage.h"
 #include "MaxProductionReachedMessagePlugin.h"
 #include "MaxProductionReachedMessageSupport.h"
-#include "Turbine.h"
+#include "iTurbine.h"
 
 using namespace std;
 
@@ -39,7 +39,7 @@ private:
 	TurbineStatusListener _listener;
 	TurbineMessageDataReader* _reader;
 	TurbineMessageDataWriter* _turbine_writer;
-	Turbine _turbine;
+	std::shared_ptr<iTurbine> _turbine;
 	uint_fast32_t turbineId;
 	chrono::milliseconds _ms_last_write_timestamp;
 

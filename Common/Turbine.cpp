@@ -8,8 +8,15 @@
 #define TIME_STAMP_FIELD = "TimeStamp";
 #define FIXED_DATE = "2014-10-18";
 
-
 using namespace std;
+
+shared_ptr<iTurbine> createTurbineInstance(uint_fast32_t id){
+	Turbine *turbine = new Turbine(id);
+	iTurbine *turbineInterface = dynamic_cast<iTurbine*>(turbine);
+	shared_ptr<iTurbine> ptr(turbineInterface);
+	return ptr;
+};
+
 Turbine::Turbine(uint_fast32_t id) {
 	this->turbineId = id;
 	auto _db = MongoDatabase::getInstance( );

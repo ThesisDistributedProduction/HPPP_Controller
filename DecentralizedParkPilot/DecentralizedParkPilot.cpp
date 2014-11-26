@@ -19,9 +19,9 @@ void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const D
 }
 
 DecentralizedParkPilot::DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
-	: _turbine(turbineId)
 {
 	this->turbineId = turbineId;
+	_turbine = createTurbineInstance(turbineId);
 	this->_ms_last_write_timestamp = chrono::duration_cast< chrono::milliseconds >(
 		chrono::high_resolution_clock::now().time_since_epoch()
 		);
@@ -104,8 +104,8 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		return;
 	}
 
-	_turbine.sendSetpoint(localSetpoint);
-	_turbine.readTurbineData(maxProd, curProd);
+	_turbine->sendSetpoint(localSetpoint);
+	_turbine->readTurbineData(maxProd, curProd);
 
 	TurbineMessage *instance = TurbineMessageTypeSupport::create_data();
 	instance->turbineId = turbineId;
@@ -153,8 +153,8 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 
 		localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, maxProd, curProd, localSetpoint, turbineInfos, cacheCount);
 
-		_turbine.sendSetpoint(localSetpoint);
-		_turbine.readTurbineData(maxProd, curProd);
+		_turbine->sendSetpoint(localSetpoint);
+		_turbine->readTurbineData(maxProd, curProd);
 
 		result = _reader->return_loan(turbines, turbineInfos);
 		if (result != DDS_RETCODE_OK) {

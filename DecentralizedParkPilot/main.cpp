@@ -6,8 +6,6 @@
 
 #include "DecentralizedParkPilot.h"
 
-#include "Turbine.h"
-
 using namespace std;
 
 static bool fileExist(const char *fileName) {
