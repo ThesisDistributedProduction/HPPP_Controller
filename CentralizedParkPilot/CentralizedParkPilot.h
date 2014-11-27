@@ -22,6 +22,7 @@
 #include "SetpointMessagePlugin.h"
 
 #include "TurbineOutlet.h"
+#include "CmdArguments.h"
 
 using namespace std;
 using namespace connext;
@@ -32,14 +33,13 @@ using namespace connext;
 class CentralizedParkPilot
 {
 public:
-	CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* setpoint_topic, uint_fast32_t number_of_turbines);
-	~CentralizedParkPilot();
+	CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* setpoint_topic, CmdArguments args);
 	
 	void calculateNewSetpoints();
 
 private:
 	Requester<RequestMessage, TurbineDataMessage> _requester;
-	uint_fast32_t _number_of_turbines;
+	CmdArguments cmdArgs;
 	SetpointMessageDataWriter* _setpoint_writer;
 	vector<TurbineOutlet*> _turbineOutlets;
 

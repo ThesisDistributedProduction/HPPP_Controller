@@ -14,33 +14,31 @@
 #include "MaxProductionReachedMessage.h"
 #include "MaxProductionReachedMessagePlugin.h"
 #include "MaxProductionReachedMessageSupport.h"
-#include "Turbine.h"
+#include "iTurbine.h"
+#include "CmdArguments.h"
 
 using namespace std;
 
-//#define TURBINE_ID 2
-#define GLOBAL_SETPOINT 2000
-
-class TurbineStatusListener : public DDSDataReaderListener {
-public:
-	void on_liveliness_changed(DDSDataReader* reader, const DDS_LivelinessChangedStatus& status);
-};
+//class TurbineStatusListener : public DDSDataReaderListener {
+//public:
+//	void on_liveliness_changed(DDSDataReader* reader, const DDS_LivelinessChangedStatus& status);
+//};
 
 class DecentralizedParkPilot
 {
 public:
-	DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic);
+	DecentralizedParkPilot(CmdArguments args, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic);
 	~DecentralizedParkPilot();
 
 	void calculateNewSetpoint();
 
 private:
 	DDSDataWriter* _writer;
-	TurbineStatusListener _listener;
+	//TurbineStatusListener _listener;
 	TurbineMessageDataReader* _reader;
 	TurbineMessageDataWriter* _turbine_writer;
-	Turbine _turbine;
-	uint_fast32_t turbineId;
+	std::shared_ptr<iTurbine> _turbine;
+	CmdArguments cmdArgs;
 	chrono::nanoseconds _ms_last_write_timestamp;
 
 	MaxProductionReachedMessageDataWriter* _maxProd_reached_writer;

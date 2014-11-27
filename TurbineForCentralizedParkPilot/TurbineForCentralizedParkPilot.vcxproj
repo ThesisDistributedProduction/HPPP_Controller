@@ -41,13 +41,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(BOOST_HOME);$(SolutionDir)\MongoClientLib\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(BOOST_HOME);$(SolutionDir)\MongoClientLib\include;$(IncludePath);$(SolutionDir)\IDL</IncludePath>
     <ReferencePath>$(VC_ReferencesPath_x64);$(BOOST_HOME);</ReferencePath>
     <LibraryPath>$(SolutionDir)\MongoClientLib\lib;$(BOOST_HOME)\lib64-msvc-12.0;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(BOOST_HOME);$(SolutionDir)\MongoClientLib\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(BOOST_HOME);$(SolutionDir)\MongoClientLib\include;$(IncludePath);$(SolutionDir)\IDL</IncludePath>
     <ReferencePath>$(VC_ReferencesPath_x64);$(BOOST_HOME);</ReferencePath>
     <LibraryPath>$(SolutionDir)\MongoClientLib\lib;$(BOOST_HOME)\lib64-msvc-12.0;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -64,7 +64,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(NDDSHOME)\ndds.5.1.0\lib\x64Win64VS2013;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>rticonnextmsgcppd.lib;nddscored.lib;netapi32.lib;advapi32.lib;user32.lib;WS2_32.lib;;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>rticonnextmsgcppd.lib;netapi32.lib;advapi32.lib;user32.lib;WS2_32.lib;;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -84,13 +84,43 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(NDDSHOME)\ndds.5.1.0\lib\x64Win64VS2013;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>rticonnextmsgcpp.lib;nddscore.lib;netapi32.lib;advapi32.lib;user32.lib;WS2_32.lib;;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>rticonnextmsgcpp.lib;netapi32.lib;advapi32.lib;user32.lib;WS2_32.lib;;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\IDL\MaxProductionReachedMessage.h" />
+    <ClInclude Include="..\IDL\MaxProductionReachedMessagePlugin.h" />
+    <ClInclude Include="..\IDL\MaxProductionReachedMessageSupport.h" />
+    <ClInclude Include="..\IDL\RequestMessage.h" />
+    <ClInclude Include="..\IDL\RequestMessagePlugin.h" />
+    <ClInclude Include="..\IDL\RequestMessageSupport.h" />
+    <ClInclude Include="..\IDL\SetpointMessage.h" />
+    <ClInclude Include="..\IDL\SetpointMessagePlugin.h" />
+    <ClInclude Include="..\IDL\SetpointMessageSupport.h" />
+    <ClInclude Include="..\IDL\TurbineDataMessage.h" />
+    <ClInclude Include="..\IDL\TurbineDataMessagePlugin.h" />
+    <ClInclude Include="..\IDL\TurbineDataMessageSupport.h" />
+    <ClInclude Include="..\IDL\TurbineMessage.h" />
+    <ClInclude Include="..\IDL\TurbineMessagePlugin.h" />
+    <ClInclude Include="..\IDL\TurbineMessageSupport.h" />
     <ClInclude Include="TurbineCentralized.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\IDL\MaxProductionReachedMessage.cxx" />
+    <ClCompile Include="..\IDL\MaxProductionReachedMessagePlugin.cxx" />
+    <ClCompile Include="..\IDL\MaxProductionReachedMessageSupport.cxx" />
+    <ClCompile Include="..\IDL\RequestMessage.cxx" />
+    <ClCompile Include="..\IDL\RequestMessagePlugin.cxx" />
+    <ClCompile Include="..\IDL\RequestMessageSupport.cxx" />
+    <ClCompile Include="..\IDL\SetpointMessage.cxx" />
+    <ClCompile Include="..\IDL\SetpointMessagePlugin.cxx" />
+    <ClCompile Include="..\IDL\SetpointMessageSupport.cxx" />
+    <ClCompile Include="..\IDL\TurbineDataMessage.cxx" />
+    <ClCompile Include="..\IDL\TurbineDataMessagePlugin.cxx" />
+    <ClCompile Include="..\IDL\TurbineDataMessageSupport.cxx" />
+    <ClCompile Include="..\IDL\TurbineMessage.cxx" />
+    <ClCompile Include="..\IDL\TurbineMessagePlugin.cxx" />
+    <ClCompile Include="..\IDL\TurbineMessageSupport.cxx" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TurbineCentralized.cpp" />
   </ItemGroup>

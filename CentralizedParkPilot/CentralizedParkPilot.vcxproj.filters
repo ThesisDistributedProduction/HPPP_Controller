@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="IDL">
+      <UniqueIdentifier>{ca38fdd3-c63b-4d89-9be4-d74ac2d0bb08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CentralizedParkPilot.h">
@@ -21,6 +24,51 @@
     <ClInclude Include="TurbineOutlet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\IDL\MaxProductionReachedMessage.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\MaxProductionReachedMessagePlugin.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\MaxProductionReachedMessageSupport.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\RequestMessage.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\RequestMessagePlugin.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\RequestMessageSupport.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\SetpointMessage.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\SetpointMessagePlugin.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\SetpointMessageSupport.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\TurbineDataMessage.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\TurbineDataMessagePlugin.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\TurbineDataMessageSupport.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\TurbineMessage.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\TurbineMessagePlugin.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDL\TurbineMessageSupport.h">
+      <Filter>IDL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CentralizedParkPilot.cpp">
@@ -28,6 +76,51 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\MaxProductionReachedMessageSupport.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\RequestMessage.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\RequestMessagePlugin.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\RequestMessageSupport.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\SetpointMessage.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\SetpointMessagePlugin.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\SetpointMessageSupport.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\TurbineDataMessage.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\TurbineDataMessagePlugin.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\TurbineDataMessageSupport.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\TurbineMessage.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\TurbineMessagePlugin.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\TurbineMessageSupport.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\MaxProductionReachedMessage.cxx">
+      <Filter>IDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDL\MaxProductionReachedMessagePlugin.cxx">
+      <Filter>IDL</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

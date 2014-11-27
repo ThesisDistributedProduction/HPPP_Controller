@@ -1,35 +1,33 @@
 #include "DecentralizedParkPilot.h"
 
 
-void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const DDS_LivelinessChangedStatus& status) 
-{
-	
-	if (status.alive_count_change > 0)
-		cout << "\nTurbine ONLINE." << std::endl;
-	else if (status.alive_count_change < 0)
-		cout << "\nTurbine OFFLINE." << std::endl;
-	else 
-		cout << "\nNo change" << std::endl;
+//void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const DDS_LivelinessChangedStatus& status) 
+//{
+//	
+//	if (status.alive_count_change > 0)
+//		cout << "\nTurbine ONLINE." << std::endl;
+//	else if (status.alive_count_change < 0)
+//		cout << "\nTurbine OFFLINE." << std::endl;
+//	else 
+//		cout << "\nNo change" << std::endl;
+//
+//	if (!status.last_publication_handle.isValid) {
+//		cout << "\nTurbine not valid.";
+//	}
+//}
 
-	if (!status.last_publication_handle.isValid) {
-		cout << "\nTurbine not valid.";
-	}
-	std::cout << endl << "DECENTRALIZED PARK PILOT" << endl;
-	cout << " N    Time     ID Prod Setpoint  Max  GlobalSetpoint CycleTime(ns) CacheCount" << endl;
-}
-
-DecentralizedParkPilot::DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
-	: _turbine(turbineId)
+DecentralizedParkPilot::DecentralizedParkPilot(CmdArguments args, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
 {
-	this->turbineId = turbineId;
-	this->_ms_last_write_timestamp = chrono::duration_cast< chrono::milliseconds >(
+	this->cmdArgs = args;
+	_turbine = createTurbineInstance(cmdArgs.id);
+	this->_ms_last_write_timestamp = chrono::duration_cast< chrono::nanoseconds >(
 		chrono::high_resolution_clock::now().time_since_epoch()
 		);
 
 	DDSDataReader* untypedReader = participant->create_datareader(
 		cluster_topic,
 		DDS_DATAREADER_QOS_DEFAULT, 
-		&_listener,							 
+		NULL,							 
 		DDS_STATUS_MASK_ALL);			//(DDS_DATA_AVAILABLE_STATUS)
 	if (untypedReader == NULL) {
 		printf("create_datareader error\n");
@@ -104,12 +102,17 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		return;
 	}
 
-	_turbine.sendSetpoint(localSetpoint);
-	_turbine.readTurbineData(maxProd, curProd);
+	_turbine->sendSetpoint(localSetpoint);
+	_turbine->readTurbineData(maxProd, curProd);
 
 	TurbineMessage *instance = TurbineMessageTypeSupport::create_data();
-	instance->turbineId = turbineId;
+	instance->turbineId = cmdArgs.id;
 	DDS_InstanceHandle_t instance_handle = _turbine_writer->register_instance(*instance);
+
+	if( !cmdArgs.silent ) {
+		std::cout << endl << "DECENTRALIZED PARK PILOT" << endl;
+		cout << " N    Time     ID Prod Setpoint  Max  GlobalSetpoint CycleTime(ms) CacheCount" << endl;
+	}
 
 	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
 
@@ -149,19 +152,21 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 			throw runtime_error("A read error occurred: " + result);
 		}
 
-		printReceivedTurbineData(turbines, turbineInfos);
+		if( !cmdArgs.silent ) {
+			printReceivedTurbineData(turbines, turbineInfos);
+		}
 
-		localSetpoint = regAlgorithm(GLOBAL_SETPOINT, turbines, maxProd, curProd, localSetpoint, turbineInfos, cacheCount);
+		localSetpoint = regAlgorithm(cmdArgs.setpoint, turbines, maxProd, curProd, localSetpoint, turbineInfos, cacheCount);
 
-		_turbine.sendSetpoint(localSetpoint);
-		_turbine.readTurbineData(maxProd, curProd);
+		_turbine->sendSetpoint(localSetpoint);
+		_turbine->readTurbineData(maxProd, curProd);
 
 		result = _reader->return_loan(turbines, turbineInfos);
 		if (result != DDS_RETCODE_OK) {
 			throw runtime_error("A loan return error occurred: " + result);
 		}
 	sleep:
-		this_thread::sleep_for(chrono::milliseconds(20));
+		this_thread::sleep_for(chrono::milliseconds(cmdArgs.msleep));
 	}
 }
 
@@ -219,7 +224,7 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 
 		TurbineMessage& turbineData = turbines[i];
 
-		if( turbineData.turbineId != this->turbineId ) {
+		if( turbineData.turbineId != this->cmdArgs.id ) {
 			continue;
 		}
 		
@@ -239,7 +244,7 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 		cout << setfill(' ') << setw(6) << turbineData.currentProduction;
 		cout << setfill(' ') << setw(7) << turbineData.setPoint;
 		cout << setfill(' ') << setw(8) << turbineData.maxProduction;
-		cout << setfill(' ') << setw(10) << GLOBAL_SETPOINT;
+		cout << setfill(' ') << setw(10) << cmdArgs.setpoint;
 		cout << setfill(' ') << setw(16) << turbineData.msSinceLastWrite;
 		cout << setfill(' ') << setw(9) << turbineData.cacheCount;
 
@@ -252,7 +257,7 @@ void DecentralizedParkPilot::productionLevelReached(long localAndMaxDiff)
 	DDS_ReturnCode_t retcode;
 
 	MaxProductionReachedMessage *msg = MaxProductionReachedMessageTypeSupport::create_data();
-	msg->turbineId = turbineId;
+	msg->turbineId = cmdArgs.id;
 	DDS_InstanceHandle_t instance_handle = _maxProd_reached_writer->register_instance(*msg);
 	
 	msg->localAndMaxDiff = localAndMaxDiff;

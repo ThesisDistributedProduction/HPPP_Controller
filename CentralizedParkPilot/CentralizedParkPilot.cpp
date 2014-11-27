@@ -1,9 +1,9 @@
 #include "CentralizedParkPilot.h"
 
-CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* setpoint_topic, uint_fast32_t number_of_turbines)
+CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DDSTopic* setpoint_topic, CmdArguments args)
 	: _requester(participant, "TurbineData")
 {
-	this->_number_of_turbines = number_of_turbines;
+	cmdArgs = args;
 
 	DDSPublisher* publisher = participant->create_publisher(
 		DDS_PUBLISHER_QOS_DEFAULT,
@@ -30,7 +30,7 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 		throw runtime_error("Unable to create _setpoint_writer");
 	}
 
-	for (size_t i = 1; i < (number_of_turbines + START_ID); i++)
+	for( size_t i = 1; i < ( cmdArgs.numberOfTurbines + START_ID ); i++ )
 	{
 		TurbineOutlet* out = new TurbineOutlet(i, _setpoint_writer);
 		out->registerTurbine();
@@ -40,14 +40,11 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 	std::cout << "CycleTime(ns)  N  GlobalSetpoint  GlobalProd  GlobalMax" << endl;
 }
 
-CentralizedParkPilot::~CentralizedParkPilot()
-{
-}
-
 void CentralizedParkPilot::calculateNewSetpoints()
 {
 	int sample_count = 0;
 	DDS_Duration_t receive_period = { 0, 150000000 }; //150 ms
+
 	DDS_Duration_t sleep_time = { 0, 20000000 }; //20 ms
 	chrono::nanoseconds ms_last_write_timestamp = chrono::duration_cast<chrono::nanoseconds>(
 		chrono::high_resolution_clock::now().time_since_epoch());
@@ -75,7 +72,7 @@ void CentralizedParkPilot::calculateNewSetpoints()
 			chrono::high_resolution_clock::now().time_since_epoch()
 			);
 
-		LoanedSamples<TurbineDataMessage> replies = _requester.receive_replies(this->_number_of_turbines, this->_number_of_turbines, DURATION_INFINITE);
+		LoanedSamples<TurbineDataMessage> replies = _requester.receive_replies(cmdArgs.numberOfTurbines, cmdArgs.numberOfTurbines, DURATION_INFINITE);
 
 		if (replies.length() == 0) {
 			//cout << "continue" << endl;
@@ -100,6 +97,8 @@ void CentralizedParkPilot::calculateNewSetpoints()
 
 				globalCurProd += it->data().currentProduction;
 				globalMaxProd += it->data().maxProduction;
+
+				long id = it->data().turbineId;
 
 				_turbineOutlets[it->data().turbineId - START_ID]->setCurProd(it->data().currentProduction);
 				_turbineOutlets[it->data().turbineId - START_ID]->setMaxProd(it->data().maxProduction);
@@ -140,7 +139,7 @@ void CentralizedParkPilot::calculateNewSetpoints()
 		}		
 
 
-		this_thread::sleep_for(chrono::milliseconds(5));
+		this_thread::sleep_for(chrono::milliseconds(cmdArgs.msleep));
 
 		/* We don't need to call replies.return_loan(); the destructor
 		* takes care of doing it every time replies goes out of scope
@@ -149,6 +148,6 @@ void CentralizedParkPilot::calculateNewSetpoints()
 		//printf("Centralized park pilot subscriber sleeping for %d ms...\n",
 		//	(receive_period.nanosec / 1000000));
 
-		//NDDSUtility::sleep(receive_period);
+		//NDDSUtility::(receive_period);
 	}
 }
