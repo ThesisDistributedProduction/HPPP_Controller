@@ -120,7 +120,7 @@ public:
 					<< local_src_time->tm_sec << "] ";
 				cout << setfill(' ') << setw(5) << _reply.data().currentProduction;
 				cout << setfill(' ') << setw(6) << _reply.data().maxProduction;
-				cout << setfill(' ') << setw(8) << request.data().msSinceLastWrite;
+				cout << setfill(' ') << setw(11) << request.data().msSinceLastWrite;
 
 				std::cout.flush();
 

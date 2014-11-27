@@ -15,7 +15,7 @@ void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const D
 		cout << "\nTurbine not valid.";
 	}
 	std::cout << endl << "DECENTRALIZED PARK PILOT" << endl;
-	cout << " N    Time     ID Prod Setpoint  Max  GlobalSetpoint CycleTime(ms) CacheCount" << endl;
+	cout << " N    Time     ID Prod Setpoint  Max  GlobalSetpoint CycleTime(ns) CacheCount" << endl;
 }
 
 DecentralizedParkPilot::DecentralizedParkPilot(uint_fast32_t turbineId, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
@@ -116,14 +116,14 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		instance->currentProduction = curProd;
 		instance->maxProduction = maxProd;
 		instance->setPoint = localSetpoint;
-		instance->msSinceLastWrite = (chrono::duration_cast< chrono::milliseconds >(
+		instance->msSinceLastWrite = (chrono::duration_cast< chrono::nanoseconds >(
 			chrono::high_resolution_clock::now().time_since_epoch()
 			) - this->_ms_last_write_timestamp).count();
 		instance->cacheCount = cacheCount;
 		
 
 		//update timestamp
-		_ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
+		_ms_last_write_timestamp = chrono::duration_cast<chrono::nanoseconds>(
 			chrono::high_resolution_clock::now().time_since_epoch()
 			);
 
@@ -240,8 +240,8 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 		cout << setfill(' ') << setw(7) << turbineData.setPoint;
 		cout << setfill(' ') << setw(8) << turbineData.maxProduction;
 		cout << setfill(' ') << setw(10) << GLOBAL_SETPOINT;
-		cout << setfill(' ') << setw(12) << turbineData.msSinceLastWrite;
-		cout << setfill(' ') << setw(13) << turbineData.cacheCount;
+		cout << setfill(' ') << setw(16) << turbineData.msSinceLastWrite;
+		cout << setfill(' ') << setw(9) << turbineData.cacheCount;
 
 		std::cout.flush( );
 	}

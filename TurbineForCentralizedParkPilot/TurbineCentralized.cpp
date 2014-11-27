@@ -66,6 +66,6 @@ TurbineCentralized::TurbineCentralized(Turbine& turbine, DDSDomainParticipant* p
 
 
 	cout << endl << "CENTRALIZED TURBINE. ID: " << this->_turbine->getTurbineId() << endl;
-	cout << "    Time     Prod  Max  CycleTime(ms)" << endl;
+	cout << "    Time     Prod  Max  CycleTime(ns)" << endl;
 
 }

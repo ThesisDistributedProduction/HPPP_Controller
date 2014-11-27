@@ -41,7 +41,7 @@ private:
 	TurbineMessageDataWriter* _turbine_writer;
 	Turbine _turbine;
 	uint_fast32_t turbineId;
-	chrono::milliseconds _ms_last_write_timestamp;
+	chrono::nanoseconds _ms_last_write_timestamp;
 
 	MaxProductionReachedMessageDataWriter* _maxProd_reached_writer;
 

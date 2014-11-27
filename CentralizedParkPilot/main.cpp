@@ -105,11 +105,11 @@ int main(int argc, char *argv[], char *envp[]){
 		number_of_turbines = atoi(argv[1]);
 	}
 
-	//if (!fileExist("USER_QOS_PROFILES.xml")) {
-	//	std::cout << "! Unable to locate QoS definition file" << std::endl;
-	//	std::cout << "! (USER_QOS_PROFILES.xml) in current directory." << std::endl;
-	//	return main_result;
-	//}
+	if (!fileExist("USER_QOS_PROFILES.xml")) {
+		std::cout << "! Unable to locate QoS definition file" << std::endl;
+		std::cout << "! (USER_QOS_PROFILES.xml) in current directory." << std::endl;
+		return main_result;
+	}
 
 	if (startCentralizedApplication(number_of_turbines))
 		main_result = 0;

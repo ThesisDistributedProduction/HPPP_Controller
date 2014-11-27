@@ -37,7 +37,7 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 		_turbineOutlets.push_back(out);
 	}
 	std::cout << endl << "CENTRALIZED PARK PILOT" << endl;
-	std::cout << "CycleTime(ms)  N  GlobalSetpoint  GlobalProd  GlobalMax" << endl;
+	std::cout << "CycleTime(ns)  N  GlobalSetpoint  GlobalProd  GlobalMax" << endl;
 }
 
 CentralizedParkPilot::~CentralizedParkPilot()
@@ -49,7 +49,7 @@ void CentralizedParkPilot::calculateNewSetpoints()
 	int sample_count = 0;
 	DDS_Duration_t receive_period = { 0, 150000000 }; //150 ms
 	DDS_Duration_t sleep_time = { 0, 20000000 }; //20 ms
-	chrono::milliseconds ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
+	chrono::nanoseconds ms_last_write_timestamp = chrono::duration_cast<chrono::nanoseconds>(
 		chrono::high_resolution_clock::now().time_since_epoch());
 
 	long cycle_time = 0;
@@ -61,7 +61,7 @@ void CentralizedParkPilot::calculateNewSetpoints()
 		WriteSample<RequestMessage> request;
 
 
-		request.data().msSinceLastWrite = (chrono::duration_cast< chrono::milliseconds >(
+		request.data().msSinceLastWrite = (chrono::duration_cast< chrono::nanoseconds >(
 			chrono::high_resolution_clock::now().time_since_epoch()) - ms_last_write_timestamp).count();
 
 		_requester.send_request(request);
@@ -71,7 +71,7 @@ void CentralizedParkPilot::calculateNewSetpoints()
 		
 
 		//update timestamp
-		ms_last_write_timestamp = chrono::duration_cast<chrono::milliseconds>(
+		ms_last_write_timestamp = chrono::duration_cast<chrono::nanoseconds>(
 			chrono::high_resolution_clock::now().time_since_epoch()
 			);
 
@@ -108,12 +108,17 @@ void CentralizedParkPilot::calculateNewSetpoints()
 				availableTurbinesCount--;
 		}
 
+		if (cycle_time == 0)
+		{
+			cout << "ZORRO" << endl;
+		}
+
 		std::cout << "\r";
-		std::cout << setfill(' ') << setw(7) << cycle_time;
-		std::cout << setfill(' ') << setw(9) << replies.length();
+		std::cout << setfill(' ') << setw(10) << cycle_time;
+		std::cout << setfill(' ') << setw(6) << replies.length();
 		std::cout << setfill(' ') << setw(11) << GLOBAL_SETPOINT;
 		std::cout << setfill(' ') << setw(14) << globalCurProd;
-		std::cout << setfill(' ') << setw(12) << globalMaxProd;
+		std::cout << setfill(' ') << setw(11) << globalMaxProd;
 
 		std::cout.flush();
 
@@ -134,6 +139,8 @@ void CentralizedParkPilot::calculateNewSetpoints()
 			}
 		}		
 
+
+		this_thread::sleep_for(chrono::milliseconds(5));
 
 		/* We don't need to call replies.return_loan(); the destructor
 		* takes care of doing it every time replies goes out of scope
