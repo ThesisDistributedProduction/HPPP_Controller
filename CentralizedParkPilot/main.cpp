@@ -3,7 +3,6 @@
 #include <list>
 #include <fstream>
 #include <vector>
-
 #include "CentralizedParkPilot.h"
 
 using namespace std;
@@ -44,7 +43,7 @@ static bool participant_shutdown(DDSDomainParticipant *participant)
 	return true;
 }
 
-static bool startCentralizedApplication(uint_fast32_t number_of_turbines)
+static bool startCentralizedApplication(CmdArguments args)
 {
 	DDS_ReturnCode_t retcode;
 
@@ -86,7 +85,7 @@ static bool startCentralizedApplication(uint_fast32_t number_of_turbines)
 
 	try
 	{
-		CentralizedParkPilot pp(participant, setpoint_topic, number_of_turbines);
+		CentralizedParkPilot pp(participant, setpoint_topic, args);
 
 		pp.calculateNewSetpoints();
 	}
@@ -98,21 +97,19 @@ static bool startCentralizedApplication(uint_fast32_t number_of_turbines)
 }
 
 int main(int argc, char *argv[], char *envp[]){
-	int main_result = 1; /* error by default */
+	int mainResult = 1; /* error by default */
 
-	uint_fast32_t number_of_turbines = 1;
-	if( argc > 1 ) {
-		number_of_turbines = atoi(argv[1]);
+	CmdArguments args = parseCmdLineArgs(argc, argv);
+
+	if( args.numberOfTurbines > 0 ) {
+		cout << "Please specify number of turbines (fx -n 50 ): ";
+		cin >> args.numberOfTurbines;
+		cout << endl;
 	}
 
-	//if (!fileExist("USER_QOS_PROFILES.xml")) {
-	//	std::cout << "! Unable to locate QoS definition file" << std::endl;
-	//	std::cout << "! (USER_QOS_PROFILES.xml) in current directory." << std::endl;
-	//	return main_result;
-	//}
 
-	if (startCentralizedApplication(number_of_turbines))
-		main_result = 0;
+	if(startCentralizedApplication(args) )
+		mainResult = 0;
 
-	return main_result;
+	return mainResult;
 }

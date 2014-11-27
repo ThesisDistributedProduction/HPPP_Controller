@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CmdArguments.h" />
     <ClInclude Include="MaxProdDBReader.h" />
     <ClInclude Include="MaxProdQuery.h" />
     <ClInclude Include="Turbine.h" />
@@ -21,6 +22,7 @@
     <ClInclude Include="Turbine\MongoPrepariedQuery.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CmdArguments.cpp" />
     <ClCompile Include="Turbine.cpp" />
     <ClCompile Include="Turbine\MongoDatabase.cpp" />
   </ItemGroup>

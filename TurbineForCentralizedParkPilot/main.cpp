@@ -46,7 +46,7 @@ static bool participant_shutdown(DDSDomainParticipant *participant)
 	return true;
 }
 
-static bool startTurbineForCentralizedApplication(uint_fast32_t turbineId)
+static bool startTurbineForCentralizedApplication(CmdArguments args)
 {
 	DDS_ReturnCode_t retcode;
 
@@ -87,7 +87,7 @@ static bool startTurbineForCentralizedApplication(uint_fast32_t turbineId)
 		participant_shutdown(participant);
 		return false;
 	}
-	std::string contentFilterExpression = "turbineId=" + std::to_string(turbineId);
+	std::string contentFilterExpression = "turbineId=" + std::to_string(args.id);
 
 	//std::string contentFilterExpression = "key='BLA'";
 
@@ -102,7 +102,7 @@ static bool startTurbineForCentralizedApplication(uint_fast32_t turbineId)
 		throw std::runtime_error("Unable to create ContentFilteredTopic");
 	}
 
-	Turbine turbine(turbineId);
+	Turbine turbine(args.id);
 
 	try
 	{
@@ -120,10 +120,7 @@ static bool startTurbineForCentralizedApplication(uint_fast32_t turbineId)
 int main(int argc, char *argv[], char *envp[]){
 	int main_result = 1; /* error by default */
 
-	uint_fast32_t turbineId = 1;
-	if( argc > 1 ) {
-		turbineId = atoi(argv[1]);
-	}
+	CmdArguments args = parseCmdLineArgs(argc, argv);
 
 	//if (!fileExist("USER_QOS_PROFILES.xml")) {
 	//	std::cout << "! Unable to locate QoS definition file" << std::endl;
@@ -131,7 +128,7 @@ int main(int argc, char *argv[], char *envp[]){
 	//	return main_result;
 	//}
 
-	if (startTurbineForCentralizedApplication(turbineId))
+	if( startTurbineForCentralizedApplication(args) )
 		main_result = 0;
 
 	return main_result;

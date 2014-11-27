@@ -42,6 +42,9 @@
     <ClInclude Include="TurbineSim.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CmdArguments.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Turbine\MongoDatabase.cpp">
@@ -49,6 +52,9 @@
     </ClCompile>
     <ClCompile Include="Turbine.cpp">
       <Filter>Turbine</Filter>
+    </ClCompile>
+    <ClCompile Include="CmdArguments.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

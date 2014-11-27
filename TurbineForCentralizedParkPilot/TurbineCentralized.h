@@ -22,6 +22,7 @@
 #include "SetpointMessagePlugin.h"
 
 #include "Turbine.h"
+#include "CmdArguments.h"
 
 using namespace std;
 using namespace connext;
