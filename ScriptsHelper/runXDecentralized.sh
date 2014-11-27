@@ -20,11 +20,13 @@ cd ../DecentralizedParkPilot
 
 echo "Starting nodes form $START to start $N"
 
-for (( i=START; i<=N; i++ )); do
+for (( i=START+1; i<=N; i++ )); do
 	echo "staring with id: " $i
-   build/DecentralizedParkPilot -id $i -msleep $mSleep -s &
+   build/DecentralicedClient -id $i -msleep $mSleep -s > null&
 done
 
+	echo "staring with id: " $START
+build/DecentralicedClient -id $START -msleep $mSleep -s
 
 cd ..
 #echo
