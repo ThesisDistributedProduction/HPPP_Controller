@@ -33,7 +33,7 @@ CmdArguments parseCmdLineArgs(int argc, char *argv[]) {
 			i++;
 
 		} else if( strcmp(argument, VERBOSE) == 0 && argc ) {
-			args.silent = false;
+			args.silent = true;
 
 		}
 
