@@ -7,13 +7,13 @@ $WORK_DIR = "~/work/HPPP_Controller/ScriptsHelper"
 $DECENTRALICED_RUN_CMD = "bash -l ./runXDecentralized.sh"
 
 $SAMPLE_TIME = 120
-$WAIT_TURBINES_TIME = 0 #NEEDS CALIBRATION
+$WAIT_TURBINES_TIME = $SAMPLE_TIME + 10  #NEEDS CALIBRATION
 
 Function StartRemoteTurbine{
   Param ([string]$HOST_SYSTEM = 0, [int]$nTurbines = 0, [int]$mSleep = 20)
   $remoteCmd = """cd ~/work/HPPP_Controller&& bash -l ./runXDecentralized.sh $nTurbines $mSleep"""
   $CMD = [scriptblock]::Create("..\Tools\putty.exe -ssh -pw end2endtest -t $HOST_SYSTEM $remoteCmd")
-#  Invoke-Command -scriptblock $CMD
+  Invoke-Command -scriptblock $CMD
 
   Write-Host $CMD
 }
@@ -39,10 +39,10 @@ Function OpenMatlab{
 
 for ([int]$nTurbines=5; $nTurbines -le 101; $nTurbines += 5){  
   $nTurbinesA = [math]::floor($nTurbines / 2)
-  $nTurbinesB = [math]::Ceiling($nTurbines / 2)
+#  $nTurbinesB = [math]::Ceiling($nTurbines / 2)
   
   StartRemoteTurbine $HOST_A $nTurbinesA
-  StartRemoteTurbine $HOST_B $nTurbinesB
+#  StartRemoteTurbine $HOST_B $nTurbinesB
   OpenMatlab
 
   sleep $WAIT_TURBINES_TIME
