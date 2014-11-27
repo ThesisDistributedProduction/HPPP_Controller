@@ -1,6 +1,6 @@
 @echo off
 
-cd DecentralizedParkPilot
+cd ..\DecentralizedParkPilot
 
 echo Starting: %id%
 
