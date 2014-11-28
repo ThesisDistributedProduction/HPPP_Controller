@@ -11,7 +11,7 @@ your installation:
 -->
 <dds>
     <qos_library name="DefaultLibrary">
-        <qos_profile name="ParticipantQOS" base_name="BuiltinQosLib::Generic.Common" is_default_participant_factory_profile="true">
+        <qos_profile name="ParticipantQOS" is_default_participant_factory_profile="true">
             <participant_factory_qos>
 				<!-- relevant for siemens -->
                 <logging>
@@ -23,7 +23,7 @@ your installation:
             </participant_factory_qos>
 
             <participant_qos>
-				<!-- db cleanup after shutdown of a participant -->
+				<!-- db cleanup after shutdown of a participant. Db is the db local and remote entities -->
                 <database>
                     <shutdown_cleanup_period>
                         <sec>DURATION_ZERO_SEC</sec>
@@ -34,18 +34,33 @@ your installation:
                 <transport_builtin>
                     <mask>UDPv4</mask>
                 </transport_builtin>
+                <receiver_pool>
+                    <buffer_size>LENGTH_AUTO</buffer_size>
+                </receiver_pool>
                 <property>
                     <value>
                         <element>
                             <name>dds.transport.UDPv4.builtin.multicast_enabled</name>
                             <value>0</value>
                         </element>
-                    </value>
+						<element>
+							<name>dds.transport.UDPv4.builtin.parent.message_size_max</name>
+							<value>65535</value>
+						</element>
+						<element>
+							<name>dds.transport.UDPv4.builtin.send_socket_buffer_size </name>
+							<value>65535</value>
+						</element>
+						<element>
+							<name>dds.transport.UDPv4.builtin.recv_socket_buffer_size</name>
+							<value>2097152</value>
+						</element>
+					</value>
                 </property>
             </participant_qos>
 			
 			<topic_qos name="TurbineTopicQos">
-				<!-- Vi er ligeglade med, om vi taber en pakke. 
+				<!-- 
 				 DDS_PROTOCOL_ACKNOWLEDGMENT_MODE (Default) = No application-level acknowledgement. 
 				 AckNack sker gennem Real-Time Publish-Subscribe (RTPS) reliability protocol. -->
 				<reliability>
@@ -58,137 +73,48 @@ your installation:
 					<name>TurbineDataWriter</name>
 				</publication_name>
 				
-				
 				<!-- Størrelse af reliability buffer -->
 				<history>
-					<kind>KEEP_LAST_HISTORY_QOS</kind>
-					<depth>1</depth>
+					<kind>KEEP_ALL_HISTORY_QOS</kind>
 				</history>
 				
-				<lifespan>
+                <!-- HIGH THROUGHPUT
+                We're limiting resources based on the number of batches. We
+                could limit resources on a per-sample basis too if we wanted
+                to; we'd probably to set the value based on how many samples
+                we expect to be in each batch. Rather than come up with a
+                heuristic, however, it's more straightforward to override
+                this value to leave the value unlimited. (If you were to set
+                both, the first limit to be hit would take effect.)
+                
+                <resource_limits>
+                    <max_samples>LENGTH_UNLIMITED</max_samples>
+                </resource_limits>-->
+				
+				<resource_limits>
+                    <max_samples_per_instance>20</max_samples_per_instance>
+                </resource_limits>
+                <reliability>
+                    <max_blocking_time>
+                        <sec>5</sec>
+                        <nanosec>0</nanosec>
+                    </max_blocking_time>
+                </reliability>
+				<!-- <lifespan>
 					<duration>
 						 <sec>0</sec>
 						 <nanosec>150000000</nanosec>
 					</duration>
-				</lifespan>
+				</lifespan> -->
 				
 				<!-- <liveliness>
 					<lease_duration>
 						<sec>0</sec>
 						<nanosec>300000000</nanosec>
 					</lease_duration>
-				</liveliness> -->  
-			</datawriter_qos>
-			
-
-			<!-- QoS used to configure the data reader created in the example code -->				
-			<datareader_qos>
-				<subscription_name>
-					<name>TurbineDataReader</name>
-				</subscription_name>
+				</liveliness> --> 
 				
-				<!-- Vi er ikke interesserede i historik -->
-				<history>
-					<kind>KEEP_LAST_HISTORY_QOS</kind>
-					<depth>0</depth>
-				</history>
-
-				<!-- enable the use of multicast -->
-				<multicast>
-					<kind>
-						AUTOMATIC_TRANSPORT_MULTICAST_QOS
-					</kind>
-					<value>
-						<element>
-							<!--<transports></transports>-->
-							<receive_address>239.192.0.1</receive_address>
-							<!--<receive_port></receive_port>-->
-						</element>
-					</value>
-				</multicast>
-
-				<!-- <liveliness>
-					<lease_duration>
-						<sec>1</sec>
-						<nanosec>0</nanosec>
-					</lease_duration>
-				</liveliness> -->
-			</datareader_qos>
-			
-        </qos_profile>
-		
-		
-      
-		<qos_profile name="SwpBestEffort">
-            <datareader_qos>
-                <liveliness>
-                    <lease_duration>
-                        <sec>1</sec>
-                        <nanosec>0</nanosec>
-                    </lease_duration>
-                </liveliness>
-                <reliability>
-                    <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
-                </reliability>
-                <history>
-                    <kind>KEEP_LAST_HISTORY_QOS</kind>
-                    <depth>1</depth>
-                </history>
-
-                <!--
-                The following parameters tune the behavior of the reliability
-                protocol. Setting them is not required in order to achieve
-                strict reliability but is beneficial from a performance
-                standpoint. 
-                -->
-                <protocol>
-                    <rtps_reliable_reader>
-                        <!--
-                        When the DataReader receives a heartbeat from a
-                        DataWriter (indicating (a) that the DataWriter still
-                        exists on the network and (b) what sequence numbers
-                        it has published), the following parameters indicate
-                        how long it will wait before replying with a positive
-                        (assuming they aren't disabled) or negative
-                        acknowledgement.
-
-                        The time the reader waits will be a random duration
-                        in between the minimum and maximum values. Narrowing
-                        this range, and shifting it towards zero, will make
-                        the system more reactive. However, it will increase
-                        the chance of (N)ACK spikes. The higher the number of
-                        readers on the topic, and the greater the load on
-                        your network, the more you should consider specifying
-                        a range here.
-                        -->
-                        <min_heartbeat_response_delay>
-                            <sec>0</sec>
-                            <nanosec>0</nanosec>
-                        </min_heartbeat_response_delay>
-                        <max_heartbeat_response_delay>
-                            <sec>0</sec>
-                            <nanosec>0</nanosec>
-                        </max_heartbeat_response_delay>
-                    </rtps_reliable_reader>
-                </protocol>
-            </datareader_qos>
-
-            <datawriter_qos>
-                <liveliness>
-                    <lease_duration>
-                        <sec>1</sec>
-                        <nanosec>0</nanosec>
-                    </lease_duration>
-                </liveliness>
-                <reliability>
-                    <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
-                </reliability>
-                <history>
-                    <kind>KEEP_LAST_HISTORY_QOS</kind>
-                    <depth>1</depth>
-                </history>
-
-                <!--
+				<!--
                 The following parameters tune the behavior of the reliability
                 protocol. Setting them is not required in order to achieve
                 strict reliability but is beneficial from a performance
@@ -299,549 +225,58 @@ your installation:
                         <max_send_window_size>32</max_send_window_size>
                     </rtps_reliable_writer>
                 </protocol>
-            </datawriter_qos>
-        </qos_profile>
+				 
+			</datawriter_qos>
+			
 
-        <qos_profile name="SwpReliableNoDurability" base_name="SwpBestEffort">
-            <datareader_qos>
-                <reliability>
-                    <kind>RELIABLE_RELIABILITY_QOS</kind>
-                </reliability>
-            </datareader_qos>
-
-            <datawriter_qos>
-                <reliability>
-                    <kind>RELIABLE_RELIABILITY_QOS</kind>
-                </reliability>
-            </datawriter_qos>
-        </qos_profile>
-
-        <qos_profile name="SwpReliable" base_name="SwpReliableNoDurability">
-            <datareader_qos>
-                <durability>
-                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
-                </durability>
-            </datareader_qos>
-
-            <datawriter_qos>
-                <durability>
-                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
-                </durability>
-            </datawriter_qos>
-        </qos_profile>
-
-        <qos_profile name="SwpStrictReliableNoDurability" base_name="SwpReliableNoDurability">
-            <datareader_qos>
-                <history>
-                    <kind>KEEP_ALL_HISTORY_QOS</kind>
-                </history>
-                <resource_limits>
-                    <max_samples_per_instance>20</max_samples_per_instance>
-                </resource_limits>
-            </datareader_qos>
-
-            <datawriter_qos>
-                <history>
-                    <kind>KEEP_ALL_HISTORY_QOS</kind>
-                </history>
-                <resource_limits>
-                    <max_samples_per_instance>20</max_samples_per_instance>
-                </resource_limits>
-                <reliability>
-                    <max_blocking_time>
-                        <sec>5</sec>
-                        <nanosec>0</nanosec>
-                    </max_blocking_time>
-                </reliability>
-            </datawriter_qos>
-        </qos_profile>
-
-        <qos_profile name="SwpStrictReliable" base_name="SwpStrictReliableNoDurability">
-            <datareader_qos>
-                <durability>
-                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
-                </durability>
-            </datareader_qos>
-
-            <datawriter_qos>
-                <durability>
-                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
-                </durability>
-            </datawriter_qos>
-        </qos_profile>
-
-        <qos_profile name="SwpHighThroughputBestEffort" base_name="SwpBestEffort">
-            <datawriter_qos>
-                <writer_resource_limits>
-                    <!--
-                    The number of batches (not samples) for which the
-                    DataWriter will allocate space.
-
-                    The initial_batches parameter is also set here, indicating
-                    to the writer that it should pre-allocate all of the space
-                    up front. Pre-allocation will remove memory allocattion
-                    from the critical path of the application, improving
-                    performance and determinism.
-
-                    Finite resources are not required for strict reliability.
-                    However, by limiting how far "ahead" of its readers a
-                    writer is able to get, you can make the system more
-                    robust and performant in the face of slow readers and/or
-                    dropped packets while at the same time constraining your
-                    memory growth.
-                    -->
-                    <max_batches>32</max_batches>
-                    <initial_batches>32</initial_batches>
-                </writer_resource_limits>
-
+			<!-- QoS used to configure the data reader created in the example code -->				
+			<datareader_qos>
+				<subscription_name>
+					<name>TurbineDataReader</name>
+				</subscription_name>
+				
+				<!-- Vi er ikke interesserede i historik -->
+				<history>
+					<kind>KEEP_LAST_HISTORY_QOS</kind>
+					<depth>0</depth>
+				</history>
                 <!--
-                We're limiting resources based on the number of batches. We
-                could limit resources on a per-sample basis too if we wanted
-                to; we'd probably to set the value based on how many samples
-                we expect to be in each batch. Rather than come up with a
-                heuristic, however, it's more straightforward to override
-                this value to leave the value unlimited. (If you were to set
-                both, the first limit to be hit would take effect.)
+                The following parameters tune the behavior of the reliability
+                protocol. Setting them is not required in order to achieve
+                strict reliability but is beneficial from a performance
+                standpoint. 
                 -->
-                <resource_limits>
-                    <max_samples>LENGTH_UNLIMITED</max_samples>
-                </resource_limits>
-
                 <protocol>
-                    <rtps_reliable_writer>
+                    <rtps_reliable_reader>
                         <!--
-                        Speed up the heartbeat rate. See reliable.xml for
-                        more information about this parameter.
-                        -->
-                        <heartbeat_period>
-                            <!-- 100 milliseconds: -->
-                            <sec>0</sec>
-                            <nanosec>100000000</nanosec>
-                        </heartbeat_period>
-                        <!--
-                        Speed up the heartbeat rate. See reliable.xml for
-                        more information about this parameter.
-                        -->
-                        <fast_heartbeat_period>
-                            <!-- 10 millisecond: -->
-                            <sec>0</sec>
-                            <nanosec>10000000</nanosec>
-                        </fast_heartbeat_period>
-                        <!--
-                        Speed up the heartbeat rate. See reliable.xml for
-                        more information about this parameter.
-                        -->
-                        <late_joiner_heartbeat_period>
-                            <!-- 10 millisecond: -->
-                            <sec>0</sec>
-                            <nanosec>10000000</nanosec>
-                        </late_joiner_heartbeat_period>
+                        When the DataReader receives a heartbeat from a
+                        DataWriter (indicating (a) that the DataWriter still
+                        exists on the network and (b) what sequence numbers
+                        it has published), the following parameters indicate
+                        how long it will wait before replying with a positive
+                        (assuming they aren't disabled) or negative
+                        acknowledgement.
 
-                        <!--
-                        The heartbeat rate is faster, so allow more time for
-                        readers to respond before they are deactivated. See
-                        reliable.xml for more information about this parameter.
+                        The time the reader waits will be a random duration
+                        in between the minimum and maximum values. Narrowing
+                        this range, and shifting it towards zero, will make
+                        the system more reactive. However, it will increase
+                        the chance of (N)ACK spikes. The higher the number of
+                        readers on the topic, and the greater the load on
+                        your network, the more you should consider specifying
+                        a range here.
                         -->
-                        <max_heartbeat_retries>1000</max_heartbeat_retries>
-
-                        <!--
-                        Set the maximum number of unacknowedged samples 
-                        (batches) in the DataWriter's queue equal to the max 
-                        number of batches.  
-                        -->
-                        <min_send_window_size>32</min_send_window_size>
-                        <max_send_window_size>32</max_send_window_size>
-
-                    </rtps_reliable_writer>
+                        <min_heartbeat_response_delay>
+                            <sec>0</sec>
+                            <nanosec>0</nanosec>
+                        </min_heartbeat_response_delay>
+                        <max_heartbeat_response_delay>
+                            <sec>0</sec>
+                            <nanosec>0</nanosec>
+                        </max_heartbeat_response_delay>
+                    </rtps_reliable_reader>
                 </protocol>
-
-                <!--
-                When sending very many small data samples, the efficiency of
-                the network can be increased by batching multiple samples
-                together in a single protocol-level message (usually
-                corresponding to a single network datagram). Batching can
-                offer very substantial throughput gains, but often at the
-                expense of latency, although in some configurations, the
-                latency penalty can be very small or even zero - even
-                negative.
-                -->
-                <batch>
-                    <enable>true</enable>
-
-                    <!--
-                    Batches can be "flushed" to the network based on a
-                    maximum size. This size can be based on the total number
-                    of bytes in the accumulated data samples and/or the number
-                    of samples. Whenever the first of these limits is reached,
-                    the batch will be flushed.
-                    -->
-                    <max_data_bytes>8000</max_data_bytes>
-                    <max_meta_data_bytes>8000</max_meta_data_bytes>
-                    <max_samples>LENGTH_UNLIMITED</max_samples>
-
-                    <!--
-                    Batches can be flushed to the network based on an elapsed
-                    time.
-                    -->
-                    <max_flush_delay>
-                        <sec>0</sec>
-                        <nanosec>50000000</nanosec>
-                    </max_flush_delay>
-
-                    <!--
-                    The middleware will associate a source timestamp with a
-                    batch when it is started. The duration below indicates
-                    the amount of time that may pass before the middleware
-                    will insert an additional timestamp into the middle of an
-                    existing batch.
-        
-                    Shortening this duration can give readers increased
-                    timestamp resolution if they require that. However,
-                    lengthening this duration decreases the amount of
-                    meta-data on the network, potentially improving
-                    throughput, especially if the data samples are very small.
-                    If this delay is set to an infinite time period,
-                    timestamps will be inserted only once per batch, and
-                    furthermore the middleware will not need to check the
-                    time with each sample in the batch, reducing the amount
-                    of computation on the send path and potentially improving
-                    both latency and throughput performance.
-                    -->
-                    <source_timestamp_resolution>
-                        <sec>DURATION_INFINITE_SEC</sec>
-                        <nanosec>DURATION_INFINITE_NSEC</nanosec>
-                    </source_timestamp_resolution>
-                </batch>
-            </datawriter_qos>
+			</datareader_qos>
         </qos_profile>
-
-        <qos_profile name="SwpHighThroughputReliable" base_name="SwpReliable">
-            <datawriter_qos>
-                <writer_resource_limits>
-                    <!--
-                    The number of batches (not samples) for which the
-                    DataWriter will allocate space.
-
-                    The initial_batches parameter is also set here, indicating
-                    to the writer that it should pre-allocate all of the space
-                    up front. Pre-allocation will remove memory allocattion
-                    from the critical path of the application, improving
-                    performance and determinism.
-
-                    Finite resources are not required for strict reliability.
-                    However, by limiting how far "ahead" of its readers a
-                    writer is able to get, you can make the system more
-                    robust and performant in the face of slow readers and/or
-                    dropped packets while at the same time constraining your
-                    memory growth.
-                    -->
-                    <max_batches>32</max_batches>
-                    <initial_batches>32</initial_batches>
-                </writer_resource_limits>
-
-                <!--
-                We're limiting resources based on the number of batches. We
-                could limit resources on a per-sample basis too if we wanted
-                to; we'd probably to set the value based on how many samples
-                we expect to be in each batch. Rather than come up with a
-                heuristic, however, it's more straightforward to override
-                this value to leave the value unlimited. (If you were to set
-                both, the first limit to be hit would take effect.)
-                -->
-                <resource_limits>
-                    <max_samples>LENGTH_UNLIMITED</max_samples>
-                </resource_limits>
-
-                <protocol>
-                    <rtps_reliable_writer>
-                        <!--
-                        Speed up the heartbeat rate. See reliable.xml for
-                        more information about this parameter.
-                        -->
-                        <heartbeat_period>
-                            <!-- 100 milliseconds: -->
-                            <sec>0</sec>
-                            <nanosec>100000000</nanosec>
-                        </heartbeat_period>
-                        <!--
-                        Speed up the heartbeat rate. See reliable.xml for
-                        more information about this parameter.
-                        -->
-                        <fast_heartbeat_period>
-                            <!-- 10 millisecond: -->
-                            <sec>0</sec>
-                            <nanosec>10000000</nanosec>
-                        </fast_heartbeat_period>
-                        <!--
-                        Speed up the heartbeat rate. See reliable.xml for
-                        more information about this parameter.
-                        -->
-                        <late_joiner_heartbeat_period>
-                            <!-- 10 millisecond: -->
-                            <sec>0</sec>
-                            <nanosec>10000000</nanosec>
-                        </late_joiner_heartbeat_period>
-
-                        <!--
-                        The heartbeat rate is faster, so allow more time for
-                        readers to respond before they are deactivated. See
-                        reliable.xml for more information about this parameter.
-                        -->
-                        <max_heartbeat_retries>1000</max_heartbeat_retries>
-
-                        <!--
-                        Set the maximum number of unacknowedged samples 
-                        (batches) in the DataWriter's queue equal to the max 
-                        number of batches.  
-                        -->
-                        <min_send_window_size>32</min_send_window_size>
-                        <max_send_window_size>32</max_send_window_size>
-
-                    </rtps_reliable_writer>
-                </protocol>
-
-                <!--
-                When sending very many small data samples, the efficiency of
-                the network can be increased by batching multiple samples
-                together in a single protocol-level message (usually
-                corresponding to a single network datagram). Batching can
-                offer very substantial throughput gains, but often at the
-                expense of latency, although in some configurations, the
-                latency penalty can be very small or even zero - even
-                negative.
-                -->
-                <batch>
-                    <enable>true</enable>
-
-                    <!--
-                    Batches can be "flushed" to the network based on a
-                    maximum size. This size can be based on the total number
-                    of bytes in the accumulated data samples and/or the number
-                    of samples. Whenever the first of these limits is reached,
-                    the batch will be flushed.
-                    -->
-                    <max_data_bytes>8000</max_data_bytes>
-                    <max_meta_data_bytes>8000</max_meta_data_bytes>
-                    <max_samples>LENGTH_UNLIMITED</max_samples>
-
-                    <!--
-                    Batches can be flushed to the network based on an elapsed
-                    time.
-                    -->
-                    <max_flush_delay>
-                        <sec>0</sec>
-                        <nanosec>50000000</nanosec>
-                    </max_flush_delay>
-
-                    <!--
-                    The middleware will associate a source timestamp with a
-                    batch when it is started. The duration below indicates
-                    the amount of time that may pass before the middleware
-                    will insert an additional timestamp into the middle of an
-                    existing batch.
-        
-                    Shortening this duration can give readers increased
-                    timestamp resolution if they require that. However,
-                    lengthening this duration decreases the amount of
-                    meta-data on the network, potentially improving
-                    throughput, especially if the data samples are very small.
-                    If this delay is set to an infinite time period,
-                    timestamps will be inserted only once per batch, and
-                    furthermore the middleware will not need to check the
-                    time with each sample in the batch, reducing the amount
-                    of computation on the send path and potentially improving
-                    both latency and throughput performance.
-                    -->
-                    <source_timestamp_resolution>
-                        <sec>DURATION_INFINITE_SEC</sec>
-                        <nanosec>DURATION_INFINITE_NSEC</nanosec>
-                    </source_timestamp_resolution>
-                </batch>
-            </datawriter_qos>
-        </qos_profile>
-
-        <qos_profile name="SwpHighThroughputStrictReliable" base_name="SwpStrictReliable">
-            <datawriter_qos>
-                <writer_resource_limits>
-                    <!--
-                    The number of batches (not samples) for which the
-                    DataWriter will allocate space.
-
-                    The initial_batches parameter is also set here, indicating
-                    to the writer that it should pre-allocate all of the space
-                    up front. Pre-allocation will remove memory allocattion
-                    from the critical path of the application, improving
-                    performance and determinism.
-
-                    Finite resources are not required for strict reliability.
-                    However, by limiting how far "ahead" of its readers a
-                    writer is able to get, you can make the system more
-                    robust and performant in the face of slow readers and/or
-                    dropped packets while at the same time constraining your
-                    memory growth.
-                    -->
-                    <max_batches>32</max_batches>
-                    <initial_batches>32</initial_batches>
-                </writer_resource_limits>
-
-                <!--
-                We're limiting resources based on the number of batches. We
-                could limit resources on a per-sample basis too if we wanted
-                to; we'd probably to set the value based on how many samples
-                we expect to be in each batch. Rather than come up with a
-                heuristic, however, it's more straightforward to override
-                this value to leave the value unlimited. (If you were to set
-                both, the first limit to be hit would take effect.)
-                -->
-                <resource_limits>
-                    <max_samples>LENGTH_UNLIMITED</max_samples>
-                </resource_limits>
-
-                <protocol>
-                    <rtps_reliable_writer>
-                        <!--
-                        Speed up the heartbeat rate. See reliable.xml for
-                        more information about this parameter.
-                        -->
-                        <heartbeat_period>
-                            <!-- 100 milliseconds: -->
-                            <sec>0</sec>
-                            <nanosec>100000000</nanosec>
-                        </heartbeat_period>
-                        <!--
-                        Speed up the heartbeat rate. See reliable.xml for
-                        more information about this parameter.
-                        -->
-                        <fast_heartbeat_period>
-                            <!-- 10 millisecond: -->
-                            <sec>0</sec>
-                            <nanosec>10000000</nanosec>
-                        </fast_heartbeat_period>
-                        <!--
-                        Speed up the heartbeat rate. See reliable.xml for
-                        more information about this parameter.
-                        -->
-                        <late_joiner_heartbeat_period>
-                            <!-- 10 millisecond: -->
-                            <sec>0</sec>
-                            <nanosec>10000000</nanosec>
-                        </late_joiner_heartbeat_period>
-
-                        <!--
-                        The heartbeat rate is faster, so allow more time for
-                        readers to respond before they are deactivated. See
-                        reliable.xml for more information about this parameter.
-                        -->
-                        <max_heartbeat_retries>1000</max_heartbeat_retries>
-
-                        <!--
-                        Set the maximum number of unacknowedged samples 
-                        (batches) in the DataWriter's queue equal to the max 
-                        number of batches.  
-                        -->
-                        <min_send_window_size>32</min_send_window_size>
-                        <max_send_window_size>32</max_send_window_size>
-
-                    </rtps_reliable_writer>
-                </protocol>
-
-                <!--
-                When sending very many small data samples, the efficiency of
-                the network can be increased by batching multiple samples
-                together in a single protocol-level message (usually
-                corresponding to a single network datagram). Batching can
-                offer very substantial throughput gains, but often at the
-                expense of latency, although in some configurations, the
-                latency penalty can be very small or even zero - even
-                negative.
-                -->
-                <batch>
-                    <enable>true</enable>
-
-                    <!--
-                    Batches can be "flushed" to the network based on a
-                    maximum size. This size can be based on the total number
-                    of bytes in the accumulated data samples and/or the number
-                    of samples. Whenever the first of these limits is reached,
-                    the batch will be flushed.
-                    -->
-                    <max_data_bytes>8000</max_data_bytes>
-                    <max_meta_data_bytes>8000</max_meta_data_bytes>
-                    <max_samples>LENGTH_UNLIMITED</max_samples>
-
-                    <!--
-                    Batches can be flushed to the network based on an elapsed
-                    time.
-                    -->
-                    <max_flush_delay>
-                        <sec>0</sec>
-                        <nanosec>50000000</nanosec>
-                    </max_flush_delay>
-
-                    <!--
-                    The middleware will associate a source timestamp with a
-                    batch when it is started. The duration below indicates
-                    the amount of time that may pass before the middleware
-                    will insert an additional timestamp into the middle of an
-                    existing batch.
-        
-                    Shortening this duration can give readers increased
-                    timestamp resolution if they require that. However,
-                    lengthening this duration decreases the amount of
-                    meta-data on the network, potentially improving
-                    throughput, especially if the data samples are very small.
-                    If this delay is set to an infinite time period,
-                    timestamps will be inserted only once per batch, and
-                    furthermore the middleware will not need to check the
-                    time with each sample in the batch, reducing the amount
-                    of computation on the send path and potentially improving
-                    both latency and throughput performance.
-                    -->
-                    <source_timestamp_resolution>
-                        <sec>DURATION_INFINITE_SEC</sec>
-                        <nanosec>DURATION_INFINITE_NSEC</nanosec>
-                    </source_timestamp_resolution>
-                </batch>
-            </datawriter_qos>
-        </qos_profile>
-
-        <!--
-        Warning: CoDataQOS must NOT use a base which is "Strict Reliable" - results in deadlock!
-        -->
-        <qos_profile name="CoDataQOS" base_name="SwpReliable">
-        </qos_profile>
-
-        <!--
-        Warning: SimpleDataQOS must NOT use a base which is "Strict Reliable" - results in deadlock!
-        -->
-        <qos_profile name="SimpleDataQOS" base_name="SwpHighThroughputReliable">
-        </qos_profile>
-
-        <qos_profile name="ResponseDataQOS" base_name="SwpStrictReliableNoDurability">
-        </qos_profile>
-
-        <qos_profile name="CmdQOS_BestEffort" base_name="SwpBestEffort">
-            <datareader_qos>
-                <reader_resource_limits>
-                    <max_samples_per_remote_writer>10</max_samples_per_remote_writer>
-                </reader_resource_limits>
-            </datareader_qos>
-        </qos_profile>
-
-        <qos_profile name="CmdQOS_Reliable" base_name="SwpReliableNoDurability">
-            <datareader_qos>
-                <reader_resource_limits>
-                    <max_samples_per_remote_writer>10</max_samples_per_remote_writer>
-                </reader_resource_limits>
-            </datareader_qos>
-        </qos_profile>
-
-        <qos_profile name="CmdQOS_StrictReliable" base_name="SwpStrictReliableNoDurability">
-            <datareader_qos>
-                <reader_resource_limits>
-                    <max_samples_per_remote_writer>10</max_samples_per_remote_writer>
-                </reader_resource_limits>
-            </datareader_qos>
-        </qos_profile>
-    </qos_library>
+	</qos_library>
 </dds>
