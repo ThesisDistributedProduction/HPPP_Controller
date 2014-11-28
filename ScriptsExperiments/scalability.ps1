@@ -1,7 +1,7 @@
 
 
-$HOST_A = "stefan@192.168.0.100"
-$HOST_B = "theis@192.168.0.101"
+$HOST_A = "-pw end2endtest stefan@192.168.0.100"
+$HOST_B = "-pw 123456 persistet@192.168.0.101"
 
 $WORK_DIR = "~/work/HPPP_Controller/ScriptsHelper"
 $DECENTRALICED_RUN_CMD = "bash -l ./runXDecentralized.sh"
@@ -13,10 +13,12 @@ $OUTFILE = "remoteCmd.txt"
 
 Function StartRemoteTurbine{
   Param ([string]$HOST_SYSTEM = 0, [int]$nTurbines = 0, [int]$mSleep = 20)
-  $remoteCmd = """cd ~/work/HPPP_Controller&& bash -l ./runXDecentralized.sh $nTurbines $mSleep"""
-  $remoteCmd | out-file $OUTFILE
+  $remoteCmd = "cd $WORK_DIR && bash -l ./runXDecentralized.sh $nTurbines"
 
-  $CMD = [scriptblock]::Create("..\Tools\putty.exe -ssh -pw end2endtest -t $HOST_SYSTEM -m $OUTFILE")
+  $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
+  [System.IO.File]::WriteAllLines($OUTFILE, $remoteCmd, $Utf8NoBomEncoding) 
+
+  $CMD = [scriptblock]::Create("..\Tools\putty.exe -ssh -t $HOST_SYSTEM -m $OUTFILE")
   Invoke-Command -scriptblock $CMD
 
   Write-Host $CMD
@@ -25,7 +27,7 @@ Function StartRemoteTurbine{
 Function KilleRemoteTurbines{
   Param ()
   $remoteCmd = """killall -9 DecentralizedParkPilot"""
-  $CMD = [scriptblock]::Create("..\Tools\putty.exe -ssh -pw end2endtest -t $HOST_SYSTEM $remoteCmd")
+  $CMD = [scriptblock]::Create("..\Tools\putty.exe -ssh -t $HOST_SYSTEM $remoteCmd")
 #  Invoke-Command -scriptblock $CMD
 
   Write-Host $CMD
@@ -43,11 +45,11 @@ Function OpenMatlab{
 
 for ([int]$nTurbines=5; $nTurbines -le 101; $nTurbines += 5){  
   $nTurbinesA = [math]::floor($nTurbines / 2)
-#  $nTurbinesB = [math]::Ceiling($nTurbines / 2)
+  $nTurbinesB = [math]::Ceiling($nTurbines / 2)
   
   StartRemoteTurbine $HOST_A $nTurbinesAn
 #  StartRemoteTurbine $HOST_B $nTurbinesB
-  OpenMatlab
+#  OpenMatlab
 
   sleep $WAIT_TURBINES_TIME
 }
