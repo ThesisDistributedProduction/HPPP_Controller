@@ -34,7 +34,7 @@ Function KilleRemoteTurbines{
 Function OpenMatlab{
   Param ()
   $CMD = [scriptblock]::Create("..\ScriptsHelper\runDecentralizedWindParkLog.bat $SAMPLE_TIME")
-#  Invoke-Command -scriptblock $CMD
+  Invoke-Command -scriptblock $CMD
 
   Write-Host $CMD
 
