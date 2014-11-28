@@ -5,7 +5,7 @@ START=1
 mSleep=20
 
 if  [ -n "$3" ]; then
-	START=$3
+	mSleep=$3
 fi
 
 if  [ -n "$2" ]; then
