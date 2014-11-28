@@ -9,10 +9,14 @@ $DECENTRALICED_RUN_CMD = "bash -l ./runXDecentralized.sh"
 $SAMPLE_TIME = 120
 $WAIT_TURBINES_TIME = $SAMPLE_TIME + 10  #NEEDS CALIBRATION
 
+$OUTFILE = "remoteCmd.txt"
+
 Function StartRemoteTurbine{
   Param ([string]$HOST_SYSTEM = 0, [int]$nTurbines = 0, [int]$mSleep = 20)
   $remoteCmd = """cd ~/work/HPPP_Controller&& bash -l ./runXDecentralized.sh $nTurbines $mSleep"""
-  $CMD = [scriptblock]::Create("..\Tools\putty.exe -ssh -pw end2endtest -t $HOST_SYSTEM $remoteCmd")
+  $remoteCmd | out-file $OUTFILE
+
+  $CMD = [scriptblock]::Create("..\Tools\putty.exe -ssh -pw end2endtest -t $HOST_SYSTEM -m $OUTFILE")
   Invoke-Command -scriptblock $CMD
 
   Write-Host $CMD
@@ -30,7 +34,7 @@ Function KilleRemoteTurbines{
 Function OpenMatlab{
   Param ()
   $CMD = [scriptblock]::Create("..\ScriptsHelper\runDecentralizedWindParkLog.bat $SAMPLE_TIME")
-  Invoke-Command -scriptblock $CMD
+#  Invoke-Command -scriptblock $CMD
 
   Write-Host $CMD
 
@@ -41,7 +45,7 @@ for ([int]$nTurbines=5; $nTurbines -le 101; $nTurbines += 5){
   $nTurbinesA = [math]::floor($nTurbines / 2)
 #  $nTurbinesB = [math]::Ceiling($nTurbines / 2)
   
-  StartRemoteTurbine $HOST_A $nTurbinesA
+  StartRemoteTurbine $HOST_A $nTurbinesAn
 #  StartRemoteTurbine $HOST_B $nTurbinesB
   OpenMatlab
 
