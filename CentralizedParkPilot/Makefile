@@ -27,7 +27,7 @@ else
 	endif
 endif
 
-.PHONY: clean build buildIDL
+.PHONY: all clean build buildIDL
 
 CommonLIB = -L./build
 IDL_GEN = $(NDDSHOME)/scripts/rtiddsgen2
@@ -44,6 +44,7 @@ INCLUDES=-I./MongoClientLib/include \
 DIRECTORIES = objs
 
 SOURCES	= $(wildcard *.cpp)
+HEADERS	= $(wildcard *.h)
 
 SOURCES_IDL	= $(wildcard $(IDL_FOLDER)*.idl)
 
@@ -55,7 +56,7 @@ OBJECTS = $(SOURCES:%=objs/%.o)
 OBJECTS += $(SOURCES_IDL_CXX:../%=objs/%.o)
 OBJECTS += $(SOURCES_IDL_CXX_2:../%=objs/%.o)
 
-build: buildIDL build/CentralicedParkPilot
+all: buildIDL build/CentralicedParkPilot
 
 debug: CXX += -DDEBUG -g
 debug: CC += -DDEBUG -g
@@ -85,7 +86,7 @@ objs/IDL/%.o: ../IDL/%
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
 
-objs/%.o: %
+objs/%.o: % $(HEADERS)
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
 

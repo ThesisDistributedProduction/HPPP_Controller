@@ -3,7 +3,7 @@
 # The rest of the rules are in the 'Makefile.common'
 include ../common.Makefile
 
-.PHONY: clean build debug
+.PHONY: all clean build debug
 
 # PIC = position independent code, used for libaries
 CFLAGS += -fPIC
@@ -21,9 +21,12 @@ DIRECTORIES = objs
 SOURCES	= $(wildcard *.cpp) \
 		  $(wildcard Turbine/*.cpp)
 
+HEADERS	= $(wildcard *.h) \
+		  $(wildcard Turbine/*.h)
+
 OBJECTS = $(SOURCES:%=objs/%.o)
 
-buld: build/common.a
+all: build/common.a
 
 debug: CXX += -DDEBUG -g
 debug: CC += -DDEBUG -g
@@ -49,7 +52,7 @@ build/libcommond.so: $(SOURCES) $(OBJECTS)
 	@mkdir -p $(@D)
 	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@ -Wl,-soname,$@
 
-objs/%.o: %
+objs/%.o: % $(HEADERS)
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
 
