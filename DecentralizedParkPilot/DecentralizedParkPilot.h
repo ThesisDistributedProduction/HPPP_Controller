@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <chrono>
 #include <thread>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "TurbineMessage.h"
 #include "TurbineMessageSupport.h"
@@ -18,17 +19,12 @@
 #include "CmdArguments.h"
 
 using namespace std;
-
-//class TurbineStatusListener : public DDSDataReaderListener {
-//public:
-//	void on_liveliness_changed(DDSDataReader* reader, const DDS_LivelinessChangedStatus& status);
-//};
+using namespace boost::posix_time;
 
 class DecentralizedParkPilot
 {
 public:
 	DecentralizedParkPilot(CmdArguments args, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic);
-	~DecentralizedParkPilot();
 
 	void calculateNewSetpoint();
 
@@ -40,11 +36,17 @@ private:
 	std::shared_ptr<iTurbine> _turbine;
 	CmdArguments cmdArgs;
 	chrono::nanoseconds _ms_last_write_timestamp;
+	unsigned short fractionWidth = time_duration::num_fractional_digits();
+
+	static const int CYCLE_AVG_BUFFER_SIZE = 200;
+	uint_fast32_t cycleAvgBuffer[CYCLE_AVG_BUFFER_SIZE] = {0};
+	uint_fast32_t cycleAvgBufferIndex = 0;
 
 	MaxProductionReachedMessageDataWriter* _maxProd_reached_writer;
 
 	void productionLevelReached(long localAndMaxDiff);
 	void printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos);
+	uint_fast32_t calculateCycleTime(DDS_SampleInfoSeq turbineInfos);
 
 	uint_fast32_t regAlgorithm(
 		uint_fast32_t globalSetpoint,

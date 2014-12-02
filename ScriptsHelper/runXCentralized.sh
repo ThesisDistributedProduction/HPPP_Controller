@@ -16,17 +16,17 @@ if  [ -n "$1" ]; then
 	N=$(($1+START-1))
 fi
 
-cd ../DecentralizedParkPilot
+cd ../TurbineForCentralizedParkPilot
 
 echo "Starting nodes form $START to start $N"
 
 for (( i=START+1; i<=N; i++ )); do
 	echo "staring with id: " $i "and mSleep: " $mSleep
-   build/DecentralicedClient -id $i -msleep $mSleep -s > /dev/null&
+   build/TurbineForCentralicedClient -id $i -msleep $mSleep -s > /dev/null&
 done
 
-	echo "staring with id: " $START "and mSleep: " $mSleep
-build/DecentralicedClient -id $START -msleep $mSleep -s
+	echo "starting with id: " $START "and mSleep: " $mSleep
+build/TurbineForCentralicedClient -id $START -msleep $mSleep -s
 
 cd ..
 #echo
@@ -39,4 +39,4 @@ cd ..
 #echo "Press any key to kill all instances"
 #read
 
-killall DecentralizedParkPilot
+killall TurbineForCentralizedParkPilot

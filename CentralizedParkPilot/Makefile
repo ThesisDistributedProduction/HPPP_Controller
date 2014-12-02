@@ -27,7 +27,7 @@ else
 	endif
 endif
 
-.PHONY: clean build buildIDL
+.PHONY: all clean buildIDL
 
 CommonLIB = -L./build
 IDL_GEN = $(NDDSHOME)/scripts/rtiddsgen2
@@ -37,6 +37,7 @@ LIBS = -L$(NDDSHOME)/lib/$(ARCH) $(NDDSLIBS) $(CommonLIB) $(MongoLib) $(BOOSTLIB
 
 #INC=-I/usr/informix/incl/c++ /opt/informix/incl/public
 INCLUDES=-I./MongoClientLib/include \
+	-I../Common \
 	-I$(IDL_FOLDER) \
 	-I$(NDDSHOME)/include/ \
 	-I$(NDDSHOME)/include/ndds
@@ -44,6 +45,7 @@ INCLUDES=-I./MongoClientLib/include \
 DIRECTORIES = objs
 
 SOURCES	= $(wildcard *.cpp)
+HEADERS	= $(wildcard *.h)
 
 SOURCES_IDL	= $(wildcard $(IDL_FOLDER)*.idl)
 
@@ -55,7 +57,9 @@ OBJECTS = $(SOURCES:%=objs/%.o)
 OBJECTS += $(SOURCES_IDL_CXX:../%=objs/%.o)
 OBJECTS += $(SOURCES_IDL_CXX_2:../%=objs/%.o)
 
-build: buildIDL build/CentralicedParkPilot
+OBJECTS += ../Common/build/common.a
+
+all: buildIDL build/CentralicedParkPilot
 
 debug: CXX += -DDEBUG -g
 debug: CC += -DDEBUG -g
@@ -67,25 +71,28 @@ build/CentralicedParkPilot: $(SOURCES) $(OBJECTS)
 	@mkdir -p $(@D)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
 
+../Common/build/common.a:
+	                cd ../Common && $(MAKE)
+
 ../Common/build/libcommon.so:
-		cd ../Common && $(MAKE)
+	                cd ../Common && $(MAKE) build/libcommon.so
 
 ../Common/build/libcommond.so:
-		cd ../Common && $(MAKE) debug
+	                cd ../Common && $(MAKE) build/libcommond.so
 
 ./build/libcommon.so: ../Common/build/libcommon.so
-	@mkdir -p $(@D)
-	@cp ../Common/build/libcommon.so ./build/libcommon.so
+	        @mkdir -p $(@D)
+		        @cp ../Common/build/libcommon.so ./build/libcommon.so
 
 ./build/libcommond.so: ../Common/build/libcommond.so
-	@mkdir -p $(@D)
-	@cp ../Common/build/libcommond.so ./build/libcommond.so
+	        @mkdir -p $(@D)
+		        @cp ../Common/build/libcommond.so ./build/libcommond.so			
 
 objs/IDL/%.o: ../IDL/%
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
 
-objs/%.o: %
+objs/%.o: % $(HEADERS)
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
 

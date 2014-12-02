@@ -1,21 +1,5 @@
 #include "DecentralizedParkPilot.h"
 
-
-//void TurbineStatusListener::on_liveliness_changed(DDSDataReader* reader, const DDS_LivelinessChangedStatus& status) 
-//{
-//	
-//	if (status.alive_count_change > 0)
-//		cout << "\nTurbine ONLINE." << std::endl;
-//	else if (status.alive_count_change < 0)
-//		cout << "\nTurbine OFFLINE." << std::endl;
-//	else 
-//		cout << "\nNo change" << std::endl;
-//
-//	if (!status.last_publication_handle.isValid) {
-//		cout << "\nTurbine not valid.";
-//	}
-//}
-
 DecentralizedParkPilot::DecentralizedParkPilot(CmdArguments args, DDSDomainParticipant* participant, DDSTopic* cluster_topic, DDSTopic* maxprod_reached_topic)
 {
 	this->cmdArgs = args;
@@ -83,7 +67,6 @@ DecentralizedParkPilot::DecentralizedParkPilot(CmdArguments args, DDSDomainParti
 	//}
 }
 
-DecentralizedParkPilot::~DecentralizedParkPilot() { }
 
 void DecentralizedParkPilot::calculateNewSetpoint()
 {
@@ -91,6 +74,7 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 	uint_fast32_t curProd = 0;
 	uint_fast32_t maxProd = 0;
 	uint_fast32_t cacheCount = 0;
+	uint_fast32_t lastCycleTime = 0;
 
 	TurbineMessageSeq turbines;
 	DDS_SampleInfoSeq turbineInfos;
@@ -111,7 +95,7 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 
 	if( !cmdArgs.silent ) {
 		std::cout << endl << "DECENTRALIZED PARK PILOT" << endl;
-		cout << " N    Time     ID Prod Setpoint  Max  GlobalSetpoint CycleTime(ms) CacheCount" << endl;
+		cout << " N    Time     ID Prod Setpoint  Max  GlobalSetpoint CycleTime(ns) CacheCount" << endl;
 	}
 
 	for (int count = 0; (sample_count == 0) || (count < sample_count); ++count) {
@@ -119,9 +103,7 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 		instance->currentProduction = curProd;
 		instance->maxProduction = maxProd;
 		instance->setPoint = localSetpoint;
-		instance->msSinceLastWrite = (chrono::duration_cast< chrono::nanoseconds >(
-			chrono::high_resolution_clock::now().time_since_epoch()
-			) - this->_ms_last_write_timestamp).count();
+		instance->msSinceLastWrite = lastCycleTime;
 		instance->cacheCount = cacheCount;
 		
 
@@ -152,14 +134,17 @@ void DecentralizedParkPilot::calculateNewSetpoint()
 			throw runtime_error("A read error occurred: " + result);
 		}
 
-		if( !cmdArgs.silent ) {
-			printReceivedTurbineData(turbines, turbineInfos);
-		}
-
 		localSetpoint = regAlgorithm(cmdArgs.setpoint, turbines, maxProd, curProd, localSetpoint, turbineInfos, cacheCount);
 
 		_turbine->sendSetpoint(localSetpoint);
 		_turbine->readTurbineData(maxProd, curProd);
+
+		lastCycleTime = this->calculateCycleTime(turbineInfos);
+
+		if( !cmdArgs.silent ) {
+			printReceivedTurbineData(turbines, turbineInfos);
+		}
+
 
 		result = _reader->return_loan(turbines, turbineInfos);
 		if (result != DDS_RETCODE_OK) {
@@ -213,8 +198,30 @@ uint_fast32_t DecentralizedParkPilot::regAlgorithm(
 	return localSetpoint;
 }
 
+uint_fast32_t DecentralizedParkPilot::calculateCycleTime(DDS_SampleInfoSeq turbineInfos){
+//	DDS_Time_t oldestDataMsgTs = turbineInfos[0].source_timestamp;
+	DDS_Time_t oldestDataMsgTs = turbineInfos[0].reception_timestamp;
+
+	ptime tStart;
+	ptime tEnd(microsec_clock::universal_time());
+	time_t now = time(NULL);
+	time_duration td;
+
+	for(int i = 1; i < turbineInfos.length(); i++){
+		DDS_Time_t ts = turbineInfos[i].source_timestamp;
+		if(ts.nanosec < oldestDataMsgTs.nanosec && ts.sec < oldestDataMsgTs.sec){
+			oldestDataMsgTs = ts;
+		}
+	}
+	tStart = from_time_t(oldestDataMsgTs.sec);
+	tStart += nanoseconds(oldestDataMsgTs.nanosec);
+	td = tEnd - tStart;
+	return td.fractional_seconds();
+}
+
 void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines, DDS_SampleInfoSeq turbineInfos)
 {
+	uint_fast64_t CycleTimeAvgCalculation = 0;
 	for (int i = 0; i < turbines.length(); ++i) {
 		DDS_SampleInfo& turbineInfo = turbineInfos[i];
 
@@ -228,6 +235,15 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 			continue;
 		}
 		
+		if(cycleAvgBufferIndex > CYCLE_AVG_BUFFER_SIZE){
+			cycleAvgBufferIndex = 0;
+		}
+		cycleAvgBuffer[cycleAvgBufferIndex++] = turbineData.msSinceLastWrite;
+		for(uint_fast32_t i = 0; i < CYCLE_AVG_BUFFER_SIZE; i++){
+			CycleTimeAvgCalculation += cycleAvgBuffer[i];
+		}
+		CycleTimeAvgCalculation /= CYCLE_AVG_BUFFER_SIZE;
+
 		cout << "\r";
 		cout << setfill(' ') << setw(2) << turbines.length();
 
@@ -245,7 +261,9 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 		cout << setfill(' ') << setw(7) << turbineData.setPoint;
 		cout << setfill(' ') << setw(8) << turbineData.maxProduction;
 		cout << setfill(' ') << setw(10) << cmdArgs.setpoint;
-		cout << setfill(' ') << setw(16) << turbineData.msSinceLastWrite;
+		cout << "        ";
+		cout << setfill('0') << setw(fractionWidth) << CycleTimeAvgCalculation;
+//		cout << setfill('0') << setw(fractionWidth) << turbineData.msSinceLastWrite;
 		cout << setfill(' ') << setw(9) << turbineData.cacheCount;
 
 		std::cout.flush( );

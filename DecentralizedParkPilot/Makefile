@@ -25,7 +25,7 @@ else
 	endif
 endif
 
-.PHONY: clean build buildIDL
+.PHONY: all clean buildIDL
 
 CommonLIB = -L./build
 IDL_GEN = $(NDDSHOME)/scripts/rtiddsgen2
@@ -41,7 +41,8 @@ INCLUDES=-I../Common \
 
 DIRECTORIES = objs
 
-SOURCES	= $(wildcard *.cpp)
+SOURCES = $(wildcard *.cpp)
+HEADERS = $(wildcard *.h)
 
 SOURCES_IDL	= $(wildcard $(IDL_FOLDER)*.idl)
 
@@ -58,7 +59,7 @@ OBJECTS += ../Common/build/common.a
 
 #build: CommonLIB += -lcommon
 #build: ./build/libcommon.so buildIDL build/DecentralicedClient
-build: buildIDL build/DecentralicedClient
+all: buildIDL build/DecentralicedClient
 
 debug: CXX += -DDEBUG -g
 debug: CC += -DDEBUG -g
@@ -93,7 +94,7 @@ objs/IDL/%.o: ../IDL/%
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
 
-objs/%.o: %
+objs/%.o: % $(HEADERS) 
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
 
