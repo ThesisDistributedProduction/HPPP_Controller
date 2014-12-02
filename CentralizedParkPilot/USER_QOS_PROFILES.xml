@@ -13,7 +13,6 @@ your installation:
     <qos_library name="DefaultLibrary">
         <qos_profile name="ParticipantQOS" is_default_participant_factory_profile="true">
             <participant_factory_qos>
-				<!-- relevant for siemens -->
                 <logging>
                     <verbosity>WARNING</verbosity>
                     <category>PLATFORM</category>
