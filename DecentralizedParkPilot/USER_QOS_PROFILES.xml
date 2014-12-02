@@ -2,7 +2,7 @@
 
 <dds>
 	<qos_library name="Turbine_Library">
-		<qos_profile name="Turbine_Profile" base_name="BuiltinQosLib::Generic.Common" is_default_qos="true">
+		<qos_profile name="Turbine_Profile" is_default_qos="true">
 			<!-- QoS used to configure the data writer created in the example code -->	   
 			<participant_factory_qos>
 				<!-- relevant for siemens -->
@@ -34,12 +34,27 @@
 					 -->
 					<mask>UDPv4</mask>
 				</transport_builtin>
+                <receiver_pool>
+                    <buffer_size>LENGTH_AUTO</buffer_size>
+                </receiver_pool>
 				<property>
                     <value>
                         <element>
                             <name>dds.transport.UDPv4.builtin.multicast_enabled</name>
                             <value>1</value>
                         </element>
+						<element>
+							<name>dds.transport.UDPv4.builtin.parent.message_size_max</name>
+							<value>65535</value>
+						</element>
+						<element>
+							<name>dds.transport.UDPv4.builtin.send_socket_buffer_size </name>
+							<value>65535</value>
+						</element>
+						<element>
+							<name>dds.transport.UDPv4.builtin.recv_socket_buffer_size</name>
+							<value>2097152</value>
+						</element>
                     </value>
                 </property>
 			</participant_qos>
@@ -72,7 +87,7 @@
 					<kind>KEEP_LAST_HISTORY_QOS</kind>
 					<depth>1</depth>
 				</history>
-				
+				<!-- how long history is relevant. Only relevant for Writers -->
 				<lifespan>
 					<duration>
 						 <sec>0</sec>
@@ -99,6 +114,7 @@
 					<kind>KEEP_LAST_HISTORY_QOS</kind>
 					<depth>1</depth>
 				</history>
+				
 				<!-- enable the use of multicast -->
 				<multicast>
 					<kind>
