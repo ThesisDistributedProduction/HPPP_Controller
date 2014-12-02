@@ -34,9 +34,10 @@ void SetpointListener::on_data_available(DDSDataReader* reader)
 }
 
 
-TurbineCentralized::TurbineCentralized(Turbine& turbine, DDSDomainParticipant* participant, DDSTopicDescription* cft_setpoint_topic)
+TurbineCentralized::TurbineCentralized(Turbine& turbine, DDSDomainParticipant* participant, DDSTopicDescription* cft_setpoint_topic,  CmdArguments args)
 	: _setpoint_listener(turbine), _replier(participant, "TurbineData") //,_request_listener(turbine)
 {
+	cmdArgs = args;
 	this->_turbine = &turbine;
 	this->_turbine->sendSetpoint(0);
 
@@ -64,8 +65,8 @@ TurbineCentralized::TurbineCentralized(Turbine& turbine, DDSDomainParticipant* p
 		throw runtime_error("Unable to narrow data reader into TurbineMessageDataReader");
 	}
 
-
-	cout << endl << "CENTRALIZED TURBINE. ID: " << this->_turbine->getTurbineId() << endl;
-	cout << "    Time     Prod  Max  CycleTime(ns)" << endl;
-
+	if(!cmdArgs.silent){
+		cout << endl << "CENTRALIZED TURBINE. ID: " << this->_turbine->getTurbineId() << endl;
+		cout << "    Time     Prod  Max  CycleTime(ns)" << endl;
+	}
 }
