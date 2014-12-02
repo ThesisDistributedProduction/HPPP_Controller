@@ -7,7 +7,7 @@ $WORK_DIR = "~/work/HPPP_Controller/ScriptsHelper"
 $DECENTRALICED_RUN_CMD = "bash -l ./runXDecentralized.sh"
 
 $SAMPLE_TIME = 60
-$WAIT_TURBINES_TIME = $SAMPLE_TIME + 25  #NEEDS CALIBRATION
+$WAIT_TURBINES_TIME = $SAMPLE_TIME + 30  #NEEDS CALIBRATION
 
 $OUTFILE = ".\remoteCmd.txt"
 
@@ -24,7 +24,8 @@ Function runCmd{
   $CMD = [scriptblock]::Create("..\Tools\putty.exe -ssh -t $HOST_SYSTEM -m $OUTFILE")
   Invoke-Command -scriptblock $CMD
 
-  Write-Host $CMD
+  Write-Host $remoteCmd
+  sleep 2
 }
 
 Function StartRemoteTurbine{
@@ -46,6 +47,11 @@ Function KilleRemoteTurbines{
   Param ()
 
   Stop-Process -processname putty*  
+}
+
+Function StartCentralizedServer{
+  Param([int]$nTurbines= 0)
+
 }
 
 Function OpenMatlab{
@@ -72,12 +78,16 @@ Function TestVariableNumeberOfTurbines {
   
   $cycleSleep = 20
 
-  for ([int]$nTurbines=5; $nTurbines -le 101; $nTurbines += 5){  
+  for ([int]$nTurbines=5; $nTurbines -le 86; $nTurbines += 5){
     $nTurbinesA = [math]::floor($nTurbines / 2)
     $nTurbinesB = [math]::Ceiling($nTurbines / 2)
     
     StartRemoteTurbine $HOST_A $nTurbinesA $cycleSleep 1 $isCentralized
     StartRemoteTurbine $HOST_B $nTurbinesB $cycleSleep 50 $isCentralized
+
+    if ($isCentralized) {
+        StartCentralizedServer $nTurbines
+    }
 
     OpenMatlab $isCentralized
 
@@ -89,9 +99,9 @@ Function TestVariableNumeberOfTurbines {
 Function TestVariableSleepTime {
   param([string]$HOST_A = 0, [string]$HOST_B = 0, [int]$WAIT_TURBINES_TIME = 0, [bool]$isCentralized)
 
-  for ([int]$nCycleSleep=5; $nCycleSleep -le 51; $nCycleSleep += 5) {
-    StartRemoteTurbine $HOST_A 50 $nCycleSleep 1 $isCentralized
-    StartRemoteTurbine $HOST_B 50 $nCycleSleep 50 $isCentralized
+  for ([int]$nCycleSleep=10; $nCycleSleep -le 51; $nCycleSleep += 5) {
+    StartRemoteTurbine $HOST_A 25 $nCycleSleep 1 $isCentralized
+    StartRemoteTurbine $HOST_B 25 $nCycleSleep 26 $isCentralized
     
     OpenMatlab $isCentralized
 
@@ -106,14 +116,16 @@ Function runTests{
   # Decentralized tests #
   $isCentralized = $false
 
-  #TestVariableNumeberOfTurbines $HOST_A $HOST_B $WAIT_TURBINES_TIME $isCentralized
   #TestVariableSleepTime $HOST_A $HOST_B $WAIT_TURBINES_TIME $isCentralized
+  #TestVariableNumeberOfTurbines $HOST_A $HOST_B $WAIT_TURBINES_TIME $isCentralized
 
   # Centralized tests #
   $isCentralized = $true
 
   TestVariableNumeberOfTurbines $HOST_A $HOST_B $WAIT_TURBINES_TIME $isCentralized
-  #TestVariableSleepTime $HOST_A $HOST_B $WAIT_TURBINES_TIME $isCentralized
+  TestVariableSleepTime $HOST_A $HOST_B $WAIT_TURBINES_TIME $isCentralized
+
+  sleep 10
 }
 
 #Run the tests suite
