@@ -199,7 +199,9 @@ uint_fast32_t DecentralizedParkPilot::regAlgorithm(
 }
 
 uint_fast32_t DecentralizedParkPilot::calculateCycleTime(DDS_SampleInfoSeq turbineInfos){
-	DDS_Time_t oldestDataMsgTs = turbineInfos[0].source_timestamp;
+//	DDS_Time_t oldestDataMsgTs = turbineInfos[0].source_timestamp;
+	DDS_Time_t oldestDataMsgTs = turbineInfos[0].reception_timestamp;
+
 	ptime tStart;
 	ptime tEnd(microsec_clock::universal_time());
 	time_t now = time(NULL);
@@ -263,8 +265,6 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 		cout << setfill('0') << setw(fractionWidth) << CycleTimeAvgCalculation;
 //		cout << setfill('0') << setw(fractionWidth) << turbineData.msSinceLastWrite;
 		cout << setfill(' ') << setw(9) << turbineData.cacheCount;
-
-		//		cout << setfill('0') << setw(fractionWidth) << lastCycleTime << endl;
 
 		std::cout.flush( );
 	}
