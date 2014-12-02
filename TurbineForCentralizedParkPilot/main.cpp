@@ -51,10 +51,11 @@ static bool startTurbineForCentralizedApplication(CmdArguments args)
 	DDS_ReturnCode_t retcode;
 
 	DDSDomainParticipantFactory* factory = DDSDomainParticipantFactory::get_instance();
-
+	auto qos = DDS_PARTICIPANT_QOS_DEFAULT;
+//	qos.wire_protocol.participant_id = args.id;
 	DDSDomainParticipant *participant = factory->create_participant(
 		0,
-		DDS_PARTICIPANT_QOS_DEFAULT,
+		qos,
 		NULL,
 		DDS_STATUS_MASK_NONE);
 	if (participant == NULL) {
@@ -106,7 +107,7 @@ static bool startTurbineForCentralizedApplication(CmdArguments args)
 
 	try
 	{
-		TurbineCentralized tc(turbine, participant, cft);
+		TurbineCentralized tc(turbine, participant, cft, args);
 
 		tc.waitForRequests();
 	}

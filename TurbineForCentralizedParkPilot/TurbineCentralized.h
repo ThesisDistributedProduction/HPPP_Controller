@@ -85,7 +85,7 @@ private:
 class TurbineCentralized
 {
 public:
-	TurbineCentralized(Turbine& turbine, DDSDomainParticipant* participant, DDSTopicDescription* cft_setpoint_topic);
+	TurbineCentralized(Turbine& turbine, DDSDomainParticipant* participant, DDSTopicDescription* cft_setpoint_topic, CmdArguments args);
 	~TurbineCentralized() { }
 
 	void waitForRequests()
@@ -112,19 +112,19 @@ public:
 
 				time_t src_time = (time_t)request.info().source_timestamp.sec;
 				tm* local_src_time = localtime(&src_time);
+				if(!cmdArgs.silent){
+					cout << "\r";
+					cout << " [" << std::setw(2) << std::setfill('0') << local_src_time->tm_hour
+						 << ":" << std::setw(2) << std::setfill('0')
+						 << local_src_time->tm_min
+						 << ":" << std::setw(2) << std::setfill('0')
+						 << local_src_time->tm_sec << "] ";
+					cout << setfill(' ') << setw(5) << _reply.data().currentProduction;
+					cout << setfill(' ') << setw(6) << _reply.data().maxProduction;
+					cout << setfill(' ') << setw(11) << request.data().msSinceLastWrite;
 
-				cout << "\r";
-				cout << " [" << std::setw(2) << std::setfill('0') << local_src_time->tm_hour
-					<< ":" << std::setw(2) << std::setfill('0')
-					<< local_src_time->tm_min
-					<< ":" << std::setw(2) << std::setfill('0')
-					<< local_src_time->tm_sec << "] ";
-				cout << setfill(' ') << setw(5) << _reply.data().currentProduction;
-				cout << setfill(' ') << setw(6) << _reply.data().maxProduction;
-				cout << setfill(' ') << setw(11) << request.data().msSinceLastWrite;
-
-				std::cout.flush();
-
+					std::cout.flush();
+				}
 				_replier.send_reply(_reply, request.identity());
 			}
 		}
@@ -134,5 +134,7 @@ private:
 	SetpointListener _setpoint_listener;
 	Replier<RequestMessage, TurbineDataMessage> _replier;
 	Turbine* _turbine;
+	 CmdArguments cmdArgs;
+
 };
 

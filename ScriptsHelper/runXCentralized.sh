@@ -22,11 +22,11 @@ echo "Starting nodes form $START to start $N"
 
 for (( i=START+1; i<=N; i++ )); do
 	echo "staring with id: " $i "and mSleep: " $mSleep
-   build/TurbineForCentralicedClient -id $i -msleep $mSleep -s > /dev/null&
+	./build/TurbineForCentralizedParkPilot	-id $i -msleep $mSleep -s &
 done
 
-	echo "starting with id: " $START "and mSleep: " $mSleep
-build/TurbineForCentralicedClient -id $START -msleep $mSleep -s
+echo "starting with id: " $START "and mSleep: " $mSleep
+./build/TurbineForCentralizedParkPilot -id $START -msleep $mSleep -s
 
 cd ..
 #echo

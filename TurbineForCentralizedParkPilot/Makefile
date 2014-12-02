@@ -66,8 +66,9 @@ all: buildIDL build/TurbineForCentralizedParkPilot
 
 debug: CXX += -DDEBUG -g
 debug: CC += -DDEBUG -g
-debug: CommonLIB += -lcommond
-debug: ./build/libcommond.so buildIDL build/TurbineForCentralizedParkPilot
+# debug: CommonLIB += -lcommond
+debug: buildIDL build/TurbineForCentralizedParkPilot
+# debug: ./build/libcommond.so buildIDL build/TurbineForCentralizedParkPilot
 
 buildIDL: $(SOURCES_IDL) $(SOURCES_IDL_CXX)
 
@@ -75,19 +76,22 @@ build/TurbineForCentralizedParkPilot: $(SOURCES) $(OBJECTS)
 	@mkdir -p $(@D)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
 
+../Common/build/common.a:
+	                cd ../Common && $(MAKE)
+
 ../Common/build/libcommon.so:
-		cd ../Common && $(MAKE)
+	                cd ../Common && $(MAKE) build/libcommon.so
 
 ../Common/build/libcommond.so:
-		cd ../Common && $(MAKE) debug
+	                cd ../Common && $(MAKE) build/libcommond.so
 
 ./build/libcommon.so: ../Common/build/libcommon.so
-	@mkdir -p $(@D)
-	@cp ../Common/build/libcommon.so ./build/libcommon.so
+	        @mkdir -p $(@D)
+		        @cp ../Common/build/libcommon.so ./build/libcommon.so
 
 ./build/libcommond.so: ../Common/build/libcommond.so
-	@mkdir -p $(@D)
-	@cp ../Common/build/libcommond.so ./build/libcommond.so
+	        @mkdir -p $(@D)
+		        @cp ../Common/build/libcommond.so ./build/libcommond.so
 
 objs/IDL/%.o: ../IDL/%
 	@mkdir -p $(@D)
