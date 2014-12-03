@@ -1,1 +1,1 @@
-cd ~/work/HPPP_Controller/ScriptsHelper && bash -l ./runXCentralized.sh 3 50 20
+cd ~/work/HPPP_Controller/ScriptsHelper && bash -l ./runXCentralized.sh 25 1 10

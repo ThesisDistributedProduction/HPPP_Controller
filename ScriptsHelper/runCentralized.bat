@@ -1,4 +1,5 @@
 @echo off
+set number_of_turbines=%1
 
 cd ..\CentralizedParkPilot
 
