@@ -4,7 +4,7 @@
     <!--qos_library name="DefaultLibrary" -->
     <qos_library name="Turbine_Library">
         <!--qos_profile name="ParticipantQOS" is_default_participant_factory_profile="true"-->
-        <qos_profile name="ParticipantQOS" is_default_qos="true">
+        <qos_profile name="Turbine_Profile" is_default_qos="true">
 
             <participant_factory_qos>
 				<!-- relevant for siemens -->
