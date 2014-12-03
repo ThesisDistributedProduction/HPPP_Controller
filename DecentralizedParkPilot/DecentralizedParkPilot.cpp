@@ -235,14 +235,14 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 			continue;
 		}
 		
-		if(cycleAvgBufferIndex > CYCLE_AVG_BUFFER_SIZE){
-			cycleAvgBufferIndex = 0;
-		}
-		cycleAvgBuffer[cycleAvgBufferIndex++] = turbineData.msSinceLastWrite;
-		for(uint_fast32_t i = 0; i < CYCLE_AVG_BUFFER_SIZE; i++){
-			CycleTimeAvgCalculation += cycleAvgBuffer[i];
-		}
-		CycleTimeAvgCalculation /= CYCLE_AVG_BUFFER_SIZE;
+//		if(cycleAvgBufferIndex > CYCLE_AVG_BUFFER_SIZE){
+//			cycleAvgBufferIndex = 0;
+//		}
+//		cycleAvgBuffer[cycleAvgBufferIndex++] = turbineData.msSinceLastWrite;
+//		for(uint_fast32_t i = 0; i < CYCLE_AVG_BUFFER_SIZE; i++){
+//			CycleTimeAvgCalculation += cycleAvgBuffer[i];
+//		}
+//		CycleTimeAvgCalculation /= CYCLE_AVG_BUFFER_SIZE;
 
 		cout << "\r";
 		cout << setfill(' ') << setw(2) << turbines.length();
@@ -262,8 +262,8 @@ void DecentralizedParkPilot::printReceivedTurbineData(TurbineMessageSeq turbines
 		cout << setfill(' ') << setw(8) << turbineData.maxProduction;
 		cout << setfill(' ') << setw(10) << cmdArgs.setpoint;
 		cout << "        ";
-		cout << setfill('0') << setw(fractionWidth) << CycleTimeAvgCalculation;
-//		cout << setfill('0') << setw(fractionWidth) << turbineData.msSinceLastWrite;
+//		cout << setfill('0') << setw(fractionWidth) << CycleTimeAvgCalculation;
+		cout << setfill('0') << setw(fractionWidth) << turbineData.msSinceLastWrite;
 		cout << setfill(' ') << setw(9) << turbineData.cacheCount;
 
 		std::cout.flush( );

@@ -38,10 +38,6 @@ private:
 	chrono::nanoseconds _ms_last_write_timestamp;
 	unsigned short fractionWidth = time_duration::num_fractional_digits();
 
-	static const int CYCLE_AVG_BUFFER_SIZE = 200;
-	uint_fast32_t cycleAvgBuffer[CYCLE_AVG_BUFFER_SIZE] = {0};
-	uint_fast32_t cycleAvgBufferIndex = 0;
-
 	MaxProductionReachedMessageDataWriter* _maxProd_reached_writer;
 
 	void productionLevelReached(long localAndMaxDiff);

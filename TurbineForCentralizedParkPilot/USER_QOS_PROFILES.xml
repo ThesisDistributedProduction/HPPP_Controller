@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-Your XML editor may be able to provide validation and auto-completion services
-as you type. To enable these services, replace the opening tag of this
-document with the following, and update the absolute path as appropriate for
-your installation:
-
-<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:noNamespaceSchemaLocation="/my_NDDSHOME_directory/resource/qos_profiles_myVersion/schema/rti_dds_qos_profiles.xsd">
--->
 <dds>
-    <qos_library name="DefaultLibrary">
-        <qos_profile name="ParticipantQOS" is_default_participant_factory_profile="true">
+    <!--qos_library name="DefaultLibrary" -->
+    <qos_library name="Turbine_Library">
+        <!-- qos_profile name="ParticipantQOS" is_default_participant_factory_profile="true" -->
+        <qos_profile name="ParticipantQOS" is_default_qos="true">
+
             <participant_factory_qos>
 				<!-- relevant for siemens -->
                 <logging>
@@ -23,6 +17,10 @@ your installation:
             </participant_factory_qos>
 
             <participant_qos>
+                <participant_name>
+                    <name>TurbineParticipant</name>
+                    <role_name>TurbineParticipantRole</role_name>
+                </participant_name>
 				<!-- db cleanup after shutdown of a participant. Db is the db local and remote entities -->
                 <database>
                     <shutdown_cleanup_period>
@@ -30,8 +28,12 @@ your installation:
                         <nanosec>1</nanosec>
                     </shutdown_cleanup_period>
                 </database>
-				<!-- shared memory disabled -->
                 <transport_builtin>
+                     <!--
+                         The transport_builtin mask identifies which builtin
+                         transports the domain participant uses. The default value
+                         is UDPv4 | SHMEM.
+                     -->
                     <mask>UDPv4</mask>
                 </transport_builtin>
                 <receiver_pool>
@@ -39,10 +41,10 @@ your installation:
                 </receiver_pool>
                 <property>
                     <value>
-                        <element>
+                        <!--element>
                             <name>dds.transport.UDPv4.builtin.multicast_enabled</name>
                             <value>0</value>
-                        </element>
+                        </element -->
 						<element>
 							<name>dds.transport.UDPv4.builtin.parent.message_size_max</name>
 							<value>65535</value>
@@ -238,7 +240,7 @@ your installation:
 				<!-- Vi er ikke interesserede i historik -->
 				<history>
 					<kind>KEEP_LAST_HISTORY_QOS</kind>
-					<depth>0</depth>
+					<depth>1</depth>
 				</history>
                 <!--
                 The following parameters tune the behavior of the reliability
@@ -246,6 +248,7 @@ your installation:
                 strict reliability but is beneficial from a performance
                 standpoint. 
                 -->
+
                 <protocol>
                     <rtps_reliable_reader>
                         <!--
