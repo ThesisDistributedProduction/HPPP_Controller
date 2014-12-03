@@ -42,7 +42,6 @@ cd ..
 
 #echo $(ps -a | grep DecentralizedPa | wc -l) instances are running
 #echo
-echo "Killing all instances"
 read
-
+echo "Killing all instances"
 killall TurbineForCentralizedParkPilot
