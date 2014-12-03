@@ -22,7 +22,7 @@ echo "Starting nodes form $START to start $N"
 
 for (( i=START+1; i<=N; i++ )); do
 	echo "staring with id: " $i "and mSleep: " $mSleep
-	./build/TurbineForCentralizedParkPilot	-id $i -msleep $mSleep -s &
+	./build/TurbineForCentralizedParkPilot	-id $i -msleep $mSleep -s > /dev/null &
 done
 
 echo "starting with id: " $START "and mSleep: " $mSleep
@@ -36,7 +36,7 @@ cd ..
 
 #echo $(ps -a | grep DecentralizedPa | wc -l) instances are running
 #echo
-#echo "Press any key to kill all instances"
+echo "Killing all instances"
 #read
 
 killall TurbineForCentralizedParkPilot
