@@ -39,7 +39,7 @@ private:
 	unsigned short fractionWidth = time_duration::num_fractional_digits();
 
 	static const int CYCLE_AVG_BUFFER_SIZE = 200;
-	uint_fast32_t cycleAvgBuffer[CYCLE_AVG_BUFFER_SIZE] = {0};
+	uint_fast32_t cycleAvgBuffer[CYCLE_AVG_BUFFER_SIZE];
 	uint_fast32_t cycleAvgBufferIndex = 0;
 
 	MaxProductionReachedMessageDataWriter* _maxProd_reached_writer;
