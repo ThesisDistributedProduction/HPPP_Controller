@@ -16,6 +16,9 @@ if  [ -n "$1" ]; then
 	N=$(($1+START-1))
 fi
 
+killall TurbineForCentralizedParkPilot
+killall CentralicedParkPilot
+
 cd ../TurbineForCentralizedParkPilot
 
 echo "Starting nodes form $START to start $N"
