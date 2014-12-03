@@ -6,6 +6,10 @@ set START_ID=%2
 IF "%START_ID%"=="" set START_ID=0
 IF "%N_INSTANCES%"=="" set N_INSTANCES=1
 
+set number_of_turbines=%N_INSTANCES%
+echo Starting: %number_of_turbines% turbines
+start runCentralized.bat %N_INSTANCES%
+
 :Loop
 IF "%N_INSTANCES%"=="0" GOTO Continue
 	set /a id=%START_ID%+%N_INSTANCES%
@@ -16,9 +20,6 @@ IF "%N_INSTANCES%"=="0" GOTO Continue
 GOTO Loop
 :Continue
 
-set number_of_turbines=%N_INSTANCES%
-echo Starting: %number_of_turbines% turbines
-start runCentralized.bat
 
 echo Press any key to kill all processes
 pause 
