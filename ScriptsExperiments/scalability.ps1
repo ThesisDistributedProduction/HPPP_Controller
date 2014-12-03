@@ -49,9 +49,22 @@ Function KilleRemoteTurbines{
   Stop-Process -processname putty*  
 }
 
+Function KillCentralizedParkPilot{
+  Param ()
+
+  Stop-Process -processname CentralizedParkPilot  
+}
+
 Function StartCentralizedServer{
   Param([int]$nTurbines= 0)
 
+  #$CMD = [scriptblock]::Create("..\ScriptsHelper\runCentralized.bat $nTurbines")
+  #$CMD = [scriptblock]::Create("..\x64\Release\CentralizedParkPilot.exe $nTurbines")
+  #Invoke-Command -scriptblock $CMD
+
+  start-process "..\x64\Release\CentralizedParkPilot.exe" "-n $nTurbines"
+
+  #Write-Host $CMD
 }
 
 Function OpenMatlab{
@@ -93,6 +106,10 @@ Function TestVariableNumeberOfTurbines {
 
     sleep $WAIT_TURBINES_TIME
     KilleRemoteTurbines
+
+    if ($isCentralized) {
+        KillCentralizedParkPilot
+    }
   }
 }
 
@@ -101,12 +118,20 @@ Function TestVariableSleepTime {
 
   for ([int]$nCycleSleep=10; $nCycleSleep -le 51; $nCycleSleep += 5) {
     StartRemoteTurbine $HOST_A 25 $nCycleSleep 1 $isCentralized
-    StartRemoteTurbine $HOST_B 25 $nCycleSleep 26 $isCentralized
+    #StartRemoteTurbine $HOST_B 25 $nCycleSleep 26 $isCentralized
     
-    OpenMatlab $isCentralized
+    if ($isCentralized) {
+        StartCentralizedServer $nTurbines
+    }
+
+    #OpenMatlab $isCentralized
 
     sleep $WAIT_TURBINES_TIME
-    KilleRemoteTurbines 
+    KilleRemoteTurbines
+
+   if ($isCentralized) {
+        KillCentralizedParkPilot
+    }
   }
 }
 
@@ -122,8 +147,8 @@ Function runTests{
   # Centralized tests #
   $isCentralized = $true
 
-  TestVariableNumeberOfTurbines $HOST_A $HOST_B $WAIT_TURBINES_TIME $isCentralized
   TestVariableSleepTime $HOST_A $HOST_B $WAIT_TURBINES_TIME $isCentralized
+  TestVariableNumeberOfTurbines $HOST_A $HOST_B $WAIT_TURBINES_TIME $isCentralized
 
   sleep 10
 }
