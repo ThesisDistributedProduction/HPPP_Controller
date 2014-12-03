@@ -36,8 +36,11 @@ CentralizedParkPilot::CentralizedParkPilot(DDSDomainParticipant* participant, DD
 		out->registerTurbine();
 		_turbineOutlets.push_back(out);
 	}
-	std::cout << endl << "CENTRALIZED PARK PILOT" << endl;
-	std::cout << "CycleTime(ns)  N  GlobalSetpoint  GlobalProd  GlobalMax" << endl;
+	
+	if (!cmdArgs.silent) {
+		std::cout << endl << "CENTRALIZED PARK PILOT" << endl;
+		std::cout << "CycleTime(ns)  N  GlobalSetpoint  GlobalProd  GlobalMax" << endl;
+	}
 }
 
 void CentralizedParkPilot::calculateNewSetpoints()
@@ -106,21 +109,17 @@ void CentralizedParkPilot::calculateNewSetpoints()
 			else
 				availableTurbinesCount--;
 		}
+		
+		if (!cmdArgs.silent) {
+			std::cout << "\r";
+			std::cout << setfill(' ') << setw(10) << cycle_time;
+			std::cout << setfill(' ') << setw(6) << replies.length();
+			std::cout << setfill(' ') << setw(11) << GLOBAL_SETPOINT;
+			std::cout << setfill(' ') << setw(14) << globalCurProd;
+			std::cout << setfill(' ') << setw(11) << globalMaxProd;
 
-		if (cycle_time == 0)
-		{
-			cout << "ZORRO" << endl;
+			std::cout.flush();
 		}
-
-		std::cout << "\r";
-		std::cout << setfill(' ') << setw(10) << cycle_time;
-		std::cout << setfill(' ') << setw(6) << replies.length();
-		std::cout << setfill(' ') << setw(11) << GLOBAL_SETPOINT;
-		std::cout << setfill(' ') << setw(14) << globalCurProd;
-		std::cout << setfill(' ') << setw(11) << globalMaxProd;
-
-		std::cout.flush();
-
 
 		for (iterator it = replies.begin(); it != replies.end(); ++it) {
 			if (it->info().valid_data) {
