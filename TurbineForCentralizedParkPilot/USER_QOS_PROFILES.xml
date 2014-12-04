@@ -92,9 +92,30 @@
                 <resource_limits>
                     <max_samples>LENGTH_UNLIMITED</max_samples>
                 </resource_limits>-->
-				
+				<writer_resource_limits>
+                    <!--
+                    The number of batches (not samples) for which the
+                    DataWriter will allocate space.
+
+                    The initial_batches parameter is also set here, indicating
+                    to the writer that it should pre-allocate all of the space
+                    up front. Pre-allocation will remove memory allocattion
+                    from the critical path of the application, improving
+                    performance and determinism.
+
+                    Finite resources are not required for strict reliability.
+                    However, by limiting how far "ahead" of its readers a
+                    writer is able to get, you can make the system more
+                    robust and performant in the face of slow readers and/or
+                    dropped packets while at the same time constraining your
+                    memory growth.
+                    -->
+                    <max_batches>32</max_batches>
+                    <initial_batches>32</initial_batches>
+                </writer_resource_limits>
 				<resource_limits>
-                    <max_samples_per_instance>20</max_samples_per_instance>
+                    <max_samples>LENGTH_UNLIMITED</max_samples>
+                    <!--max_samples_per_instance>20</max_samples_per_instance-->
                 </resource_limits>
                 <reliability>
                     <max_blocking_time>
@@ -227,7 +248,64 @@
                         <max_send_window_size>32</max_send_window_size>
                     </rtps_reliable_writer>
                 </protocol>
-				 
+				
+				 <!--
+                When sending very many small data samples, the efficiency of
+                the network can be increased by batching multiple samples
+                together in a single protocol-level message (usually
+                corresponding to a single network datagram). Batching can
+                offer very substantial throughput gains, but often at the
+                expense of latency, although in some configurations, the
+                latency penalty can be very small or even zero - even
+                negative.
+                -->
+                <batch>
+                    <enable>true</enable>
+
+                    <!--
+                    Batches can be "flushed" to the network based on a
+                    maximum size. This size can be based on the total number
+                    of bytes in the accumulated data samples and/or the number
+                    of samples. Whenever the first of these limits is reached,
+                    the batch will be flushed.
+                    -->
+                    <max_data_bytes>2500</max_data_bytes>
+                    <max_meta_data_bytes>2500</max_meta_data_bytes>
+                    <max_samples>LENGTH_UNLIMITED</max_samples>
+
+                    <!--
+                    Batches can be flushed to the network based on an elapsed
+                    time.
+                    -->
+                    <max_flush_delay>
+                        <sec>0</sec>
+                        <nanosec>50000000</nanosec>
+                    </max_flush_delay>
+
+                    <!--
+                    The middleware will associate a source timestamp with a
+                    batch when it is started. The duration below indicates
+                    the amount of time that may pass before the middleware
+                    will insert an additional timestamp into the middle of an
+                    existing batch.
+        
+                    Shortening this duration can give readers increased
+                    timestamp resolution if they require that. However,
+                    lengthening this duration decreases the amount of
+                    meta-data on the network, potentially improving
+                    throughput, especially if the data samples are very small.
+                    If this delay is set to an infinite time period,
+                    timestamps will be inserted only once per batch, and
+                    furthermore the middleware will not need to check the
+                    time with each sample in the batch, reducing the amount
+                    of computation on the send path and potentially improving
+                    both latency and throughput performance.
+                    -->
+                    <source_timestamp_resolution>
+                        <sec>DURATION_INFINITE_SEC</sec>
+                        <nanosec>DURATION_INFINITE_NSEC</nanosec>
+                    </source_timestamp_resolution>
+                </batch>
 			</datawriter_qos>
 			
 
