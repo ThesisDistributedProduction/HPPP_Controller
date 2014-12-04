@@ -61,19 +61,20 @@
                 </property>
             </participant_qos>
 			
-			<topic_qos name="TurbineTopicQos">
+			<datawriter_qos>
+				<publication_name>
+					<name>TurbineDataWriter</name>
+				</publication_name>
 				<!-- 
 				 DDS_PROTOCOL_ACKNOWLEDGMENT_MODE (Default) = No application-level acknowledgement. 
 				 AckNack sker gennem Real-Time Publish-Subscribe (RTPS) reliability protocol. -->
 				<reliability>
 				  <kind>DDS_RELIABLE_RELIABILITY_QOS</kind>
+                    <max_blocking_time>
+                        <sec>5</sec>
+                        <nanosec>0</nanosec>
+                    </max_blocking_time>
 				</reliability>
-			</topic_qos>
-			
-			<datawriter_qos>
-				<publication_name>
-					<name>TurbineDataWriter</name>
-				</publication_name>
 				
 				<!-- Størrelse af reliability buffer -->
 				<history>
@@ -95,12 +96,6 @@
 				<resource_limits>
                     <max_samples_per_instance>20</max_samples_per_instance>
                 </resource_limits>
-                <reliability>
-                    <max_blocking_time>
-                        <sec>5</sec>
-                        <nanosec>0</nanosec>
-                    </max_blocking_time>
-                </reliability>
 				<!-- <lifespan>
 					<duration>
 						 <sec>0</sec>
@@ -234,6 +229,9 @@
 				<subscription_name>
 					<name>TurbineDataReader</name>
 				</subscription_name>
+				<reliability>
+				  <kind>DDS_RELIABLE_RELIABILITY_QOS</kind>
+				</reliability>
 				
 				<!-- Vi er ikke interesserede i historik -->
 				<history>
