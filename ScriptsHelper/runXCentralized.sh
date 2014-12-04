@@ -16,11 +16,21 @@ if  [ -n "$1" ]; then
 	N=$(($1+START-1))
 fi
 
+if  [ -n "$4" ]; then
+	totalTurbines=$4
+fi
+
+
 killall TurbineForCentralizedParkPilot
 killall CentralicedParkPilot
 
-#cd ../CentralizedParkPilot
-#./build/CentralicedParkPilot -n $4 -msleep 0&
+
+if  [ "$totalTurbines"  -gt 0 ]; then
+	cd ../CentralizedParkPilot
+	./build/CentralicedParkPilot -n $totalTurbines -msleep 0&
+fi
+
+
 
 cd ../TurbineForCentralizedParkPilot
 
@@ -35,13 +45,8 @@ echo "starting with id: " $START "and mSleep: " $mSleep
 ./build/TurbineForCentralizedParkPilot -id $START -msleep $mSleep -s &
 
 cd ..
-#echo
-#echo "staring instances please wait..."
-#echo
-#sleep 5s
 
-#echo $(ps -a | grep DecentralizedPa | wc -l) instances are running
-#echo
 read
 echo "Killing all instances"
 killall TurbineForCentralizedParkPilot
+killall CentralicedParkPilot
