@@ -48,9 +48,12 @@ static bool startCentralizedApplication(CmdArguments args)
 	DDS_ReturnCode_t retcode;
 
 	DDSDomainParticipantFactory* factory = DDSDomainParticipantFactory::get_instance();
+	//DDS_DomainParticipantQos qos = DDS_PARTICIPANT_QOS_DEFAULT;
+	//	qos.wire_protocol.participant_id = args.id;
+	//factory->get_default_participant_qos(qos);
 
 	DDSDomainParticipant *participant = factory->create_participant(
-		0,
+		0, 
 		DDS_PARTICIPANT_QOS_DEFAULT,
 		NULL,
 		DDS_STATUS_MASK_ALL);
