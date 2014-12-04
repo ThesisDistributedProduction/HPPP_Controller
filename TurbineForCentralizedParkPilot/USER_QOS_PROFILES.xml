@@ -92,7 +92,6 @@
                 <resource_limits>
                     <max_samples>LENGTH_UNLIMITED</max_samples>
                 </resource_limits>-->
-				
 				<resource_limits>
                     <max_samples_per_instance>20</max_samples_per_instance>
                 </resource_limits>
@@ -227,7 +226,6 @@
                         <max_send_window_size>32</max_send_window_size>
                     </rtps_reliable_writer>
                 </protocol>
-				 
 			</datawriter_qos>
 			
 
