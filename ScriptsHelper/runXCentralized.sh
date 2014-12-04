@@ -20,7 +20,7 @@ killall TurbineForCentralizedParkPilot
 killall CentralicedParkPilot
 
 #cd ../CentralizedParkPilot
-#./build/CentralicedParkPilot -n $N &
+#./build/CentralicedParkPilot -n $4 -msleep 0&
 
 cd ../TurbineForCentralizedParkPilot
 

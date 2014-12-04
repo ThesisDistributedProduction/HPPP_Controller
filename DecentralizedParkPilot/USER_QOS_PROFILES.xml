@@ -55,6 +55,10 @@
 							<name>dds.transport.UDPv4.builtin.recv_socket_buffer_size</name>
 							<value>2097152</value>
 						</element>
+						<element>
+                            <name>dds.transport.UDPv4.builtin.ignore_loopback_interface</name>
+                            <value>0</value>
+                        </element>
                     </value>
                 </property>
 			</participant_qos>
