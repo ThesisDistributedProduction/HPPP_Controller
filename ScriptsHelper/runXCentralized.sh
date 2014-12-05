@@ -26,6 +26,7 @@ killall CentralicedParkPilot
 
 
 if  [ "$totalTurbines"  -gt 0 ]; then
+	echo "./build/CentralicedParkPilot -n $totalTurbines -msleep 0"
 	cd ../CentralizedParkPilot
 	./build/CentralicedParkPilot -n $totalTurbines -msleep 0&
 fi
@@ -38,7 +39,7 @@ echo "Starting nodes form $START to start $N"
 
 for (( i=START+1; i<=N; i++ )); do
 	echo "staring with id: " $i "and mSleep: " $mSleep
-	./build/TurbineForCentralizedParkPilot	-id $i -msleep $mSleep -s > /dev/null &
+	./build/TurbineForCentralizedParkPilot	-id $i -msleep $mSleep -s &
 done
 
 echo "starting with id: " $START "and mSleep: " $mSleep

@@ -20,11 +20,12 @@ shared_ptr<iTurbine> createTurbineInstance(uint_fast32_t id){
 Turbine::Turbine(uint_fast32_t id) {
 	this->turbineId = id;
 	auto _db = MongoDatabase::getInstance( );
+
 	//_db->setVerbose(true);
 	_db->connect( );
 
-	string startTime = "16:00:00";
-	string stopTime = "20:00:00";
+	string startTime = "00:00:01";
+	string stopTime = "23:59:59";
 		
 	string collections[4] = { "Turbine3000363Log", "Turbine3000364Log", "Turbine3000365Log", "Turbine3000366Log" };
 

@@ -76,7 +76,6 @@ void CentralizedParkPilot::calculateNewSetpoints()
 			);
 
 		LoanedSamples<TurbineDataMessage> replies = _requester.receive_replies(cmdArgs.numberOfTurbines, cmdArgs.numberOfTurbines, DURATION_INFINITE);
-
 		if (replies.length() == 0) {
 			//cout << "continue" << endl;
 			continue;
@@ -112,7 +111,7 @@ void CentralizedParkPilot::calculateNewSetpoints()
 		
 		if (!cmdArgs.silent) {
 			std::cout << "\r";
-			std::cout << setfill(' ') << setw(10) << cycle_time;
+			std::cout << " " << setfill('0') << setw(9) << cycle_time;
 			std::cout << setfill(' ') << setw(6) << replies.length();
 			std::cout << setfill(' ') << setw(11) << GLOBAL_SETPOINT;
 			std::cout << setfill(' ') << setw(14) << globalCurProd;
