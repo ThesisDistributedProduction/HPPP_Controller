@@ -216,9 +216,9 @@
                         (batches) in the DataWriter's queue equal to the max 
                         number of batches, to limit how far ahead a writer can 
                         get ahead of its potentially slow readers.
-                        -->
                         <min_send_window_size>32</min_send_window_size>
                         <max_send_window_size>32</max_send_window_size>
+                        -->
                     </rtps_reliable_writer>
                 </protocol>
 			</datawriter_qos>
@@ -235,9 +235,13 @@
 				
 				<!-- Vi er ikke interesserede i historik -->
 				<history>
-					<kind>KEEP_LAST_HISTORY_QOS</kind>
-					<depth>1</depth>
+					<!--kind>KEEP_LAST_HISTORY_QOS</kind>
+					<depth>1</depth-->
+					<kind>KEEP_ALL_HISTORY_QOS</kind>
 				</history>
+				<resource_limits>
+                    <max_samples_per_instance>1</max_samples_per_instance>
+                </resource_limits>
                 <!--
                 The following parameters tune the behavior of the reliability
                 protocol. Setting them is not required in order to achieve
