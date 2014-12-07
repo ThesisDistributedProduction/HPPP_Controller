@@ -36,9 +36,6 @@
                      -->
                     <mask>UDPv4</mask>
                 </transport_builtin>
-                <receiver_pool>
-                    <buffer_size>LENGTH_AUTO</buffer_size>
-                </receiver_pool>
                 <property>
                     <value>
                         <!--element>
@@ -123,7 +120,7 @@
                         samples, it will slow the rate at which it sends
                         heartbeats to readers.
                         -->
-                        <low_watermark>5</low_watermark>
+                        <low_watermark>1</low_watermark>
                         <!--
                         When the writer's cache is filled to this level, it
                         will begin sending heartbeats at a faster rate in
@@ -240,7 +237,7 @@
 					<kind>KEEP_ALL_HISTORY_QOS</kind>
 				</history>
 				<resource_limits>
-                    <max_samples_per_instance>1</max_samples_per_instance>
+                    <max_samples_per_instance>20</max_samples_per_instance>
                 </resource_limits>
                 <!--
                 The following parameters tune the behavior of the reliability
