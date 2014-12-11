@@ -76,18 +76,20 @@ void CentralizedParkPilot::calculateNewSetpoints()
 			);
 
 		LoanedSamples<TurbineDataMessage> replies = _requester.receive_replies(cmdArgs.numberOfTurbines, cmdArgs.numberOfTurbines, DURATION_INFINITE);
+		
 		if (replies.length() == 0) {
 			//cout << "continue" << endl;
 			continue;
 		}
 
-
-		int availableTurbinesCount = replies.length();
+		regAlgorithm(GLOBAL_SETPOINT, replies, cycle_time);
+		/*int availableTurbinesCount = replies.length();
 
 		typedef LoanedSamples<TurbineDataMessage>::iterator iterator;
 		long localSetpoint = 0;
 		long globalCurProd = 0;
 		long globalMaxProd = 0;
+
 
 		//regulering
 		for (iterator it = replies.begin(); it != replies.end(); ++it) {
@@ -135,7 +137,7 @@ void CentralizedParkPilot::calculateNewSetpoints()
 				_turbineOutlets[it->data().turbineId - START_ID]->publishData();
 			}
 		}		
-
+		*/
 
 		this_thread::sleep_for(chrono::milliseconds(cmdArgs.msleep));
 
@@ -147,5 +149,62 @@ void CentralizedParkPilot::calculateNewSetpoints()
 		//	(receive_period.nanosec / 1000000));
 
 		//NDDSUtility::(receive_period);
+	}
+}
+
+void CentralizedParkPilot::regAlgorithm(
+	uint_fast32_t globalSetpoint,
+	LoanedSamples<TurbineDataMessage> &turbines,
+	long cycle_time)
+{
+	int availableTurbinesCount = turbines.length();
+
+	typedef LoanedSamples<TurbineDataMessage>::iterator iterator;
+	long localSetpoint = 0;
+	long globalCurProd = 0;
+	long globalMaxProd = 0;
+
+	for (iterator it = turbines.begin(); it != turbines.end(); ++it) {
+		if (it->info().valid_data) {
+
+			if (it->data().currentProduction >= it->data().maxProduction) {
+				availableTurbinesCount--;
+			}
+
+			globalCurProd += it->data().currentProduction;
+			globalMaxProd += it->data().maxProduction;
+
+		}
+		else
+			availableTurbinesCount--;
+	}
+
+
+	if (!cmdArgs.silent) {
+		std::cout << "\r";
+		std::cout << " " << setfill('0') << setw(9) << cycle_time;
+		std::cout << setfill(' ') << setw(6) << turbines.length();
+		std::cout << setfill(' ') << setw(11) << GLOBAL_SETPOINT;
+		std::cout << setfill(' ') << setw(14) << globalCurProd;
+		std::cout << setfill(' ') << setw(11) << globalMaxProd;
+
+		std::cout.flush();
+	}
+
+
+	for (iterator it = turbines.begin(); it != turbines.end(); ++it) {
+		if (it->info().valid_data) {
+			if (availableTurbinesCount <= 0)
+				localSetpoint = globalSetpoint;
+			else
+				localSetpoint = globalSetpoint / availableTurbinesCount;
+
+			if (localSetpoint > it->data().maxProduction) {
+				localSetpoint = it->data().maxProduction;
+			}
+
+			_turbineOutlets[it->data().turbineId - START_ID]->setSetpoint(localSetpoint);
+			_turbineOutlets[it->data().turbineId - START_ID]->publishData();
+		}
 	}
 }

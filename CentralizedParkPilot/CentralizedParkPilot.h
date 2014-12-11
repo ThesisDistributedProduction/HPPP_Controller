@@ -43,13 +43,9 @@ private:
 	SetpointMessageDataWriter* _setpoint_writer;
 	vector<TurbineOutlet*> _turbineOutlets;
 
-	uint_fast32_t regAlgorithm(
+	void regAlgorithm(
 		uint_fast32_t globalSetpoint,
-		LoanedSamples<TurbineDataMessage> turbines,
-		uint_fast32_t maxProd,
-		uint_fast32_t currentProd,
-		uint_fast32_t setPoint,
-		DDS_SampleInfoSeq turbineInfos,
-		uint_fast32_t &cacheCount);
+		LoanedSamples<TurbineDataMessage> &turbines,
+		long cycle_time);
 };
 

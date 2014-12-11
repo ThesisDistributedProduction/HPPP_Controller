@@ -34,9 +34,9 @@
 					 -->
 					<mask>UDPv4</mask>
 				</transport_builtin>
-                <receiver_pool>
+                <!--receiver_pool>
                     <buffer_size>LENGTH_AUTO</buffer_size>
-                </receiver_pool>
+                </receiver_pool-->
 				<property>
                     <value>
                         <element>
@@ -74,7 +74,10 @@
 				<durability>
 					<kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
 				</durability>
-				
+				<history>
+					<kind>KEEP_LAST_HISTORY_QOS</kind>
+					<depth>1</depth>
+				</history>
 			</topic_qos>
 			
 			<datawriter_qos>
@@ -83,10 +86,10 @@
 				</publication_name>
 				
 				<!--- For reliability purposes -->
-				<history>
+				<!--history>
 					<kind>KEEP_LAST_HISTORY_QOS</kind>
 					<depth>1</depth>
-				</history>
+				</history-->
 				<!-- how long history is relevant. Only relevant for Writers -->
 				<lifespan>
 					<duration>
@@ -110,10 +113,10 @@
 					<name>TurbineDataReader</name>
 				</subscription_name>
 				<!-- Vi er kun interesserede i seneste måling -->
-				<history>
+				<!--history>
 					<kind>KEEP_LAST_HISTORY_QOS</kind>
 					<depth>1</depth>
-				</history>
+				</history-->
 				
 				<!-- enable the use of multicast -->
 				<multicast>
